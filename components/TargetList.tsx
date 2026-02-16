@@ -261,12 +261,86 @@ const TargetList: React.FC = () => {
                                         </button>
                                     )
                                 )}
-                            </div>                       </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            )}
+
+            {/* Report Sighting Modal */}
+            {showReportModal && reportTarget && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+                    <div className="bg-gray-950 border border-yellow-500 rounded-lg w-full max-w-md shadow-[0_0_50px_rgba(234,179,8,0.3)]">
+                        <div className="p-6 border-b border-yellow-900/50 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <AlertTriangle size={24} className="text-yellow-500" />
+                                <div>
+                                    <h3 className="font-orbitron font-bold text-yellow-500 text-lg">REPORT SIGHTING</h3>
+                                    <p className="text-xs text-gray-400 font-mono">{reportTarget.codename}</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setShowReportModal(false)} className="text-gray-400 hover:text-white">
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {reportSuccess ? (
+                            <div className="p-8 text-center">
+                                <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-green-500">
+                                    <CheckCircle size={32} className="text-green-500" />
+                                </div>
+                                <h4 className="font-bold text-green-500 text-xl mb-2">REPORT SUBMITTED</h4>
+                                <p className="text-sm text-gray-400">Your sighting has been forwarded to authorities. Thank you for your vigilance.</p>
+                            </div>
+                        ) : (
+                            <div className="p-6 space-y-4">
+                                <p className="text-xs text-yellow-200 bg-yellow-900/20 p-3 rounded border border-yellow-900/50">
+                                    ⚠️ Your information will be forwarded to law enforcement. All reports are encrypted and confidential.
+                                </p>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 mb-2">FULL NAME *</label>
+                                    <input type="text" value={reportForm.name} onChange={(e) => setReportForm({ ...reportForm, name: e.target.value })}
+                                        className="w-full bg-black border border-gray-700 rounded px-3 py-2 text-white font-mono text-sm focus:border-yellow-500 focus:outline-none"
+                                        placeholder="John Doe" required />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 mb-2">PHONE NUMBER *</label>
+                                    <input type="tel" value={reportForm.phone} onChange={(e) => setReportForm({ ...reportForm, phone: e.target.value })}
+                                        className="w-full bg-black border border-gray-700 rounded px-3 py-2 text-white font-mono text-sm focus:border-yellow-500 focus:outline-none"
+                                        placeholder="+1 (555) 123-4567" required />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 mb-2">EMAIL ADDRESS *</label>
+                                    <input type="email" value={reportForm.email} onChange={(e) => setReportForm({ ...reportForm, email: e.target.value })}
+                                        className="w-full bg-black border border-gray-700 rounded px-3 py-2 text-white font-mono text-sm focus:border-yellow-500 focus:outline-none"
+                                        placeholder="john@example.com" required />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 mb-2">SIGHTING DETAILS (Optional)</label>
+                                    <textarea value={reportForm.details} onChange={(e) => setReportForm({ ...reportForm, details: e.target.value })}
+                                        className="w-full bg-black border border-gray-700 rounded px-3 py-2 text-white font-mono text-sm focus:border-yellow-500 focus:outline-none resize-none"
+                                        rows={3} placeholder="Location, time, suspicious activity..." />
+                                </div>
+
+                                <div className="flex gap-3 pt-4">
+                                    <button onClick={() => setShowReportModal(false)}
+                                        className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white text-sm font-bold rounded border border-gray-600 transition-colors">
+                                        CANCEL
+                                    </button>
+                                    <button onClick={submitReport}
+                                        className="flex-1 px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-black text-sm font-bold rounded border border-yellow-400 transition-colors">
+                                        SUBMIT REPORT
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
-    )
-}
+            )}
         </div >
     );
 };
