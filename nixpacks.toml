@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ['nodejs_20', 'python3']
+
+[phases.install]
+cmds = ['npm ci']
+
+[phases.build]
+cmds = ['cd backend && npm install --legacy-peer-deps']
+
+[start]
+cmd = 'cd backend && node server.js'
