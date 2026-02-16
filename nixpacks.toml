@@ -1,11 +1,24 @@
 [phases.setup]
+# Install Node.js and base compilers via nixPkgs
 nixPkgs = ['nodejs_20', 'python3', 'gcc', 'gnumake', 'stdenv.cc.cc.lib']
 
-[phases.install]
-cmds = ['cd backend && npm install --legacy-peer-deps']
+# Install additional compilers via apt (for Debian-based Railway)
+aptPkgs = [
+  "python3-pip",
+  "g++",
+  "openjdk-17-jdk",
+  "golang-go",
+  "cargo",
+  "rustc",
+  "ruby-full",
+  "php-cli"
+]
 
-[phases.build]
-cmds = []
+[phases.install]
+cmds = [
+  "cd backend",
+  "npm install --legacy-peer-deps"
+]
 
 [start]
-cmd = 'cd backend && node server.js'
+cmd = "cd backend && node server.js"
