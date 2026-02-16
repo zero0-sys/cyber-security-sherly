@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { Send, Hand, Brain, Pause } from 'lucide-react';
+import { Send } from 'lucide-react';
 
 interface ChatControlsProps {
     onSendMessage: (text: string) => void;
     isProcessing: boolean;
-    onGesture?: (gesture: 'idle' | 'wave' | 'think') => void;
 }
 
-const ChatControls: React.FC<ChatControlsProps> = ({ onSendMessage, isProcessing, onGesture }) => {
+const ChatControls: React.FC<ChatControlsProps> = ({ onSendMessage, isProcessing }) => {
     const [input, setInput] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -19,32 +18,7 @@ const ChatControls: React.FC<ChatControlsProps> = ({ onSendMessage, isProcessing
     };
 
     return (
-        <div className="w-full space-y-2">
-            {/* Gesture Controls */}
-            {onGesture && (
-                <div className="flex items-center justify-center gap-2 flex-wrap">
-                    <button
-                        onClick={() => onGesture('wave')}
-                        className="px-3 py-1 bg-cyan-900/50 hover:bg-cyan-800 border border-cyan-500/30 hover:border-cyan-500 rounded text-cyan-400 text-xs font-mono transition-all flex items-center gap-2"
-                    >
-                        <Hand size={12} /> Wave
-                    </button>
-                    <button
-                        onClick={() => onGesture('think')}
-                        className="px-3 py-1 bg-cyan-900/50 hover:bg-cyan-800 border border-cyan-500/30 hover:border-cyan-500 rounded text-cyan-400 text-xs font-mono transition-all flex items-center gap-2"
-                    >
-                        <Brain size={12} /> Think
-                    </button>
-                    <button
-                        onClick={() => onGesture('idle')}
-                        className="px-3 py-1 bg-gray-900/50 hover:bg-gray-800 border border-gray-700 hover:border-gray-500 rounded text-gray-400 text-xs font-mono transition-all flex items-center gap-2"
-                    >
-                        <Pause size={12} /> Idle
-                    </button>
-                </div>
-            )}
-
-            {/* Chat Input */}
+        <div className="w-full">
             <form onSubmit={handleSubmit} className="flex gap-2">
                 <input
                     type="text"
@@ -60,7 +34,7 @@ const ChatControls: React.FC<ChatControlsProps> = ({ onSendMessage, isProcessing
                     className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 disabled:bg-gray-700 disabled:text-gray-500 text-black font-bold rounded transition-all flex items-center gap-2 text-xs"
                 >
                     <Send size={14} />
-                    {isProcessing ? 'Processing...' : 'Send'}
+                    {isProcessing ? '...' : 'Send'}
                 </button>
             </form>
         </div>
