@@ -176,7 +176,20 @@ const DatabaseViewer: React.FC = () => {
     return (
         <div className="flex flex-col h-full bg-black">
             {/* Header */}
-            <div className="p-4 border-b border-green-900">
+            <div className="p-6 border-b border-green-900 bg-black/30">
+                {/* Production Warning */}
+                {import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.includes('railway.app') && (
+                    <div className="mb-4 p-3 bg-yellow-900/20 border border-yellow-500/50 rounded-lg">
+                        <div className="flex items-start gap-2">
+                            <span className="text-yellow-400 text-xl">⚠️</span>
+                            <div className="text-xs text-yellow-200">
+                                <strong>Production Storage Notice:</strong> Files are stored temporarily and may be lost on server restart.
+                                For permanent storage, run locally or use cloud storage integration.
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                         <Folder size={24} className="text-green-500" />
@@ -288,8 +301,8 @@ const DatabaseViewer: React.FC = () => {
             {/* Message */}
             {message && (
                 <div className={`mx-4 mt-3 p-3 rounded border flex items-center gap-2 ${message.type === 'success'
-                        ? 'bg-green-900/20 border-green-500 text-green-400'
-                        : 'bg-red-900/20 border-red-500 text-red-400'
+                    ? 'bg-green-900/20 border-green-500 text-green-400'
+                    : 'bg-red-900/20 border-red-500 text-red-400'
                     }`}>
                     {message.type === 'success' ? <CheckCircle size={16} /> : <AlertCircle size={16} />}
                     {message.text}
@@ -311,8 +324,8 @@ const DatabaseViewer: React.FC = () => {
                             <div
                                 key={index}
                                 className={`p-3 rounded border transition-all ${file.type === 'directory'
-                                        ? 'bg-blue-900/10 border-blue-900 hover:bg-blue-900/20 cursor-pointer'
-                                        : 'bg-gray-900/50 border-gray-800 hover:bg-gray-900'
+                                    ? 'bg-blue-900/10 border-blue-900 hover:bg-blue-900/20 cursor-pointer'
+                                    : 'bg-gray-900/50 border-gray-800 hover:bg-gray-900'
                                     }`}
                                 onClick={() => file.type === 'directory' && navigateToFolder(file.name)}
                             >
