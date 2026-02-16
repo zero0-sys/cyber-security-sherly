@@ -5,7 +5,7 @@ nixPkgs = ['nodejs_20', 'python3']
 cmds = []
 
 [phases.build]
-cmds = ['cd backend && npm install --legacy-peer-deps']
+cmds = ['npm install --legacy-peer-deps']
 
 [start]
-cmd = 'cd backend && node server.js'
+cmd = 'node server.js'
