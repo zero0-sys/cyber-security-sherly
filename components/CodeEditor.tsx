@@ -1,41 +1,56 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Editor from '@monaco-editor/react';
-import { Play, Save, FolderOpen, File, Plus, Trash2, Download, Code2, Terminal as TerminalIcon, Bug, GitBranch, GitPullRequest, GitCommit, AlertCircle, CheckCircle } from 'lucide-react';
+import { Play, Save, FolderOpen, File, Plus, Trash2, Download, Code2, Terminal as TerminalIcon, FileCode, ChevronRight, ChevronDown, X, Bug, CheckCircle, AlertCircle } from 'lucide-react';
 
 interface Script {
   name: string;
-  size: number;
-  modified: Date;
+  language: string;
+  content: string;
+  path: string;
+}
+
+interface FileNode {
+  name: string;
+  type: 'file' | 'folder';
+  children?: FileNode[];
+  path: string;
 }
 
 const CodeEditor: React.FC = () => {
-  const [code, setCode] = useState('# Write your code here\nprint("Hello from AI Sherly Lab!")');
-  const [language, setLanguage] = useState('python');
-  const [filename, setFilename] = useState('script.py');
+  const [openFiles, setOpenFiles] = useState<Script[]>([{ name: 'script.py', language: 'python', content: '# Write your Python code here\nprint("Hello from AI Sherly Code Editor!")\n', path: '/script.py' }]);
+  const [activeFile, setActiveFile] = useState(0);
   const [output, setOutput] = useState('');
   const [isExecuting, setIsExecuting] = useState(false);
-  const [scripts, setScripts] = useState<Script[]>([]);
-  const [showScripts, setShowScripts] = useState(true);
-  const [bugs, setBugs] = useState<string[]>([]);
-  const [gitOutput, setGitOutput] = useState('');
-  const [showGitPanel, setShowGitPanel] = useState(false);
-  const [gitUrl, setGitUrl] = useState('');
-  const [commitMessage, setCommitMessage] = useState('');
+  const [showSidebar, setShowSidebar] = useState(true);
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['/']));
   const editorRef = useRef<any>(null);
 
-  // Load scripts list
-  useEffect(() => {
-    loadScripts();
-  }, []);
+  // File tree structure (mock data)
+  const fileTree: FileNode[] = [
+    {
+      name: 'scripts',
+      type: 'folder',
+      path: '/scripts',
+      children: [
+        { name: 'main.py', type: 'file', path: '/scripts/main.py' },
+        { name: 'utils.js', type: 'file', path: '/scripts/utils.js' },
+        { name: 'test.sh', type: 'file', path: '/scripts/test.sh' },
+      ]
+    },
+    { name: 'script.py', type: 'file', path: '/script.py' },
+    { name: 'app.js', type: 'file', path: '/app.js' },
+    { name: 'config.json', type: 'file', path: '/config.json' },
+  ];
 
-  const loadScripts = async () => {
-    try {
-      const res = await fetch('/api/scripts/list');
-      const data = await res.json();
-      setScripts(data.files || []);
-    } catch (error) {
-      console.error('Failed to load scripts:', error);
-    }
+  const getLanguageFromFilename = (filename: string): string => {
+    const ext = filename.split('.').pop()?.toLowerCase();
+    const languageMap: Record<string, string> = {
+      'py': 'python', 'js': 'javascript', 'ts': 'typescript',
+      'c': 'c', 'cpp': 'cpp', 'java': 'java', 'go': 'go',
+      'rs': 'rust', 'rb': 'ruby', 'php': 'php', 'sh': 'bash',
+      'json': 'json', 'html': 'html', 'css': 'css', 'md': 'markdown'
+    };
+    return languageMap[ext || ''] || 'plaintext';
   };
 
   const handleEditorDidMount = (editor: any) => {
@@ -44,16 +59,18 @@ const CodeEditor: React.FC = () => {
   };
 
   const handleSave = async () => {
+    if (openFiles.length === 0) return;
+    const currentFile = openFiles[activeFile];
     try {
-      const res = await fetch('/api/scripts/save', {
+      const backendUrl = import.meta.env.VITE_API_URL || '';
+      const res = await fetch(`${backendUrl}/api/scripts/save`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename, content: code })
+        body: JSON.stringify({ filename: currentFile.name, content: currentFile.content })
       });
       const data = await res.json();
       if (data.success) {
-        setOutput(`✓ Saved to ${data.path}\n`);
-        loadScripts();
+        setOutput(`✓ Saved ${currentFile.name}\n`);
       }
     } catch (error) {
       setOutput(`✗ Save failed: ${error}\n`);
@@ -61,19 +78,27 @@ const CodeEditor: React.FC = () => {
   };
 
   const handleExecute = async () => {
+    if (openFiles.length === 0) return;
+    const currentFile = openFiles[activeFile];
+
     setIsExecuting(true);
-    setOutput('Executing...\n');
+    setOutput('🚀 Executing...\n');
 
     try {
-      const res = await fetch('/api/execute/code', {
+      const backendUrl = import.meta.env.VITE_API_URL || '';
+      const res = await fetch(`${backendUrl}/api/execute/code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, language, filename })
+        body: JSON.stringify({
+          code: currentFile.content,
+          language: currentFile.language,
+          filename: currentFile.name
+        })
       });
       const data = await res.json();
 
       if (data.success) {
-        setOutput(`✓ Execution completed\n\n${data.output}${data.error ? `\nErrors:\n${data.error}` : ''}`);
+        setOutput(`✓ Execution completed\n\n${data.output}${data.error ? `\nWarnings:\n${data.error}` : ''}`);
       } else {
         setOutput(`✗ Execution failed\n\n${data.errorOutput || data.error}`);
       }
@@ -84,420 +109,244 @@ const CodeEditor: React.FC = () => {
     }
   };
 
-  // Bug Finder / Linter
-  const handleLint = () => {
-    const foundBugs: string[] = [];
-    const lines = code.split('\n');
-
-    if (language === 'python') {
-      // Basic Python linting
-      lines.forEach((line, i) => {
-        if (line.trim().startsWith('import ') && i > 10) {
-          foundBugs.push(`Line ${i + 1}: Import statement should be at the top`);
-        }
-        if (line.includes('==') && line.includes('True')) {
-          foundBugs.push(`Line ${i + 1}: Use 'is True' instead of '== True'`);
-        }
-        if (/\s+$/.test(line)) {
-          foundBugs.push(`Line ${i + 1}: Trailing whitespace detected`);
-        }
-        if (line.length > 120) {
-          foundBugs.push(`Line ${i + 1}: Line too long (${line.length} > 120 chars)`);
-        }
-      });
-    } else if (language === 'javascript' || language === 'typescript') {
-      // Basic JS/TS linting
-      lines.forEach((line, i) => {
-        if (line.includes('var ')) {
-          foundBugs.push(`Line ${i + 1}: Use 'let' or 'const' instead of 'var'`);
-        }
-        if (line.includes('==') && !line.includes('===')) {
-          foundBugs.push(`Line ${i + 1}: Use '===' instead of '=='`);
-        }
-        if (line.match(/console\.log/)) {
-          foundBugs.push(`Line ${i + 1}: Remove console.log before production`);
-        }
-      });
-    }
-
-    setBugs(foundBugs);
-    setOutput(`🔍 Bug Scan Complete\n\nFound ${foundBugs.length} issue(s):\n\n` +
-      (foundBugs.length > 0 ? foundBugs.join('\n') : '✓ No issues found!'));
-  };
-
-  // Git Operations
-  const handleGitClone = async () => {
-    if (!gitUrl.trim()) {
-      setGitOutput('❌ Please enter a Git repository URL');
+  const openFile = (node: FileNode) => {
+    if (node.type === 'folder') {
+      toggleFolder(node.path);
       return;
     }
 
-    setGitOutput('Cloning repository...\n');
-    try {
-      const res = await fetch('/api/git/clone', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: gitUrl })
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        setGitOutput(`✓ Repository cloned successfully\n\n${data.output}`);
-        loadScripts();
-      } else {
-        setGitOutput(`❌ Clone failed\n\n${data.error}`);
-      }
-    } catch (error) {
-      setGitOutput(`❌ Request failed: ${error}`);
-    }
-  };
-
-  const handleGitPull = async () => {
-    setGitOutput('Pulling latest changes...\n');
-    try {
-      const res = await fetch('/api/git/pull', { method: 'POST' });
-      const data = await res.json();
-
-      if (data.success) {
-        setGitOutput(`✓ Pull successful\n\n${data.output}`);
-        loadScripts();
-      } else {
-        setGitOutput(`❌ Pull failed\n\n${data.error}`);
-      }
-    } catch (error) {
-      setGitOutput(`❌ Request failed: ${error}`);
-    }
-  };
-
-  const handleGitCommit = async () => {
-    if (!commitMessage.trim()) {
-      setGitOutput('❌ Please enter a commit message');
+    // Check if already open
+    const existingIndex = openFiles.findIndex(f => f.path === node.path);
+    if (existingIndex >= 0) {
+      setActiveFile(existingIndex);
       return;
     }
 
-    setGitOutput('Committing changes...\n');
-    try {
-      const res = await fetch('/api/git/commit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: commitMessage })
-      });
-      const data = await res.json();
+    // Open new file
+    const language = getLanguageFromFilename(node.name);
+    const defaultContent = language === 'python'
+      ? `# ${node.name}\nprint("Hello from ${node.name}")\n`
+      : language === 'javascript'
+        ? `// ${node.name}\nconsole.log("Hello from ${node.name}");\n`
+        : `// ${node.name}\n`;
 
-      if (data.success) {
-        setGitOutput(`✓ Commit successful\n\n${data.output}`);
-        setCommitMessage('');
-      } else {
-        setGitOutput(`❌ Commit failed\n\n${data.error}`);
-      }
-    } catch (error) {
-      setGitOutput(`❌ Request failed: ${error}`);
+    const newFile: Script = {
+      name: node.name,
+      language,
+      content: defaultContent,
+      path: node.path
+    };
+
+    setOpenFiles([...openFiles, newFile]);
+    setActiveFile(openFiles.length);
+  };
+
+  const closeFile = (index: number) => {
+    if (openFiles.length === 1) return; // Keep at least one file open
+    const newFiles = openFiles.filter((_, i) => i !== index);
+    setOpenFiles(newFiles);
+    if (activeFile >= newFiles.length) {
+      setActiveFile(newFiles.length - 1);
+    } else if (activeFile > index) {
+      setActiveFile(activeFile - 1);
     }
   };
 
-  const handleGitPush = async () => {
-    setGitOutput('Pushing to remote...\n');
-    try {
-      const res = await fetch('/api/git/push', { method: 'POST' });
-      const data = await res.json();
-
-      if (data.success) {
-        setGitOutput(`✓ Push successful\n\n${data.output}`);
-      } else {
-        setGitOutput(`❌ Push failed\n\n${data.error}`);
-      }
-    } catch (error) {
-      setGitOutput(`❌ Request failed: ${error}`);
+  const toggleFolder = (path: string) => {
+    const newExpanded = new Set(expandedFolders);
+    if (newExpanded.has(path)) {
+      newExpanded.delete(path);
+    } else {
+      newExpanded.add(path);
     }
+    setExpandedFolders(newExpanded);
   };
 
-  const handleLoadScript = async (scriptName: string) => {
-    try {
-      const res = await fetch(`/api/scripts/load?filename=${encodeURIComponent(scriptName)}`);
-      const data = await res.json();
-      setCode(data.content);
-      setFilename(scriptName);
-
-      // Detect language from extension
-      const ext = scriptName.split('.').pop()?.toLowerCase();
-      if (ext === 'py') setLanguage('python');
-      else if (ext === 'js') setLanguage('javascript');
-      else if (ext === 'sh') setLanguage('shell');
-      else if (ext === 'ts') setLanguage('typescript');
-      else if (ext === 'java') setLanguage('java');
-      else if (ext === 'cpp' || ext === 'cc') setLanguage('cpp');
-      else if (ext === 'c') setLanguage('c');
-      else if (ext === 'go') setLanguage('go');
-      else if (ext === 'rs') setLanguage('rust');
-
-      setOutput(`✓ Loaded ${scriptName}\n`);
-    } catch (error) {
-      setOutput(`✗ Load failed: ${error}\n`);
-    }
+  const renderFileTree = (nodes: FileNode[], depth = 0) => {
+    return nodes.map((node) => (
+      <div key={node.path}>
+        <div
+          className={`flex items-center gap-1 px-2 py-1 hover:bg-gray-800 cursor-pointer text-xs transition-colors ${openFiles[activeFile]?.path === node.path ? 'bg-blue-900/30 text-blue-400' : 'text-gray-400'
+            }`}
+          style={{ paddingLeft: `${depth * 12 + 8}px` }}
+          onClick={() => openFile(node)}
+        >
+          {node.type === 'folder' ? (
+            <>
+              {expandedFolders.has(node.path) ? (
+                <ChevronDown size={14} className="text-gray-500" />
+              ) : (
+                <ChevronRight size={14} className="text-gray-500" />
+              )}
+              <FolderOpen size={14} className="text-yellow-500" />
+            </>
+          ) : (
+            <>
+              <div className="w-3.5" />
+              <FileCode size={14} className="text-green-500" />
+            </>
+          )}
+          <span className="font-mono">{node.name}</span>
+        </div>
+        {node.type === 'folder' && expandedFolders.has(node.path) && node.children && (
+          <div>{renderFileTree(node.children, depth + 1)}</div>
+        )}
+      </div>
+    ));
   };
 
-  const handleNewFile = () => {
-    const ext = language === 'python' ? 'py' : language === 'javascript' ? 'js' : language === 'shell' ? 'sh' : 'txt';
-    setFilename(`new_file.${ext}`);
-    setCode(`// New ${language} file\n\n`);
-    setOutput('');
-  };
-
-  const handleLanguageChange = (lang: string) => {
-    setLanguage(lang);
-    const ext = lang === 'python' ? 'py' : lang === 'javascript' ? 'js' : lang === 'shell' ? 'sh' : 'txt';
-    setFilename(filename.replace(/\.[^.]+$/, `.${ext}`));
+  const updateFileContent = (content: string) => {
+    const newFiles = [...openFiles];
+    newFiles[activeFile].content = content;
+    setOpenFiles(newFiles);
   };
 
   return (
-    <div className="flex h-full bg-black">
-      {/* Sidebar - File Browser */}
-      {showScripts && (
-        <div className="w-64 border-r border-green-900 flex flex-col bg-black/40">
-          <div className="p-3 border-b border-green-900">
-            <h3 className="font-orbitron font-bold text-white flex items-center gap-2">
-              <FolderOpen size={16} className="text-green-500" />
-              SCRIPTS
-            </h3>
-          </div>
+    <div className="h-full flex flex-col bg-gray-950 text-white">
+      {/* Top Bar */}
+      <div className="h-10 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4">
+        <div className="flex items-center gap-3">
+          <Code2 size={20} className="text-blue-500" />
+          <h2 className="font-orbitron font-bold text-sm">CODE EDITOR</h2>
+          <span className="text-xs text-gray-600 font-mono">Professional IDE</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowSidebar(!showSidebar)}
+            className="px-2 py-1 text-xs bg-gray-800 hover:bg-gray-700 rounded transition-colors"
+          >
+            {showSidebar ? '◀' : '▶'} Files
+          </button>
+        </div>
+      </div>
 
-          <div className="p-2">
-            <button
-              onClick={handleNewFile}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded bg-green-600 hover:bg-green-500 text-black font-bold text-sm transition-colors"
-            >
-              <Plus size={16} />
-              New File
-            </button>
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        {showSidebar && (
+          <div className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col">
+            <div className="p-2 border-b border-gray-800 flex items-center justify-between">
+              <span className="text-xs font-bold text-gray-400 uppercase">Explorer</span>
+              <div className="flex gap-1">
+                <button className="p-1 hover:bg-gray-800 rounded" title="New File">
+                  <Plus size={14} className="text-gray-500" />
+                </button>
+                <button className="p-1 hover:bg-gray-800 rounded" title="Refresh">
+                  <Download size={14} className="text-gray-500" />
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              {renderFileTree(fileTree)}
+            </div>
           </div>
+        )}
 
-          <div className="flex-1 overflow-y-auto p-2 space-y-1">
-            {scripts.map((script) => (
-              <button
-                key={script.name}
-                onClick={() => handleLoadScript(script.name)}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded text-left text-sm transition-colors ${script.name === filename
-                  ? 'bg-green-900/30 text-green-400 border border-green-900'
-                  : 'text-gray-400 hover:bg-green-900/10 hover:text-green-300'
+        {/* Main Editor Area */}
+        <div className="flex-1 flex flex-col">
+          {/* Tabs */}
+          <div className="bg-gray-900 border-b border-gray-800 flex items-center overflow-x-auto">
+            {openFiles.map((file, index) => (
+              <div
+                key={index}
+                className={`flex items-center gap-2 px-3 py-2 border-r border-gray-800 cursor-pointer group min-w-0 ${activeFile === index
+                    ? 'bg-gray-950 text-white'
+                    : 'bg-gray-900 text-gray-400 hover:bg-gray-850'
                   }`}
+                onClick={() => setActiveFile(index)}
               >
-                <File size={14} />
-                <span className="flex-1 truncate">{script.name}</span>
-              </button>
+                <FileCode size={14} className="text-green-500 flex-shrink-0" />
+                <span className="text-xs font-mono truncate">{file.name}</span>
+                {openFiles.length > 1 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      closeFile(index);
+                    }}
+                    className="opacity-0 group-hover:opacity-100 hover:bg-red-900/30 rounded p-0.5 transition-opacity flex-shrink-0"
+                  >
+                    <X size={12} className="text-gray-500 hover:text-red-400" />
+                  </button>
+                )}
+              </div>
             ))}
-
-            {scripts.length === 0 && (
-              <div className="text-xs text-gray-600 text-center py-8">
-                No scripts yet
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Main Editor Area */}
-      <div className="flex-1 flex flex-col">
-        {/* Toolbar */}
-        <div className="flex items-center justify-between p-3 border-b border-green-900 bg-black">
-          <div className="flex items-center gap-3">
-            <Code2 size={20} className="text-green-500" />
-            <input
-              type="text"
-              value={filename}
-              onChange={(e) => setFilename(e.target.value)}
-              className="bg-black border border-green-900 rounded px-3 py-1 text-green-400 font-mono text-sm focus:border-green-500 focus:outline-none"
-            />
-
-            <select
-              value={language}
-              onChange={(e) => handleLanguageChange(e.target.value)}
-              className="bg-black border border-green-900 rounded px-3 py-1 text-green-400 font-mono text-sm focus:border-green-500 focus:outline-none"
-            >
-              <option value="python">Python</option>
-              <option value="javascript">JavaScript</option>
-              <option value="typescript">TypeScript</option>
-              <option value="shell">Bash</option>
-              <option value="c">C</option>
-              <option value="cpp">C++</option>
-              <option value="java">Java</option>
-              <option value="go">Go</option>
-              <option value="rust">Rust</option>
-              <option value="html">HTML</option>
-              <option value="css">CSS</option>
-              <option value="json">JSON</option>
-              <option value="yaml">YAML</option>
-              <option value="markdown">Markdown</option>
-            </select>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleLint}
-              className="flex items-center gap-2 px-3 py-2 rounded bg-yellow-600 hover:bg-yellow-500 text-black font-bold text-sm transition-colors"
-              title="Find Bugs"
-            >
-              <Bug size={16} />
-              Lint
-            </button>
-
-            <button
-              onClick={() => setShowGitPanel(!showGitPanel)}
-              className="flex items-center gap-2 px-3 py-2 rounded bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm transition-colors"
-              title="Git Operations"
-            >
-              <GitBranch size={16} />
-              Git
-            </button>
-
-            <button
-              onClick={handleSave}
-              className="flex items-center gap-2 px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-colors"
-            >
-              <Save size={16} />
-              Save
-            </button>
-
-            <button
-              onClick={handleExecute}
-              disabled={isExecuting || !['python', 'javascript', 'shell'].includes(language)}
-              className="flex items-center gap-2 px-4 py-2 rounded bg-green-600 hover:bg-green-500 text-black font-bold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Play size={16} />
-              {isExecuting ? 'Running...' : 'Execute'}
-            </button>
-          </div>
-        </div>
-
-        {/* Git Panel */}
-        {showGitPanel && (
-          <div className="p-3 border-b border-green-900 bg-gray-900/50">
-            <div className="flex items-center gap-2 mb-3">
-              <GitBranch size={16} className="text-purple-500" />
-              <h3 className="font-bold text-white text-sm">GIT OPERATIONS</h3>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2 mb-2">
-              <div className="col-span-2">
-                <input
-                  type="text"
-                  value={gitUrl}
-                  onChange={(e) => setGitUrl(e.target.value)}
-                  placeholder="https://github.com/user/repo.git"
-                  className="w-full bg-black border border-green-900 rounded px-3 py-2 text-green-400 font-mono text-xs focus:border-green-500 focus:outline-none"
-                />
-              </div>
-              <button
-                onClick={handleGitClone}
-                className="flex items-center justify-center gap-2 px-3 py-2 rounded bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition-colors"
-              >
-                <Download size={14} />
-                Clone
-              </button>
-              <button
-                onClick={handleGitPull}
-                className="flex items-center justify-center gap-2 px-3 py-2 rounded bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-colors"
-              >
-                <GitPullRequest size={14} />
-                Pull
-              </button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              <input
-                type="text"
-                value={commitMessage}
-                onChange={(e) => setCommitMessage(e.target.value)}
-                placeholder="Commit message..."
-                className="bg-black border border-green-900 rounded px-3 py-2 text-green-400 font-mono text-xs focus:border-green-500 focus:outline-none"
+          {/* Editor */}
+          <div className="flex-1 relative">
+            {openFiles.length > 0 ? (
+              <Editor
+                height="100%"
+                language={openFiles[activeFile].language}
+                value={openFiles[activeFile].content}
+                onChange={(value) => updateFileContent(value || '')}
+                onMount={handleEditorDidMount}
+                theme="vs-dark"
+                options={{
+                  minimap: { enabled: true },
+                  fontSize: 13,
+                  fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, monospace",
+                  lineNumbers: 'on',
+                  rulers: [80, 120],
+                  wordWrap: 'on',
+                  automaticLayout: true,
+                  scrollBeyondLastLine: false,
+                  tabSize: 4,
+                }}
               />
-              <div className="flex gap-2">
-                <button
-                  onClick={handleGitCommit}
-                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded bg-green-600 hover:bg-green-500 text-black font-bold text-xs transition-colors"
-                >
-                  <GitCommit size={14} />
-                  Commit
-                </button>
-                <button
-                  onClick={handleGitPush}
-                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs transition-colors"
-                >
-                  Push
-                </button>
-              </div>
-            </div>
-
-            {gitOutput && (
-              <div className="mt-2 p-2 bg-black border border-purple-900 rounded text-xs text-purple-400 font-mono whitespace-pre-wrap max-h-24 overflow-y-auto">
-                {gitOutput}
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-600">
+                <div className="text-center">
+                  <Code2 size={48} className="mx-auto mb-3 opacity-50" />
+                  <p>No file open. Select a file from the explorer.</p>
+                </div>
               </div>
             )}
           </div>
-        )}
 
-        {/* Bug Display */}
-        {bugs.length > 0 && (
-          <div className="p-3 border-b border-yellow-900 bg-yellow-900/10">
-            <div className="flex items-center gap-2 mb-2">
-              <AlertCircle size={16} className="text-yellow-500" />
-              <h3 className="font-bold text-white text-sm">{bugs.length} ISSUE(S) FOUND</h3>
+          {/* Action Bar */}
+          <div className="h-12 bg-gray-900 border-t border-gray-800 flex items-center justify-between px-4">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-500 font-mono">
+                {openFiles.length > 0 && `Language: ${openFiles[activeFile].language}`}
+              </span>
             </div>
-            <div className="space-y-1 max-h-32 overflow-y-auto">
-              {bugs.slice(0, 5).map((bug, i) => (
-                <div key={i} className="text-xs text-yellow-400 font-mono">
-                  • {bug}
+            <div className="flex gap-2">
+              <button
+                onClick={handleSave}
+                className="flex items-center gap-2 px-4 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-colors"
+              >
+                <Save size={14} /> Save
+              </button>
+              <button
+                onClick={handleExecute}
+                disabled={isExecuting || openFiles.length === 0}
+                className="flex items-center gap-2 px-4 py-1.5 rounded bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:text-gray-500 text-black text-xs font-bold transition-colors"
+              >
+                <Play size={14} /> {isExecuting ? 'Running...' : 'Execute'}
+              </button>
+            </div>
+          </div>
+
+          {/* Output Panel */}
+          {output && (
+            <div className="h-48 bg-black border-t border-gray-800 flex flex-col">
+              <div className="h-8 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-3">
+                <div className="flex items-center gap-2">
+                  <TerminalIcon size={14} className="text-green-500" />
+                  <span className="text-xs font-bold text-gray-400">OUTPUT</span>
                 </div>
-              ))}
-              {bugs.length > 5 && (
-                <div className="text-xs text-gray-500">... and {bugs.length - 5} more</div>
-              )}
+                <button
+                  onClick={() => setOutput('')}
+                  className="text-gray-500 hover:text-white"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-3 font-mono text-xs">
+                <pre className="text-green-400 whitespace-pre-wrap">{output}</pre>
+              </div>
             </div>
-          </div>
-        )}
-
-        {/* Editor */}
-        <div className="flex-1 min-h-0">
-          <Editor
-            height="100%"
-            language={language}
-            value={code}
-            onChange={(value) => { setCode(value || ''); setBugs([]); }}
-            onMount={handleEditorDidMount}
-            theme="vs-dark"
-            options={{
-              minimap: { enabled: true },
-              fontSize: 14,
-              fontFamily: '"Cascadia Code", "Fira Code", Consolas, monospace',
-              lineNumbers: 'on',
-              rulers: [80, 120],
-              formatOnPaste: true,
-              automaticLayout: true,
-              scrollBeyondLastLine: false,
-              wordWrap: 'on',
-              tabSize: 4,
-              insertSpaces: true,
-            }}
-          />
-        </div>
-
-        {/* Output Terminal */}
-        <div className="h-48 border-t border-green-900 bg-black flex flex-col">
-          <div className="flex items-center justify-between px-3 py-2 border-b border-green-900/50">
-            <div className="flex items-center gap-2 text-sm font-bold text-white">
-              <TerminalIcon size={14} className="text-green-500" />
-              LIVE OUTPUT
-              {isExecuting && <span className="animate-pulse text-yellow-400 text-xs">● RUNNING</span>}
-            </div>
-            <button
-              onClick={() => { setOutput(''); setBugs([]); }}
-              className="text-xs text-gray-500 hover:text-green-400"
-            >
-              Clear
-            </button>
-          </div>
-          <div className="flex-1 overflow-y-auto p-3 font-mono text-xs text-green-400 whitespace-pre-wrap">
-            {output || '⚡ Ready to execute. Click Execute to run your code or Lint to find bugs.'}
-          </div>
+          )}
         </div>
       </div>
     </div>
