@@ -301,7 +301,7 @@ const SidebarContent: React.FC<{ activeTab: TabType, onTabChange: (t: TabType) =
       <div className="text-xs text-gray-500 uppercase tracking-wider mb-2 mt-6 font-bold px-2">Offensive Ops</div>
       <NavButton active={activeTab === 'targets'} onClick={() => onTabChange('targets')} icon={<Target size={18} />} label="Wanted List" badge="NEW" />
       <NavButton active={activeTab === 'tools'} onClick={() => onTabChange('tools')} icon={<Search size={18} />} label="Tool Armory" />
-      <NavButton active={activeTab === 'code_editor'} onClick={() => onTabChange('code_editor')} icon={<Code size={18} />} label="Script Forge" />
+      <NavButton active={activeTab === 'code_editor'} onClick={() => onTabChange('code_editor')} icon={<Code size={18} />} label="Code Editor" />
       <NavButton active={activeTab === 'attack'} onClick={() => onTabChange('attack')} icon={<Zap size={18} />} label="Attack Sim" />
       <NavButton active={activeTab === 'c2'} onClick={() => onTabChange('c2')} icon={<Laptop size={18} />} label="Command & Control" badge="RAT" />
       <NavButton active={activeTab === 'crypto'} onClick={() => onTabChange('crypto')} icon={<Key size={18} />} label="Cryptography" />
