@@ -73,3 +73,15 @@ ALLOWED_ORIGINS = https://your-site.netlify.app
 ---
 
 **Support**: Check `DEPLOYMENT.md` for detailed troubleshooting
+
+---
+
+## 👤 Creator
+
+**Name**: netyc  
+**Age**: ∞ (infinity)  
+**Hobby**: Ngerusuh 😈
+
+---
+
+*Built with chaos and code* 🔥
