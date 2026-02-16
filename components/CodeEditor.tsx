@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Editor from '@monaco-editor/react';
-import { Play, Save, FolderPlus, FilePlus, File, Trash2, Edit2, Code2, Terminal as TerminalIcon, FileCode, ChevronRight, ChevronDown, X, CheckCircle, AlertCircle, FolderOpen } from 'lucide-react';
+import { Play, Save, FolderPlus, FilePlus, Trash2, Edit2, Code2, Terminal as TerminalIcon, FileCode, ChevronRight, ChevronDown, X, GripVertical, FolderOpen } from 'lucide-react';
 
 interface Script {
   name: string;
@@ -30,9 +30,17 @@ const CodeEditor: React.FC = () => {
     { name: 'app.js', type: 'file', path: '/app.js' },
     { name: 'styles.css', type: 'file', path: '/styles.css' },
   ]);
-  const [showTerminal, setShowTerminal] = useState(false);
-  const [terminalOutput, setTerminalOutput] = useState('AI Sherly Terminal v1.0\nType commands here...\n');
+  const [showTerminal, setShowTerminal] = useState(true);
+  const [terminalOutput, setTerminalOutput] = useState('AI Sherly Terminal v1.0\nReady to execute commands.\nType "help" for available commands.\n\n');
   const [terminalInput, setTerminalInput] = useState('');
+  const [draggedFile, setDraggedFile] = useState<FileNode | null>(null);
+
+  // Resizable panels
+  const [outputHeight, setOutputHeight] = useState(200);
+  const [terminalHeight, setTerminalHeight] = useState(250);
+  const [isResizingOutput, setIsResizingOutput] = useState(false);
+  const [isResizingTerminal, setIsResizingTerminal] = useState(false);
+
   const editorRef = useRef<any>(null);
 
   const languageTemplates: Record<string, string> = {
@@ -51,6 +59,35 @@ const CodeEditor: React.FC = () => {
     css: '/* CSS */\nbody {\n    font-family: Arial, sans-serif;\n    background: #000;\n    color: #0f0;\n}\n',
     json: '{\n    "message": "Hello World"\n}\n',
   };
+
+  // Resize handlers
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isResizingOutput) {
+        const newHeight = window.innerHeight - e.clientY - 60;
+        setOutputHeight(Math.max(100, Math.min(500, newHeight)));
+      }
+      if (isResizingTerminal) {
+        const newHeight = window.innerHeight - e.clientY - 60;
+        setTerminalHeight(Math.max(150, Math.min(600, newHeight)));
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizingOutput(false);
+      setIsResizingTerminal(false);
+    };
+
+    if (isResizingOutput || isResizingTerminal) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizingOutput, isResizingTerminal]);
 
   const getLanguageFromFilename = (filename: string): string => {
     const ext = filename.split('.').pop()?.toLowerCase();
@@ -71,8 +108,16 @@ const CodeEditor: React.FC = () => {
   const handleSave = async () => {
     if (openFiles.length === 0) return;
     const currentFile = openFiles[activeFile];
+
+    setTerminalOutput(prev => `${prev}$ Saving ${currentFile.name}...\n`);
+
     try {
       const backendUrl = import.meta.env.VITE_API_URL || '';
+
+      if (!backendUrl) {
+        throw new Error('VITE_API_URL not configured. Check ENV_SETUP.md');
+      }
+
       const res = await fetch(`${backendUrl}/api/scripts/save`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -80,17 +125,20 @@ const CodeEditor: React.FC = () => {
       });
 
       if (!res.ok) {
-        throw new Error(`HTTP ${res.status}`);
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
       }
 
       const data = await res.json();
       if (data.success) {
-        setOutput(`✅ Saved ${currentFile.name}\n`);
+        setOutput(`✅ Saved ${currentFile.name} successfully\n`);
+        setTerminalOutput(prev => `${prev}✅ File saved to ${data.path || 'server'}\n\n`);
       } else {
-        setOutput(`❌ Save failed: ${data.error || 'Unknown error'}\n`);
+        throw new Error(data.error || 'Save failed');
       }
     } catch (error) {
-      setOutput(`❌ Save failed: ${error instanceof Error ? error.message : 'Network error'}\n`);
+      const errorMsg = error instanceof Error ? error.message : 'Network error';
+      setOutput(`❌ Save failed: ${errorMsg}\n\nTip: Check if VITE_API_URL is set in Netlify environment variables.`);
+      setTerminalOutput(prev => `${prev}❌ ERROR: ${errorMsg}\n\n`);
     }
   };
 
@@ -100,9 +148,15 @@ const CodeEditor: React.FC = () => {
 
     setIsExecuting(true);
     setOutput('⚡ Executing code...\n');
+    setTerminalOutput(prev => `${prev}$ Executing ${currentFile.name}...\n`);
 
     try {
       const backendUrl = import.meta.env.VITE_API_URL || '';
+
+      if (!backendUrl) {
+        throw new Error('VITE_API_URL not configured. Set in Netlify with Railway URL');
+      }
+
       const res = await fetch(`${backendUrl}/api/execute/code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -120,21 +174,63 @@ const CodeEditor: React.FC = () => {
       const contentType = res.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const text = await res.text();
-        throw new Error(`Server returned non-JSON response: ${text.substring(0, 100)}`);
+        throw new Error(`Server returned non-JSON: ${text.substring(0, 100)}`);
       }
 
       const data = await res.json();
 
       if (data.success) {
-        setOutput(`✅ Execution completed\n\n${data.output || '(no output)'}${data.error ? `\n⚠️ Warnings:\n${data.error}` : ''}`);
+        const result = `✅ Execution completed\n\n${data.output || '(no output)'}${data.error ? `\n⚠️ Warnings:\n${data.error}` : ''}`;
+        setOutput(result);
+        setTerminalOutput(prev => `${prev}${data.output || '(no output)'}\n\n`);
       } else {
-        setOutput(`❌ Execution failed\n\n${data.errorOutput || data.error || 'Unknown error'}`);
+        throw new Error(data.errorOutput || data.error || 'Execution failed');
       }
     } catch (error) {
-      setOutput(`❌ Execution error: ${error instanceof Error ? error.message : 'Network error'}\n\nTip: Make sure backend is running and VITE_API_URL is set correctly.`);
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      setOutput(`❌ Execution error: ${errorMsg}\n\nCheck:\n1. VITE_API_URL set in Netlify\n2. Backend running on Railway\n3. ENV_SETUP.md for details`);
+      setTerminalOutput(prev => `${prev}❌ ERROR: ${errorMsg}\n\n`);
     } finally {
       setIsExecuting(false);
     }
+  };
+
+  // Drag and drop handlers
+  const handleDragStart = (node: FileNode, e: React.DragEvent) => {
+    setDraggedFile(node);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (targetNode: FileNode, e: React.DragEvent) => {
+    e.preventDefault();
+    if (!draggedFile || draggedFile.path === targetNode.path) return;
+
+    if (targetNode.type === 'folder') {
+      // Move file into folder
+      const newTree = fileTree.filter(n => n.path !== draggedFile.path);
+      const newPath = `${targetNode.path}/${draggedFile.name}`;
+
+      // Add to folder's children
+      const updatedTree = newTree.map(node => {
+        if (node.path === targetNode.path) {
+          return {
+            ...node,
+            children: [...(node.children || []), { ...draggedFile, path: newPath }]
+          };
+        }
+        return node;
+      });
+
+      setFileTree(updatedTree);
+      setTerminalOutput(prev => `${prev}📁 Moved ${draggedFile.name} to ${targetNode.name}/\n`);
+    }
+
+    setDraggedFile(null);
   };
 
   const createNewFile = () => {
@@ -161,7 +257,7 @@ const CodeEditor: React.FC = () => {
     setFileTree([...fileTree, newNode]);
     setOpenFiles([...openFiles, newFile]);
     setActiveFile(openFiles.length);
-    setOutput(`✅ Created ${trimmedName}\n`);
+    setTerminalOutput(prev => `${prev}$ Created file: ${trimmedName}\n`);
   };
 
   const createNewFolder = () => {
@@ -176,7 +272,7 @@ const CodeEditor: React.FC = () => {
     };
 
     setFileTree([...fileTree, newFolder]);
-    setOutput(`✅ Created folder ${folderName}\n`);
+    setTerminalOutput(prev => `${prev}$ Created folder: ${folderName}/\n`);
   };
 
   const deleteFile = (node: FileNode, e: React.MouseEvent) => {
@@ -185,13 +281,12 @@ const CodeEditor: React.FC = () => {
 
     setFileTree(fileTree.filter(n => n.path !== node.path));
 
-    // Close if open
     const fileIndex = openFiles.findIndex(f => f.path === node.path);
     if (fileIndex >= 0) {
       closeFile(fileIndex);
     }
 
-    setOutput(`✅ Deleted ${node.name}\n`);
+    setTerminalOutput(prev => `${prev}$ Deleted: ${node.name}\n`);
   };
 
   const renameFile = (node: FileNode, e: React.MouseEvent) => {
@@ -206,7 +301,6 @@ const CodeEditor: React.FC = () => {
     );
     setFileTree(updatedTree);
 
-    // Update open file if exists
     const fileIndex = openFiles.findIndex(f => f.path === node.path);
     if (fileIndex >= 0) {
       const updatedFiles = [...openFiles];
@@ -219,7 +313,7 @@ const CodeEditor: React.FC = () => {
       setOpenFiles(updatedFiles);
     }
 
-    setOutput(`✅ Renamed to ${newName}\n`);
+    setTerminalOutput(prev => `${prev}$ Renamed: ${node.name} → ${newName}\n`);
   };
 
   const openFile = (node: FileNode) => {
@@ -250,7 +344,7 @@ const CodeEditor: React.FC = () => {
 
   const closeFile = (index: number) => {
     if (openFiles.length === 1) {
-      setOutput('⚠️ Cannot close last file\n');
+      setTerminalOutput(prev => `${prev}⚠️ Cannot close last file\n`);
       return;
     }
 
@@ -278,8 +372,12 @@ const CodeEditor: React.FC = () => {
     return nodes.map((node) => (
       <div key={node.path}>
         <div
+          draggable
+          onDragStart={(e) => handleDragStart(node, e)}
+          onDragOver={handleDragOver}
+          onDrop={(e) => handleDrop(node, e)}
           className={`flex items-center justify-between gap-1 px-2 py-1 hover:bg-gray-800 cursor-pointer text-xs transition-colors group ${openFiles[activeFile]?.path === node.path ? 'bg-blue-900/30 text-blue-400' : 'text-gray-400'
-            }`}
+            } ${draggedFile?.path === node.path ? 'opacity-50' : ''}`}
           style={{ paddingLeft: `${depth * 12 + 8}px` }}
           onClick={() => openFile(node)}
         >
@@ -327,20 +425,21 @@ const CodeEditor: React.FC = () => {
     if (!terminalInput.trim()) return;
 
     const cmd = terminalInput.trim();
-    setTerminalOutput(prev => `${prev}\n$ ${cmd}\n`);
+    setTerminalOutput(prev => `${prev}$ ${cmd}\n`);
 
-    // Simulate command execution
     if (cmd === 'clear') {
       setTerminalOutput('AI Sherly Terminal v1.0\n');
     } else if (cmd === 'help') {
-      setTerminalOutput(prev => `${prev}Available commands:\n  clear - Clear terminal\n  ls - List files\n  pwd - Print working directory\n  help - Show this help\n`);
+      setTerminalOutput(prev => `${prev}Available commands:\n  clear - Clear terminal\n  ls - List files\n  pwd - Print working directory\n  tree - Show file tree\n  help - Show this help\n\n`);
     } else if (cmd === 'ls') {
-      const files = fileTree.map(f => f.name).join('  ');
-      setTerminalOutput(prev => `${prev}${files}\n`);
+      const files = fileTree.map(f => f.type === 'folder' ? `📁 ${f.name}/` : `📄 ${f.name}`).join('\n  ');
+      setTerminalOutput(prev => `${prev}  ${files}\n\n`);
     } else if (cmd === 'pwd') {
-      setTerminalOutput(prev => `${prev}/workspace\n`);
+      setTerminalOutput(prev => `${prev}/workspace\n\n`);
+    } else if (cmd === 'tree') {
+      setTerminalOutput(prev => `${prev}.\n${fileTree.map(f => `├── ${f.name}${f.type === 'folder' ? '/' : ''}`).join('\n')}\n\n`);
     } else {
-      setTerminalOutput(prev => `${prev}Command not found: ${cmd}\nType 'help' for available commands.\n`);
+      setTerminalOutput(prev => `${prev}Command not found: ${cmd}\nType 'help' for available commands.\n\n`);
     }
 
     setTerminalInput('');
@@ -352,22 +451,22 @@ const CodeEditor: React.FC = () => {
       <div className="h-10 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
           <Code2 size={20} className="text-blue-500" />
-          <h2 className="font-orbitron font-bold text-sm">CODE EDITOR</h2>
-          <span className="text-xs text-gray-600 font-mono">Multi-Language IDE</span>
+          <h2 className="font-orbitron font-bold text-sm">EDITOR KODE</h2>
+          <span className="text-xs text-gray-600 font-mono">IDE Multi-Bahasa</span>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowTerminal(!showTerminal)}
-            className={`px-2 py-1 text-xs rounded transition-colors ${showTerminal ? 'bg-green-600 text-black' : 'bg-gray-800 hover:bg-gray-700'}`}
+            className={`px-3 py-1 text-xs rounded transition-all flex items-center gap-1 ${showTerminal ? 'bg-green-600 text-black font-bold' : 'bg-gray-800 hover:bg-gray-700 text-gray-300'}`}
           >
-            <TerminalIcon size={14} className="inline mr-1" />
+            <TerminalIcon size={14} />
             Terminal
           </button>
           <button
             onClick={() => setShowSidebar(!showSidebar)}
             className="px-2 py-1 text-xs bg-gray-800 hover:bg-gray-700 rounded transition-colors"
           >
-            {showSidebar ? '◀' : '▶'} Files
+            {showSidebar ? '◀' : '▶'} File
           </button>
         </div>
       </div>
@@ -377,12 +476,12 @@ const CodeEditor: React.FC = () => {
         {showSidebar && (
           <div className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col">
             <div className="p-2 border-b border-gray-800 flex items-center justify-between">
-              <span className="text-xs font-bold text-gray-400 uppercase">Explorer</span>
+              <span className="text-xs font-bold text-gray-400 uppercase">PENJELAJAH</span>
               <div className="flex gap-1">
-                <button onClick={createNewFile} className="p-1 hover:bg-gray-800 rounded" title="New File">
+                <button onClick={createNewFile} className="p-1 hover:bg-gray-800 rounded" title="File Baru">
                   <FilePlus size={14} className="text-green-500" />
                 </button>
-                <button onClick={createNewFolder} className="p-1 hover:bg-gray-800 rounded" title="New Folder">
+                <button onClick={createNewFolder} className="p-1 hover:bg-gray-800 rounded" title="Folder Baru">
                   <FolderPlus size={14} className="text-yellow-500" />
                 </button>
               </div>
@@ -391,12 +490,12 @@ const CodeEditor: React.FC = () => {
               {renderFileTree(fileTree)}
             </div>
             <div className="p-2 border-t border-gray-800 text-xs text-gray-500">
-              {openFiles.length} file(s) open
+              {openFiles.length} file terbuka
             </div>
           </div>
         )}
 
-        {/* Main Editor Area */}
+        {/* Main Area */}
         <div className="flex-1 flex flex-col">
           {/* Tabs */}
           <div className="bg-gray-900 border-b border-gray-800 flex items-center overflow-x-auto">
@@ -452,7 +551,7 @@ const CodeEditor: React.FC = () => {
               <div className="flex items-center justify-center h-full text-gray-600">
                 <div className="text-center">
                   <Code2 size={48} className="mx-auto mb-3 opacity-50" />
-                  <p>No file open. Create or select a file from explorer.</p>
+                  <p>Tidak ada file terbuka. Buat atau pilih file dari penjelajah.</p>
                 </div>
               </div>
             )}
@@ -463,9 +562,9 @@ const CodeEditor: React.FC = () => {
             <div className="flex items-center gap-3 text-xs text-gray-500 font-mono">
               {openFiles.length > 0 && (
                 <>
-                  <span>Language: <span className="text-green-400">{openFiles[activeFile].language}</span></span>
+                  <span>Bahasa: <span className="text-green-400">{openFiles[activeFile].language}</span></span>
                   <span>•</span>
-                  <span>Lines: <span className="text-blue-400">{openFiles[activeFile].content.split('\n').length}</span></span>
+                  <span>Baris: <span className="text-blue-400">{openFiles[activeFile].content.split('\n').length}</span></span>
                 </>
               )}
             </div>
@@ -475,21 +574,27 @@ const CodeEditor: React.FC = () => {
                 disabled={openFiles.length === 0}
                 className="flex items-center gap-2 px-4 py-1.5 rounded bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:text-gray-500 text-white text-xs font-bold transition-colors"
               >
-                <Save size={14} /> Save
+                <Save size={14} /> Simpan
               </button>
               <button
                 onClick={handleExecute}
                 disabled={isExecuting || openFiles.length === 0}
                 className="flex items-center gap-2 px-4 py-1.5 rounded bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:text-gray-500 text-black text-xs font-bold transition-colors"
               >
-                <Play size={14} /> {isExecuting ? 'Running...' : 'Execute'}
+                <Play size={14} /> {isExecuting ? 'Menjalankan...' : 'Eksekusi'}
               </button>
             </div>
           </div>
 
-          {/* Output Panel */}
+          {/* Output Panel - Resizable */}
           {output && (
-            <div className="h-48 bg-black border-t-2 border-green-500 flex flex-col">
+            <div style={{ height: `${outputHeight}px` }} className="bg-black border-t-2 border-green-500 flex flex-col">
+              <div
+                className="h-1 bg-gray-800 hover:bg-green-500 cursor-ns-resize flex items-center justify-center"
+                onMouseDown={() => setIsResizingOutput(true)}
+              >
+                <GripVertical size={16} className="text-gray-600" />
+              </div>
               <div className="h-8 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-3">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
@@ -505,9 +610,15 @@ const CodeEditor: React.FC = () => {
             </div>
           )}
 
-          {/* Terminal Panel */}
+          {/* Terminal Panel - Resizable */}
           {showTerminal && (
-            <div className="h-64 bg-black border-t-2 border-blue-500 flex flex-col">
+            <div style={{ height: `${terminalHeight}px` }} className="bg-black border-t-2 border-blue-500 flex flex-col">
+              <div
+                className="h-1 bg-gray-800 hover:bg-blue-500 cursor-ns-resize flex items-center justify-center"
+                onMouseDown={() => setIsResizingTerminal(true)}
+              >
+                <GripVertical size={16} className="text-gray-600" />
+              </div>
               <div className="h-8 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-3">
                 <div className="flex items-center gap-2">
                   <TerminalIcon size={14} className="text-blue-400" />
@@ -520,7 +631,7 @@ const CodeEditor: React.FC = () => {
               <div className="flex-1 overflow-y-auto p-3 font-mono text-xs text-green-400">
                 <pre className="whitespace-pre-wrap">{terminalOutput}</pre>
               </div>
-              <div className="border-t border-gray-800 p-2 flex items-center gap-2">
+              <div className="border-t border-gray-800 p-2 flex items-center gap-2 bg-gray-950">
                 <span className="text-green-400 font-mono text-sm">$</span>
                 <input
                   type="text"
@@ -528,7 +639,7 @@ const CodeEditor: React.FC = () => {
                   onChange={(e) => setTerminalInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && executeTerminalCommand()}
                   className="flex-1 bg-transparent border-none outline-none text-green-400 font-mono text-xs"
-                  placeholder="Type command..."
+                  placeholder="Ketik perintah... (help untuk bantuan)"
                 />
               </div>
             </div>
