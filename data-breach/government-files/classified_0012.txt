@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-12
+TITLE: Classified Document #12
+CLEARANCE_LEVEL: 3
+ISSUED: 2025-03-23T00:57:56.407Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

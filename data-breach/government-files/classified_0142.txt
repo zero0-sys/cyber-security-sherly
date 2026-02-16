@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-142
+TITLE: Classified Document #142
+CLEARANCE_LEVEL: 3
+ISSUED: 2026-01-31T15:07:10.856Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

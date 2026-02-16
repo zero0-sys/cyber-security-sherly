@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-118
+TITLE: Classified Document #118
+CLEARANCE_LEVEL: 4
+ISSUED: 2025-10-31T22:28:30.792Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

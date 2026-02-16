@@ -1,0 +1,5 @@
+LOAN_ID: LN-97
+BORROWER: Borrower #97
+AMOUNT: $407764.88
+RATE: 4.13%
+TERM: 20 years

@@ -1,0 +1,5 @@
+LOAN_ID: LN-78
+BORROWER: Borrower #78
+AMOUNT: $268794.60
+RATE: 0.74%
+TERM: 15 years

@@ -1,0 +1,5 @@
+LOAN_ID: LN-12
+BORROWER: Borrower #12
+AMOUNT: $166036.70
+RATE: 4.84%
+TERM: 15 years

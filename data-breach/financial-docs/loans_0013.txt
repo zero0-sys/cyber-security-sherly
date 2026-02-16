@@ -1,0 +1,5 @@
+LOAN_ID: LN-13
+BORROWER: Borrower #13
+AMOUNT: $409643.65
+RATE: 7.86%
+TERM: 20 years

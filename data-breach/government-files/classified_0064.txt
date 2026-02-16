@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-64
+TITLE: Classified Document #64
+CLEARANCE_LEVEL: 5
+ISSUED: 2025-12-11T02:14:36.435Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

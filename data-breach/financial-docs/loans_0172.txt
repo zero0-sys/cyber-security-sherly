@@ -1,0 +1,5 @@
+LOAN_ID: LN-172
+BORROWER: Borrower #172
+AMOUNT: $88060.94
+RATE: 2.37%
+TERM: 20 years

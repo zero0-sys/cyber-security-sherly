@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-161
+TITLE: Classified Document #161
+CLEARANCE_LEVEL: 2
+ISSUED: 2025-03-10T09:09:40.516Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

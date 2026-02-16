@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-151
+TITLE: Classified Document #151
+CLEARANCE_LEVEL: 2
+ISSUED: 2026-01-10T00:50:24.436Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

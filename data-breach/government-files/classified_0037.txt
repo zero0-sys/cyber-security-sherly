@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-37
+TITLE: Classified Document #37
+CLEARANCE_LEVEL: 3
+ISSUED: 2026-01-19T21:05:40.512Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

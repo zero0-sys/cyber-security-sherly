@@ -1,0 +1,5 @@
+LOAN_ID: LN-1
+BORROWER: Borrower #1
+AMOUNT: $449148.18
+RATE: 5.19%
+TERM: 20 years

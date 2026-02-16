@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-40
+TITLE: Classified Document #40
+CLEARANCE_LEVEL: 1
+ISSUED: 2025-07-13T14:51:40.945Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

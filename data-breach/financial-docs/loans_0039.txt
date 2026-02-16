@@ -1,0 +1,5 @@
+LOAN_ID: LN-39
+BORROWER: Borrower #39
+AMOUNT: $424179.25
+RATE: 8.23%
+TERM: 15 years

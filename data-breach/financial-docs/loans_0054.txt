@@ -1,0 +1,5 @@
+LOAN_ID: LN-54
+BORROWER: Borrower #54
+AMOUNT: $196312.89
+RATE: 0.52%
+TERM: 15 years

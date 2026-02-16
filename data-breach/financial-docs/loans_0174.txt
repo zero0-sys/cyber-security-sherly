@@ -1,0 +1,5 @@
+LOAN_ID: LN-174
+BORROWER: Borrower #174
+AMOUNT: $1178.14
+RATE: 8.06%
+TERM: 15 years

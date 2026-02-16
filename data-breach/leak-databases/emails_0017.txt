@@ -1,0 +1,6 @@
+MESSAGE_ID: 17
+FROM: sender17@company.com
+TO: recipient17@example.com
+SUBJECT: Important Document #17
+DATE: 2026-01-27T02:27:41.951Z
+CONTENT: This is a confidential email containing sensitive information...

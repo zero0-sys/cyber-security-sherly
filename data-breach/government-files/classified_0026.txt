@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-26
+TITLE: Classified Document #26
+CLEARANCE_LEVEL: 2
+ISSUED: 2025-04-16T10:48:14.753Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

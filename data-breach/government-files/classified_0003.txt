@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-3
+TITLE: Classified Document #3
+CLEARANCE_LEVEL: 4
+ISSUED: 2025-07-25T04:07:30.833Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

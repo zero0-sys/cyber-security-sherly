@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-162
+TITLE: Classified Document #162
+CLEARANCE_LEVEL: 3
+ISSUED: 2025-07-26T00:47:40.550Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

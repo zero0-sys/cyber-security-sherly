@@ -1,0 +1,5 @@
+LOAN_ID: LN-73
+BORROWER: Borrower #73
+AMOUNT: $478609.56
+RATE: 9.86%
+TERM: 20 years

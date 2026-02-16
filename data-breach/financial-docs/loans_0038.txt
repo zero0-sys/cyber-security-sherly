@@ -1,0 +1,5 @@
+LOAN_ID: LN-38
+BORROWER: Borrower #38
+AMOUNT: $70922.08
+RATE: 1.28%
+TERM: 30 years

@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-192
+TITLE: Classified Document #192
+CLEARANCE_LEVEL: 3
+ISSUED: 2025-02-19T04:43:29.674Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

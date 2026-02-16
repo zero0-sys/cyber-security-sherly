@@ -1,0 +1,5 @@
+LOAN_ID: LN-77
+BORROWER: Borrower #77
+AMOUNT: $195710.81
+RATE: 9.43%
+TERM: 30 years

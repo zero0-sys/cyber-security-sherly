@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-110
+TITLE: Classified Document #110
+CLEARANCE_LEVEL: 1
+ISSUED: 2025-10-02T01:05:45.895Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

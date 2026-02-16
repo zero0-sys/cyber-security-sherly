@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-114
+TITLE: Classified Document #114
+CLEARANCE_LEVEL: 5
+ISSUED: 2025-08-17T09:21:27.358Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

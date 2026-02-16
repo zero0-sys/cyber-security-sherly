@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-198
+TITLE: Classified Document #198
+CLEARANCE_LEVEL: 4
+ISSUED: 2025-08-16T21:48:55.413Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

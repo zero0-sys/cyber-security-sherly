@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-165
+TITLE: Classified Document #165
+CLEARANCE_LEVEL: 1
+ISSUED: 2025-12-13T04:36:37.146Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

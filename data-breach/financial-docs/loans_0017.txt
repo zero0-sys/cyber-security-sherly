@@ -1,0 +1,5 @@
+LOAN_ID: LN-17
+BORROWER: Borrower #17
+AMOUNT: $86926.63
+RATE: 9.60%
+TERM: 30 years

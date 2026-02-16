@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-177
+TITLE: Classified Document #177
+CLEARANCE_LEVEL: 3
+ISSUED: 2025-07-10T02:30:15.846Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

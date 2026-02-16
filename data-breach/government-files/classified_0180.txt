@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-180
+TITLE: Classified Document #180
+CLEARANCE_LEVEL: 1
+ISSUED: 2025-12-31T20:40:47.925Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

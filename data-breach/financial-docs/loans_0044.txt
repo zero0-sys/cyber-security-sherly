@@ -1,0 +1,5 @@
+LOAN_ID: LN-44
+BORROWER: Borrower #44
+AMOUNT: $43278.18
+RATE: 3.54%
+TERM: 30 years

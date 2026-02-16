@@ -1,0 +1,5 @@
+LOAN_ID: LN-29
+BORROWER: Borrower #29
+AMOUNT: $292502.58
+RATE: 5.15%
+TERM: 30 years

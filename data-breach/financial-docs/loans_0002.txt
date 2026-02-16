@@ -1,0 +1,5 @@
+LOAN_ID: LN-2
+BORROWER: Borrower #2
+AMOUNT: $388020.55
+RATE: 0.73%
+TERM: 30 years

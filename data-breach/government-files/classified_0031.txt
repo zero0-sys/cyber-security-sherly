@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-31
+TITLE: Classified Document #31
+CLEARANCE_LEVEL: 2
+ISSUED: 2025-04-21T15:57:41.555Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-123
+TITLE: Classified Document #123
+CLEARANCE_LEVEL: 4
+ISSUED: 2026-02-09T22:52:49.984Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

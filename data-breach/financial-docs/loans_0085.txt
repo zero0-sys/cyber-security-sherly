@@ -1,0 +1,5 @@
+LOAN_ID: LN-85
+BORROWER: Borrower #85
+AMOUNT: $138179.80
+RATE: 0.04%
+TERM: 20 years

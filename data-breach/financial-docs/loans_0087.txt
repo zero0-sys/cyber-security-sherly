@@ -1,0 +1,5 @@
+LOAN_ID: LN-87
+BORROWER: Borrower #87
+AMOUNT: $470489.07
+RATE: 9.06%
+TERM: 15 years

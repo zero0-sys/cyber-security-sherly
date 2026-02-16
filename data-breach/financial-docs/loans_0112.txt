@@ -1,0 +1,5 @@
+LOAN_ID: LN-112
+BORROWER: Borrower #112
+AMOUNT: $46837.10
+RATE: 7.03%
+TERM: 20 years

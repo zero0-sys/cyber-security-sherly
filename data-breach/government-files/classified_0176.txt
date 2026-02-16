@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-176
+TITLE: Classified Document #176
+CLEARANCE_LEVEL: 2
+ISSUED: 2025-10-27T22:47:50.632Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

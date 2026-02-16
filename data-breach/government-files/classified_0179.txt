@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-179
+TITLE: Classified Document #179
+CLEARANCE_LEVEL: 5
+ISSUED: 2025-03-02T23:14:13.775Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

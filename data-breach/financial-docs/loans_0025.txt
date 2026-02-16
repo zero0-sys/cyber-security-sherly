@@ -1,0 +1,5 @@
+LOAN_ID: LN-25
+BORROWER: Borrower #25
+AMOUNT: $295474.03
+RATE: 9.85%
+TERM: 20 years

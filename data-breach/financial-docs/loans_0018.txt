@@ -1,0 +1,5 @@
+LOAN_ID: LN-18
+BORROWER: Borrower #18
+AMOUNT: $181088.42
+RATE: 3.11%
+TERM: 15 years

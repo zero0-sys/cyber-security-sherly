@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-167
+TITLE: Classified Document #167
+CLEARANCE_LEVEL: 3
+ISSUED: 2025-04-07T11:24:24.736Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

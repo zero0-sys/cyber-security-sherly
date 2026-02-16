@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-62
+TITLE: Classified Document #62
+CLEARANCE_LEVEL: 3
+ISSUED: 2025-06-04T02:27:43.478Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

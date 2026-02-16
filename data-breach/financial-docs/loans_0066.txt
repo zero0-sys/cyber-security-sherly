@@ -1,0 +1,5 @@
+LOAN_ID: LN-66
+BORROWER: Borrower #66
+AMOUNT: $285488.10
+RATE: 5.39%
+TERM: 15 years

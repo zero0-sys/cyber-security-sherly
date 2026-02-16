@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-128
+TITLE: Classified Document #128
+CLEARANCE_LEVEL: 4
+ISSUED: 2025-08-31T20:42:37.711Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

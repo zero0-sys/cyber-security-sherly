@@ -1,0 +1,5 @@
+LOAN_ID: LN-58
+BORROWER: Borrower #58
+AMOUNT: $306746.29
+RATE: 0.90%
+TERM: 20 years

@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-106
+TITLE: Classified Document #106
+CLEARANCE_LEVEL: 2
+ISSUED: 2025-05-27T03:38:08.722Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-122
+TITLE: Classified Document #122
+CLEARANCE_LEVEL: 3
+ISSUED: 2025-05-19T12:36:25.559Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

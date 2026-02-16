@@ -1,0 +1,5 @@
+LOAN_ID: LN-8
+BORROWER: Borrower #8
+AMOUNT: $213704.53
+RATE: 2.21%
+TERM: 30 years

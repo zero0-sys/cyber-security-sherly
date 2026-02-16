@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-159
+TITLE: Classified Document #159
+CLEARANCE_LEVEL: 5
+ISSUED: 2025-08-15T07:35:37.557Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

@@ -1,0 +1,5 @@
+LOAN_ID: LN-50
+BORROWER: Borrower #50
+AMOUNT: $341943.31
+RATE: 1.37%
+TERM: 30 years

@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-7
+TITLE: Classified Document #7
+CLEARANCE_LEVEL: 3
+ISSUED: 2025-11-27T14:01:21.219Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

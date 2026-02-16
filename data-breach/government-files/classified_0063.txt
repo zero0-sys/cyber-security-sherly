@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-63
+TITLE: Classified Document #63
+CLEARANCE_LEVEL: 4
+ISSUED: 2025-12-04T08:53:22.384Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-112
+TITLE: Classified Document #112
+CLEARANCE_LEVEL: 3
+ISSUED: 2025-11-28T18:04:26.084Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

@@ -1,0 +1,5 @@
+LOAN_ID: LN-141
+BORROWER: Borrower #141
+AMOUNT: $39146.40
+RATE: 1.48%
+TERM: 15 years

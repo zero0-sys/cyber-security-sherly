@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-172
+TITLE: Classified Document #172
+CLEARANCE_LEVEL: 3
+ISSUED: 2025-08-10T02:46:41.851Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

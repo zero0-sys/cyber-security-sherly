@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-92
+TITLE: Classified Document #92
+CLEARANCE_LEVEL: 3
+ISSUED: 2025-11-20T19:18:27.861Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

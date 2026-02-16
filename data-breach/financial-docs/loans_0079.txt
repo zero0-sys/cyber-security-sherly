@@ -1,0 +1,5 @@
+LOAN_ID: LN-79
+BORROWER: Borrower #79
+AMOUNT: $257500.59
+RATE: 2.69%
+TERM: 20 years

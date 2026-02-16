@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-169
+TITLE: Classified Document #169
+CLEARANCE_LEVEL: 5
+ISSUED: 2025-07-01T20:16:11.660Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-144
+TITLE: Classified Document #144
+CLEARANCE_LEVEL: 5
+ISSUED: 2025-09-28T14:42:40.414Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

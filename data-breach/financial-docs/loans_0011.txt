@@ -1,0 +1,5 @@
+LOAN_ID: LN-11
+BORROWER: Borrower #11
+AMOUNT: $382451.73
+RATE: 1.97%
+TERM: 30 years

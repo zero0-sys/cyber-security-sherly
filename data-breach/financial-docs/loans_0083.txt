@@ -1,0 +1,5 @@
+LOAN_ID: LN-83
+BORROWER: Borrower #83
+AMOUNT: $210121.43
+RATE: 4.26%
+TERM: 30 years

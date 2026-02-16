@@ -1,0 +1,5 @@
+LOAN_ID: LN-30
+BORROWER: Borrower #30
+AMOUNT: $56402.09
+RATE: 3.23%
+TERM: 15 years

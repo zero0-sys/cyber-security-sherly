@@ -1,0 +1,5 @@
+LOAN_ID: LN-92
+BORROWER: Borrower #92
+AMOUNT: $408337.27
+RATE: 2.91%
+TERM: 30 years

@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-28
+TITLE: Classified Document #28
+CLEARANCE_LEVEL: 4
+ISSUED: 2026-01-21T00:05:01.653Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

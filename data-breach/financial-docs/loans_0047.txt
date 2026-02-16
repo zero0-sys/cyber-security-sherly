@@ -1,0 +1,5 @@
+LOAN_ID: LN-47
+BORROWER: Borrower #47
+AMOUNT: $427653.76
+RATE: 8.37%
+TERM: 30 years

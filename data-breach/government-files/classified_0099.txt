@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-99
+TITLE: Classified Document #99
+CLEARANCE_LEVEL: 5
+ISSUED: 2025-06-07T04:39:16.368Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-96
+TITLE: Classified Document #96
+CLEARANCE_LEVEL: 2
+ISSUED: 2025-12-28T05:18:16.438Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

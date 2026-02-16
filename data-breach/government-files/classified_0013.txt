@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-13
+TITLE: Classified Document #13
+CLEARANCE_LEVEL: 4
+ISSUED: 2025-03-08T00:26:57.402Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-88
+TITLE: Classified Document #88
+CLEARANCE_LEVEL: 4
+ISSUED: 2025-12-16T18:06:11.187Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

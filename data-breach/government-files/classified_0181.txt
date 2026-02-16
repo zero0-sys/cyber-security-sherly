@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-181
+TITLE: Classified Document #181
+CLEARANCE_LEVEL: 2
+ISSUED: 2025-12-08T01:13:05.833Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

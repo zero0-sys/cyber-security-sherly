@@ -1,0 +1,6 @@
+MESSAGE_ID: 126
+FROM: sender126@company.com
+TO: recipient126@example.com
+SUBJECT: Urgent Document #126
+DATE: 2025-12-29T22:47:26.584Z
+CONTENT: This is a confidential email containing sensitive information...

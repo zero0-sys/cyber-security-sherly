@@ -1,0 +1,5 @@
+LOAN_ID: LN-34
+BORROWER: Borrower #34
+AMOUNT: $294257.58
+RATE: 6.85%
+TERM: 20 years

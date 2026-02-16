@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-139
+TITLE: Classified Document #139
+CLEARANCE_LEVEL: 5
+ISSUED: 2025-03-26T02:34:57.745Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

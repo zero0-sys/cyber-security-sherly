@@ -1,0 +1,5 @@
+LOAN_ID: LN-24
+BORROWER: Borrower #24
+AMOUNT: $169959.19
+RATE: 3.47%
+TERM: 15 years

@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-117
+TITLE: Classified Document #117
+CLEARANCE_LEVEL: 3
+ISSUED: 2025-04-10T00:04:27.451Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

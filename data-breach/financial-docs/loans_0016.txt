@@ -1,0 +1,5 @@
+LOAN_ID: LN-16
+BORROWER: Borrower #16
+AMOUNT: $15169.87
+RATE: 9.40%
+TERM: 20 years

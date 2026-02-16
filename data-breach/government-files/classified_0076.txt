@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-76
+TITLE: Classified Document #76
+CLEARANCE_LEVEL: 2
+ISSUED: 2025-08-08T00:41:54.783Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

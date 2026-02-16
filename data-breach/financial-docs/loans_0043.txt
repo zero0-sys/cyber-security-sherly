@@ -1,0 +1,5 @@
+LOAN_ID: LN-43
+BORROWER: Borrower #43
+AMOUNT: $232019.92
+RATE: 0.60%
+TERM: 20 years

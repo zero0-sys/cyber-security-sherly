@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-108
+TITLE: Classified Document #108
+CLEARANCE_LEVEL: 4
+ISSUED: 2025-04-13T16:19:31.017Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

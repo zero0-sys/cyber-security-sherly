@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-23
+TITLE: Classified Document #23
+CLEARANCE_LEVEL: 4
+ISSUED: 2025-02-23T08:04:24.165Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

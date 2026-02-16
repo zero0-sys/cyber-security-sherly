@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-86
+TITLE: Classified Document #86
+CLEARANCE_LEVEL: 2
+ISSUED: 2025-06-03T12:38:09.878Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

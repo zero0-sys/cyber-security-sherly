@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-87
+TITLE: Classified Document #87
+CLEARANCE_LEVEL: 3
+ISSUED: 2025-09-23T23:44:47.966Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

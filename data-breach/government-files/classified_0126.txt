@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-126
+TITLE: Classified Document #126
+CLEARANCE_LEVEL: 2
+ISSUED: 2025-03-08T18:31:30.872Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

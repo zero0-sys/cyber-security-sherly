@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-164
+TITLE: Classified Document #164
+CLEARANCE_LEVEL: 5
+ISSUED: 2026-01-18T02:58:22.664Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

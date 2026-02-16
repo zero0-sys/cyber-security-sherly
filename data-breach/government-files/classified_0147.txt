@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-147
+TITLE: Classified Document #147
+CLEARANCE_LEVEL: 3
+ISSUED: 2025-10-28T17:08:25.606Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

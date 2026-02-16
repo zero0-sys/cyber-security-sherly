@@ -1,0 +1,5 @@
+LOAN_ID: LN-125
+BORROWER: Borrower #125
+AMOUNT: $80921.29
+RATE: 8.79%
+TERM: 30 years

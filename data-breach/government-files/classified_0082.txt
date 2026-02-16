@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-82
+TITLE: Classified Document #82
+CLEARANCE_LEVEL: 3
+ISSUED: 2025-11-18T14:32:25.051Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

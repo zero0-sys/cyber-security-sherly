@@ -1,0 +1,5 @@
+LOAN_ID: LN-74
+BORROWER: Borrower #74
+AMOUNT: $368036.79
+RATE: 8.66%
+TERM: 30 years

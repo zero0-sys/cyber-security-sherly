@@ -1,0 +1,5 @@
+LOAN_ID: LN-41
+BORROWER: Borrower #41
+AMOUNT: $51599.45
+RATE: 3.30%
+TERM: 30 years

@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-58
+TITLE: Classified Document #58
+CLEARANCE_LEVEL: 4
+ISSUED: 2025-04-02T08:01:57.267Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

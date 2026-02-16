@@ -1,0 +1,5 @@
+LOAN_ID: LN-186
+BORROWER: Borrower #186
+AMOUNT: $90283.17
+RATE: 2.33%
+TERM: 15 years

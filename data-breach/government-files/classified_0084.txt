@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-84
+TITLE: Classified Document #84
+CLEARANCE_LEVEL: 5
+ISSUED: 2026-01-01T08:04:31.671Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

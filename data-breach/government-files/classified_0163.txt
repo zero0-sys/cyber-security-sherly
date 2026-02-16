@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-163
+TITLE: Classified Document #163
+CLEARANCE_LEVEL: 4
+ISSUED: 2026-01-24T03:38:21.957Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

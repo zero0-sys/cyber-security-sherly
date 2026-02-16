@@ -1,0 +1,5 @@
+LOAN_ID: LN-136
+BORROWER: Borrower #136
+AMOUNT: $79161.13
+RATE: 3.45%
+TERM: 20 years

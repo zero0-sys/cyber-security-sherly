@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-137
+TITLE: Classified Document #137
+CLEARANCE_LEVEL: 3
+ISSUED: 2026-01-08T01:56:22.169Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

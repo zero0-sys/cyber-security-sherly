@@ -1,0 +1,5 @@
+LOAN_ID: LN-31
+BORROWER: Borrower #31
+AMOUNT: $35394.09
+RATE: 3.85%
+TERM: 20 years

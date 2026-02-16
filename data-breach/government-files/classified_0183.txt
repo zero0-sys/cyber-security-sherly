@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-183
+TITLE: Classified Document #183
+CLEARANCE_LEVEL: 4
+ISSUED: 2025-10-28T04:24:43.469Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

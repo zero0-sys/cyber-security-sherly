@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-197
+TITLE: Classified Document #197
+CLEARANCE_LEVEL: 3
+ISSUED: 2025-10-27T04:46:08.729Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

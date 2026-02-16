@@ -1,0 +1,5 @@
+LOAN_ID: LN-22
+BORROWER: Borrower #22
+AMOUNT: $252371.14
+RATE: 9.72%
+TERM: 20 years

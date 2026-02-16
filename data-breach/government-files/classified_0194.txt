@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-194
+TITLE: Classified Document #194
+CLEARANCE_LEVEL: 5
+ISSUED: 2026-02-10T13:55:24.884Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

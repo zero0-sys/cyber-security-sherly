@@ -1,0 +1,5 @@
+LOAN_ID: LN-37
+BORROWER: Borrower #37
+AMOUNT: $177900.80
+RATE: 3.72%
+TERM: 20 years

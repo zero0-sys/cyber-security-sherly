@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-134
+TITLE: Classified Document #134
+CLEARANCE_LEVEL: 5
+ISSUED: 2025-08-31T02:08:25.154Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

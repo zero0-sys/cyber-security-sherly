@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-65
+TITLE: Classified Document #65
+CLEARANCE_LEVEL: 1
+ISSUED: 2025-03-12T16:47:41.026Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

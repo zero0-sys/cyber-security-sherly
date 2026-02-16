@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-49
+TITLE: Classified Document #49
+CLEARANCE_LEVEL: 5
+ISSUED: 2025-10-03T04:22:11.613Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

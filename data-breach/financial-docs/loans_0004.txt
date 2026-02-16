@@ -1,0 +1,5 @@
+LOAN_ID: LN-4
+BORROWER: Borrower #4
+AMOUNT: $125308.50
+RATE: 3.41%
+TERM: 20 years

@@ -1,0 +1,5 @@
+LOAN_ID: LN-96
+BORROWER: Borrower #96
+AMOUNT: $7441.31
+RATE: 7.08%
+TERM: 15 years

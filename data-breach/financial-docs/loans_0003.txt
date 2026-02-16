@@ -1,0 +1,5 @@
+LOAN_ID: LN-3
+BORROWER: Borrower #3
+AMOUNT: $23042.13
+RATE: 5.05%
+TERM: 15 years

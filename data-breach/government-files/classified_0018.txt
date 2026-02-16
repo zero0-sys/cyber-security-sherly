@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-18
+TITLE: Classified Document #18
+CLEARANCE_LEVEL: 4
+ISSUED: 2025-04-17T10:29:11.241Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

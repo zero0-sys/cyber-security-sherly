@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-39
+TITLE: Classified Document #39
+CLEARANCE_LEVEL: 5
+ISSUED: 2025-04-30T20:29:52.704Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

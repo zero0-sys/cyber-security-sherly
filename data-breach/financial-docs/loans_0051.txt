@@ -1,0 +1,5 @@
+LOAN_ID: LN-51
+BORROWER: Borrower #51
+AMOUNT: $126066.91
+RATE: 0.90%
+TERM: 15 years

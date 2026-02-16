@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-22
+TITLE: Classified Document #22
+CLEARANCE_LEVEL: 3
+ISSUED: 2025-02-20T08:19:35.997Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

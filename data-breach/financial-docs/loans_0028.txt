@@ -1,0 +1,5 @@
+LOAN_ID: LN-28
+BORROWER: Borrower #28
+AMOUNT: $265025.97
+RATE: 8.99%
+TERM: 20 years

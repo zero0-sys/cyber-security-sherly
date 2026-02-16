@@ -1,0 +1,5 @@
+LOAN_ID: LN-70
+BORROWER: Borrower #70
+AMOUNT: $4304.01
+RATE: 2.95%
+TERM: 20 years

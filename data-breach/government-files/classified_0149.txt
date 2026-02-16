@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-149
+TITLE: Classified Document #149
+CLEARANCE_LEVEL: 5
+ISSUED: 2026-02-07T17:11:09.101Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

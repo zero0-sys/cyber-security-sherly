@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-129
+TITLE: Classified Document #129
+CLEARANCE_LEVEL: 5
+ISSUED: 2025-06-13T18:07:17.532Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

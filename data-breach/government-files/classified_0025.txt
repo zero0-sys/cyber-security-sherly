@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-25
+TITLE: Classified Document #25
+CLEARANCE_LEVEL: 1
+ISSUED: 2025-05-12T00:54:12.775Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

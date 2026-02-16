@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-33
+TITLE: Classified Document #33
+CLEARANCE_LEVEL: 4
+ISSUED: 2025-03-28T15:19:41.164Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

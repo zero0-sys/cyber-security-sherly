@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-80
+TITLE: Classified Document #80
+CLEARANCE_LEVEL: 1
+ISSUED: 2025-02-21T05:09:59.168Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

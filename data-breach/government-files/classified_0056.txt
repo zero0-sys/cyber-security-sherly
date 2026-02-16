@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-56
+TITLE: Classified Document #56
+CLEARANCE_LEVEL: 2
+ISSUED: 2025-07-30T18:11:58.756Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

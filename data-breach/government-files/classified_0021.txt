@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-21
+TITLE: Classified Document #21
+CLEARANCE_LEVEL: 2
+ISSUED: 2025-04-23T18:20:57.763Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

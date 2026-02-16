@@ -1,0 +1,22 @@
+# Backend deployment configuration for Render.com
+
+services:
+  - type: web
+    name: ai-sherly-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5001
+      - key: JWT_SECRET
+        generateValue: true
+      - key: GOOGLE_API_KEY
+        sync: false  # Set manually in Render dashboard
+      - key: ALLOWED_ORIGINS
+        value: https://your-app.netlify.app
+    healthCheckPath: /

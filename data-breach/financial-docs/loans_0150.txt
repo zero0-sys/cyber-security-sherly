@@ -1,0 +1,5 @@
+LOAN_ID: LN-150
+BORROWER: Borrower #150
+AMOUNT: $89923.30
+RATE: 3.89%
+TERM: 15 years

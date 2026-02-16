@@ -1,0 +1,5 @@
+LOAN_ID: LN-15
+BORROWER: Borrower #15
+AMOUNT: $146313.64
+RATE: 3.86%
+TERM: 15 years

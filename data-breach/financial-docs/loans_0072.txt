@@ -1,0 +1,5 @@
+LOAN_ID: LN-72
+BORROWER: Borrower #72
+AMOUNT: $313182.23
+RATE: 3.32%
+TERM: 15 years

@@ -1,0 +1,5 @@
+LOAN_ID: LN-20
+BORROWER: Borrower #20
+AMOUNT: $114457.10
+RATE: 8.51%
+TERM: 30 years

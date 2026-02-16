@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-24
+TITLE: Classified Document #24
+CLEARANCE_LEVEL: 5
+ISSUED: 2025-07-04T22:33:39.435Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

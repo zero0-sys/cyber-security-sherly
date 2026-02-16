@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-16
+TITLE: Classified Document #16
+CLEARANCE_LEVEL: 2
+ISSUED: 2026-02-02T10:35:44.152Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

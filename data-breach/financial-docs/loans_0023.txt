@@ -1,0 +1,5 @@
+LOAN_ID: LN-23
+BORROWER: Borrower #23
+AMOUNT: $249965.67
+RATE: 8.66%
+TERM: 30 years

@@ -1,0 +1,5 @@
+LOAN_ID: LN-95
+BORROWER: Borrower #95
+AMOUNT: $118550.95
+RATE: 7.22%
+TERM: 30 years

@@ -1,0 +1,5 @@
+LOAN_ID: LN-81
+BORROWER: Borrower #81
+AMOUNT: $192817.71
+RATE: 8.04%
+TERM: 15 years

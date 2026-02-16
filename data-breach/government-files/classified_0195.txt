@@ -1,0 +1,6 @@
+CLASSIFICATION: TOP SECRET
+DOCUMENT_ID: DOC-195
+TITLE: Classified Document #195
+CLEARANCE_LEVEL: 1
+ISSUED: 2025-02-25T13:51:34.295Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

@@ -1,0 +1,6 @@
+CLASSIFICATION: SECRET
+DOCUMENT_ID: DOC-109
+TITLE: Classified Document #109
+CLEARANCE_LEVEL: 5
+ISSUED: 2026-02-08T07:31:14.646Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

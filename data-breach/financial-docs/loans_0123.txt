@@ -1,0 +1,5 @@
+LOAN_ID: LN-123
+BORROWER: Borrower #123
+AMOUNT: $26017.76
+RATE: 6.01%
+TERM: 15 years

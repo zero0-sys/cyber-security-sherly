@@ -1,0 +1,6 @@
+CLASSIFICATION: CONFIDENTIAL
+DOCUMENT_ID: DOC-107
+TITLE: Classified Document #107
+CLEARANCE_LEVEL: 3
+ISSUED: 2025-07-28T18:53:46.744Z
+CONTENT: [REDACTED] - This document contains sensitive national security information.

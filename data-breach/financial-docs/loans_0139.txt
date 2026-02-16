@@ -1,0 +1,5 @@
+LOAN_ID: LN-139
+BORROWER: Borrower #139
+AMOUNT: $13047.88
+RATE: 8.96%
+TERM: 20 years
