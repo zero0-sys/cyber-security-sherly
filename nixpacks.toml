@@ -1,17 +1,19 @@
-[phases.setup]
-# Install Node.js and base compilers via nixPkgs
-nixPkgs = ['nodejs_20', 'python3', 'gcc', 'gnumake', 'stdenv.cc.cc.lib']
+# Railway Nixpacks Configuration
+# Using nixPkgs ONLY (not aptPkgs) to prevent build failures
 
-# Install additional compilers via apt (for Debian-based Railway)
-aptPkgs = [
-  "python3-pip",
-  "g++",
-  "openjdk-17-jdk",
-  "golang-go",
-  "cargo",
-  "rustc",
-  "ruby-full",
-  "php-cli"
+[phases.setup]
+nixPkgs = [
+  'nodejs_20',
+  'python3',
+  'python3Packages.pip',
+  'gcc',
+  'gnumake',
+  'stdenv.cc.cc.lib',
+  'go',
+  'rustc',
+  'cargo',
+  'ruby',
+  'php'
 ]
 
 [phases.install]
