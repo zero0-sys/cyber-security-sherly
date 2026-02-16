@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Send } from 'lucide-react';
+import { Send, Hand, Brain, Pause } from 'lucide-react';
 
 interface ChatControlsProps {
     onSendMessage: (text: string) => void;
     isProcessing: boolean;
+    onGesture?: (gesture: 'idle' | 'wave' | 'think') => void;
 }
 
-const ChatControls: React.FC<ChatControlsProps> = ({ onSendMessage, isProcessing }) => {
+const ChatControls: React.FC<ChatControlsProps> = ({ onSendMessage, isProcessing, onGesture }) => {
     const [input, setInput] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -18,7 +19,30 @@ const ChatControls: React.FC<ChatControlsProps> = ({ onSendMessage, isProcessing
     };
 
     return (
-        <div className="w-full">
+        <div className="w-full space-y-2">
+            {onGesture && (
+                <div className="flex items-center justify-center gap-2 flex-wrap">
+                    <button
+                        onClick={() => onGesture('wave')}
+                        className="px-3 py-1 bg-cyan-900/50 hover:bg-cyan-800 border border-cyan-500/30 hover:border-cyan-500 rounded text-cyan-400 text-xs font-mono transition-all flex items-center gap-2"
+                    >
+                        <Hand size={12} /> Wave
+                    </button>
+                    <button
+                        onClick={() => onGesture('think')}
+                        className="px-3 py-1 bg-cyan-900/50 hover:bg-cyan-800 border border-cyan-500/30 hover:border-cyan-500 rounded text-cyan-400 text-xs font-mono transition-all flex items-center gap-2"
+                    >
+                        <Brain size={12} /> Think
+                    </button>
+                    <button
+                        onClick={() => onGesture('idle')}
+                        className="px-3 py-1 bg-gray-900/50 hover:bg-gray-800 border border-gray-700 hover:border-gray-500 rounded text-gray-400 text-xs font-mono transition-all flex items-center gap-2"
+                    >
+                        <Pause size={12} /> Idle
+                    </button>
+                </div>
+            )}
+
             <form onSubmit={handleSubmit} className="flex gap-2">
                 <input
                     type="text"

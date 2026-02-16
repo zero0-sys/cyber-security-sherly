@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 
 interface BinaryAvatarProps {
     isSpeaking: boolean;
+    gesture: 'idle' | 'wave' | 'think';
 }
 
 interface Point3D {
@@ -21,16 +22,21 @@ interface Particle {
     speed: number;
 }
 
-const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking }) => {
+const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking, gesture }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const animationRef = useRef<number>(0);
 
     const particlesRef = useRef<Particle[]>([]);
     const isSpeakingRef = useRef(isSpeaking);
+    const gestureRef = useRef(gesture);
 
     useEffect(() => {
         isSpeakingRef.current = isSpeaking;
     }, [isSpeaking]);
+
+    useEffect(() => {
+        gestureRef.current = gesture;
+    }, [gesture]);
 
     const PARTICLES_COUNT = 6000;
 
@@ -77,6 +83,13 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking }) => {
             x: p.x * Math.cos(angle) + p.z * Math.sin(angle),
             y: p.y,
             z: -p.x * Math.sin(angle) + p.z * Math.cos(angle),
+            isActive: p.isActive
+        });
+
+        const rotateZ = (p: Point3D, angle: number): Point3D => ({
+            x: p.x * Math.cos(angle) - p.y * Math.sin(angle),
+            y: p.x * Math.sin(angle) + p.y * Math.cos(angle),
+            z: p.z,
             isActive: p.isActive
         });
 
@@ -130,18 +143,38 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking }) => {
             const phase = t * 0.005;
 
             const speaking = isSpeakingRef.current;
+            const currentGesture = gestureRef.current;
 
+            let torsoRotY = 0;
+            let headRotY = 0;
             let headNod = 0;
+
+            let rArm = { x: 0, z: 0.15, elbow: 0.2 };
+            let lArm = { x: 0, z: -0.15, elbow: 0.2 };
+
+            if (currentGesture === 'wave') {
+                rArm.z = 2.5; rArm.x = 0; rArm.elbow = 0.5 + Math.sin(phase * 4) * 0.5;
+                headRotY = 0.3;
+            }
+            else if (currentGesture === 'think') {
+                rArm.z = 2.0; rArm.x = 0.5; rArm.elbow = 2.2;
+                headNod = 0.3; headRotY = -0.3;
+            }
 
             if (speaking) {
                 headNod += Math.sin(t * 0.1) * 0.08;
+                torsoRotY += Math.sin(t * 0.05) * 0.05;
+                rArm.z += Math.sin(t * 0.1) * 0.2;
+                lArm.z -= Math.sin(t * 0.12) * 0.1;
+                rArm.elbow += Math.sin(t * 0.1) * 0.1;
             }
 
             for (let i = 0; i < torsoCount; i++) {
                 let p = getCylinderPoint(16, 55, 0, -55, 0);
                 if (p.y > -20) { p.x *= 0.85; p.z *= 0.85; }
                 if (p.y < -40) { p.x *= 1.5; p.z *= 1.2; }
-                targetPoints.push(p);
+                let pFinal = rotateY(p, torsoRotY);
+                targetPoints.push(pFinal);
             }
 
             const headY = -68;
@@ -164,6 +197,7 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking }) => {
                 let pFinal = translate(p, 0, headY, 0);
                 pFinal = translate(pFinal, 0, -headY, 0);
                 pFinal = rotateX(pFinal, headNod);
+                pFinal = rotateY(pFinal, headRotY + torsoRotY);
                 pFinal = translate(pFinal, 0, headY, 0);
 
                 pFinal.isActive = isActive;
@@ -175,14 +209,16 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking }) => {
                 length1: number,
                 length2: number,
                 angle: { x: number, z: number, elbow: number },
+                isLeft: boolean,
                 thickness: number
             ) => {
                 const limbCount = 450;
 
                 for (let i = 0; i < limbCount; i++) {
                     let p = getCylinderPoint(thickness, length1, 0, 0, 0);
-                    p = rotateX(p, angle.x);
+                    p = rotateX(p, angle.x); p = rotateZ(p, angle.z);
                     p = translate(p, origin.x, origin.y, origin.z);
+                    p = rotateY(p, torsoRotY);
                     targetPoints.push(p);
                 }
 
@@ -191,14 +227,15 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking }) => {
                     let elbowAngle = angle.elbow;
                     p = rotateX(p, elbowAngle);
                     p = translate(p, 0, length1, 0);
-                    p = rotateX(p, angle.x);
+                    p = rotateX(p, angle.x); p = rotateZ(p, angle.z);
                     p = translate(p, origin.x, origin.y, origin.z);
+                    p = rotateY(p, torsoRotY);
                     targetPoints.push(p);
                 }
             };
 
-            addLimb({ x: 22, y: -50, z: 0 }, 28, 25, { x: 0, z: -0.15, elbow: -0.2 }, 5.5);
-            addLimb({ x: -22, y: -50, z: 0 }, 28, 25, { x: 0, z: 0.15, elbow: -0.2 }, 5.5);
+            addLimb({ x: 22, y: -50, z: 0 }, 28, 25, { x: rArm.x, z: -rArm.z, elbow: -Math.abs(rArm.elbow) }, false, 5.5);
+            addLimb({ x: -22, y: -50, z: 0 }, 28, 25, { x: lArm.x, z: -lArm.z, elbow: -Math.abs(lArm.elbow) }, true, 5.5);
 
             return targetPoints;
         };

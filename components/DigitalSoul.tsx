@@ -6,6 +6,7 @@ import { Cpu, Activity, Brain, Heart, Mic, Volume2, Wifi, Battery, Zap, Shield }
 
 const DigitalSoul: React.FC = () => {
     const [isSpeaking, setIsSpeaking] = useState(false);
+    const [gesture, setGesture] = useState<'idle' | 'wave' | 'think'>('idle');
     const [isProcessing, setIsProcessing] = useState(false);
     const [messages, setMessages] = useState<{ role: 'user' | 'ai', text: string }[]>([]);
     const chatEndRef = useRef<HTMLDivElement>(null);
@@ -133,11 +134,21 @@ const DigitalSoul: React.FC = () => {
         setIsProcessing(true);
         setMessages(prev => [...prev, { role: 'user', text }]);
 
+        setGesture('think');
+
         const responseText = await generateResponse(text);
 
         setMessages(prev => [...prev, { role: 'ai', text: responseText }]);
         setIsProcessing(false);
+        setGesture('idle');
         speak(responseText);
+    };
+
+    const handleGesture = (g: 'idle' | 'wave' | 'think') => {
+        setGesture(g);
+        if (g !== 'idle') {
+            setTimeout(() => setGesture('idle'), 4000);
+        }
     };
 
     return (
@@ -277,7 +288,7 @@ const DigitalSoul: React.FC = () => {
                         </div>
 
                         <div className="p-3 border-t border-cyan-500/20 bg-black/50 shrink-0">
-                            <ChatControls onSendMessage={handleSendMessage} isProcessing={isProcessing} />
+                            <ChatControls onSendMessage={handleSendMessage} isProcessing={isProcessing} onGesture={handleGesture} />
                         </div>
                     </div>
 
@@ -326,7 +337,7 @@ const DigitalSoul: React.FC = () => {
             </div>
 
             <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
-                <BinaryAvatar isSpeaking={isSpeaking} />
+                <BinaryAvatar isSpeaking={isSpeaking} gesture={gesture} />
             </div>
 
             <div className="absolute inset-0 z-50 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]"></div>
