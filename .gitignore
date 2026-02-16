@@ -56,3 +56,4 @@ scripts/
 # Deployment
 .netlify/
 .vercel/
+ai_sherly_llmindex_rag/
