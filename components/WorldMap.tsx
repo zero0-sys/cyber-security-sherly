@@ -64,7 +64,8 @@ const WorldMap: React.FC = () => {
   useEffect(() => {
     const fetchThreats = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/geoip/threats');
+        const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+        const response = await fetch(`${backendUrl}/api/geoip/threats`);
         const data = await response.json();
         if (data.success && data.threats) {
           setRealThreats(data.threats);

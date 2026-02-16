@@ -60,7 +60,9 @@ const Terminal: React.FC = () => {
 
     // Connect to WebSocket
     const connectWebSocket = () => {
-      const ws = new WebSocket('ws://localhost:3001');
+      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+      const wsUrl = backendUrl.replace('http://', 'ws://').replace('https://', 'wss://');
+      const ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {
         setIsConnected(true);
@@ -156,8 +158,8 @@ const Terminal: React.FC = () => {
 
         <div className="flex items-center gap-2">
           <div className={`flex items-center gap-2 px-3 py-1 rounded text-xs font-mono ${isConnected
-              ? 'bg-green-900/20 text-green-400 border border-green-900'
-              : 'bg-red-900/20 text-red-400 border border-red-900'
+            ? 'bg-green-900/20 text-green-400 border border-green-900'
+            : 'bg-red-900/20 text-red-400 border border-red-900'
             }`}>
             <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
             {isConnected ? 'CONNECTED' : 'DISCONNECTED'}
@@ -201,7 +203,7 @@ const Terminal: React.FC = () => {
       {/* Footer */}
       <div className="p-2 border-t border-green-900 bg-black/50 text-xs text-gray-600 font-mono flex justify-between">
         <span>Press Ctrl+C to interrupt • Ctrl+D to exit</span>
-        <span>Backend: ws://localhost:3001</span>
+        <span>Backend: {import.meta.env.VITE_API_URL || 'http://localhost:5001'}</span>
       </div>
     </div>
   );
