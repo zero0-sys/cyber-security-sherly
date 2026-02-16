@@ -225,6 +225,21 @@ app.post('/api/files/folder', async (req, res) => {
 // ==================== Code Execution ====================
 app.use('/api/execute', executeRoutes);
 
+// Health check endpoint for Railway
+app.get('/', (req, res) => {
+    res.status(200).json({
+        status: 'online',
+        service: 'AI Sherly Backend',
+        version: '2.0.0',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
+
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'healthy' });
+});
+
 // ==================== Scripts Management ====================// Save script file
 app.post('/api/scripts/save', async (req, res) => {
     try {
