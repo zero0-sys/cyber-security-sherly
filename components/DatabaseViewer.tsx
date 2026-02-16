@@ -25,7 +25,8 @@ const DatabaseViewer: React.FC = () => {
     const loadFiles = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/files/list?path=${encodeURIComponent(currentPath)}`);
+            const backendUrl = import.meta.env.VITE_API_URL || '';
+            const res = await fetch(`${backendUrl}/api/files/list?path=${encodeURIComponent(currentPath)}`);
             const data = await res.json();
             setFiles(data.files || []);
             setLoading(false);
@@ -56,7 +57,8 @@ const DatabaseViewer: React.FC = () => {
         setUploadProgress(0);
 
         try {
-            const res = await fetch('/api/files/upload', {
+            const backendUrl = import.meta.env.VITE_API_URL || '';
+            const res = await fetch(`${backendUrl}/api/files/upload`, {
                 method: 'POST',
                 body: formData,
             });
@@ -81,7 +83,8 @@ const DatabaseViewer: React.FC = () => {
         if (!confirm(`Delete ${type} "${filename}"?`)) return;
 
         try {
-            const res = await fetch('/api/files/delete', {
+            const backendUrl = import.meta.env.VITE_API_URL || '';
+            const res = await fetch(`${backendUrl}/api/files/delete`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -105,8 +108,9 @@ const DatabaseViewer: React.FC = () => {
 
     const handleDownload = async (filename: string) => {
         try {
+            const backendUrl = import.meta.env.VITE_API_URL || '';
             const filePath = currentPath === '/' ? filename : `${currentPath}/${filename}`;
-            const res = await fetch(`/api/files/download?path=${encodeURIComponent(filePath)}`);
+            const res = await fetch(`${backendUrl}/api/files/download?path=${encodeURIComponent(filePath)}`);
 
             if (res.ok) {
                 const blob = await res.blob();
@@ -129,7 +133,8 @@ const DatabaseViewer: React.FC = () => {
         if (!newFolderName.trim()) return;
 
         try {
-            const res = await fetch('/api/files/folder', {
+            const backendUrl = import.meta.env.VITE_API_URL || '';
+            const res = await fetch(`${backendUrl}/api/files/folder`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
