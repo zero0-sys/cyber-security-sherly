@@ -1,4 +1,0 @@
-SSN: 139-87-3763
-NAME: Person #153
-DOB: 24/1/1974
-ADDRESS: 153 Main Street, City, ST 52076

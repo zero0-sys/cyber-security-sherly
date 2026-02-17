@@ -1,5 +1,0 @@
-LOAN_ID: LN-82
-BORROWER: Borrower #82
-AMOUNT: $101396.90
-RATE: 7.88%
-TERM: 20 years

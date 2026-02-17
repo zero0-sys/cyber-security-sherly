@@ -1,6 +1,0 @@
-CLASSIFICATION: SECRET
-DOCUMENT_ID: DOC-103
-TITLE: Classified Document #103
-CLEARANCE_LEVEL: 4
-ISSUED: 2025-09-26T14:21:53.566Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

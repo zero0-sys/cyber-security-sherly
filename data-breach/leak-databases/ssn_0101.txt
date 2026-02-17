@@ -1,4 +1,0 @@
-SSN: 856-95-7984
-NAME: Person #101
-DOB: 26/5/1981
-ADDRESS: 101 Main Street, City, ST 44640

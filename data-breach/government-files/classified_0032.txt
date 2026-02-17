@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-32
-TITLE: Classified Document #32
-CLEARANCE_LEVEL: 3
-ISSUED: 2026-01-18T13:21:00.849Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

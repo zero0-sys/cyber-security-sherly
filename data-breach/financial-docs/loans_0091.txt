@@ -1,5 +1,0 @@
-LOAN_ID: LN-91
-BORROWER: Borrower #91
-AMOUNT: $297566.44
-RATE: 9.25%
-TERM: 20 years

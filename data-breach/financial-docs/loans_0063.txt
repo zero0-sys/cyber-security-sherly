@@ -1,5 +1,0 @@
-LOAN_ID: LN-63
-BORROWER: Borrower #63
-AMOUNT: $439895.84
-RATE: 6.22%
-TERM: 15 years

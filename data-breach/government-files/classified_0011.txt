@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-11
-TITLE: Classified Document #11
-CLEARANCE_LEVEL: 2
-ISSUED: 2025-11-01T09:25:39.412Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

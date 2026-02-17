@@ -1,4 +1,0 @@
-SSN: 669-89-8519
-NAME: Person #28
-DOB: 7/9/1952
-ADDRESS: 28 Main Street, City, ST 12741

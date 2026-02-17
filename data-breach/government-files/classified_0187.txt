@@ -1,6 +1,0 @@
-CLASSIFICATION: SECRET
-DOCUMENT_ID: DOC-187
-TITLE: Classified Document #187
-CLEARANCE_LEVEL: 3
-ISSUED: 2025-05-06T18:16:42.558Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

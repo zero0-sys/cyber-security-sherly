@@ -1,5 +1,0 @@
-LOAN_ID: LN-59
-BORROWER: Borrower #59
-AMOUNT: $211276.17
-RATE: 0.45%
-TERM: 30 years

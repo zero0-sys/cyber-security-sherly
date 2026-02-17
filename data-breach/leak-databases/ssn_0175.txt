@@ -1,4 +1,0 @@
-SSN: 954-17-3499
-NAME: Person #175
-DOB: 4/5/1987
-ADDRESS: 175 Main Street, City, ST 97389

@@ -1,4 +1,0 @@
-SSN: 559-95-2132
-NAME: Person #152
-DOB: 15/9/1957
-ADDRESS: 152 Main Street, City, ST 17892

@@ -1,4 +1,0 @@
-SSN: 545-17-2448
-NAME: Person #154
-DOB: 19/10/1971
-ADDRESS: 154 Main Street, City, ST 58123

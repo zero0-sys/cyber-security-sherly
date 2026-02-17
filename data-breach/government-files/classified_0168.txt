@@ -1,6 +1,0 @@
-CLASSIFICATION: TOP SECRET
-DOCUMENT_ID: DOC-168
-TITLE: Classified Document #168
-CLEARANCE_LEVEL: 4
-ISSUED: 2025-08-06T07:42:23.653Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

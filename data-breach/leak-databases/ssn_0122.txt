@@ -1,4 +1,0 @@
-SSN: 868-37-7507
-NAME: Person #122
-DOB: 28/11/1974
-ADDRESS: 122 Main Street, City, ST 16882

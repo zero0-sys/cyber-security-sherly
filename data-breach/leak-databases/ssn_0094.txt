@@ -1,4 +1,0 @@
-SSN: 261-59-7355
-NAME: Person #94
-DOB: 27/11/1958
-ADDRESS: 94 Main Street, City, ST 83403

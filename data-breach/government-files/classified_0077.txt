@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-77
-TITLE: Classified Document #77
-CLEARANCE_LEVEL: 3
-ISSUED: 2025-11-09T23:04:42.041Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

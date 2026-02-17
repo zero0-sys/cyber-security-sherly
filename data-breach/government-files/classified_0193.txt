@@ -1,6 +1,0 @@
-CLASSIFICATION: SECRET
-DOCUMENT_ID: DOC-193
-TITLE: Classified Document #193
-CLEARANCE_LEVEL: 4
-ISSUED: 2025-02-20T22:17:38.110Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

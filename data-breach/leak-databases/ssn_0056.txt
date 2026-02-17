@@ -1,4 +1,0 @@
-SSN: 406-89-5489
-NAME: Person #56
-DOB: 17/2/1992
-ADDRESS: 56 Main Street, City, ST 90718

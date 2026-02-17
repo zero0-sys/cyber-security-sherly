@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import CryptoJS from 'crypto-js';
 import { Lock, Unlock, Hash, Key, Copy, Check, AlertCircle } from 'lucide-react';
 
-type TabType = 'encrypt' | 'encode' | 'hash' | 'modern' | 'converter';
+type TabType = 'encrypt' | 'encode' | 'hash' | 'modern' | 'converter' | 'jwt';
 
 const CryptoLab: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabType>('encrypt');
@@ -11,6 +11,12 @@ const CryptoLab: React.FC = () => {
     const [key, setKey] = useState('mysecretkey123');
     const [copied, setCopied] = useState(false);
     const [error, setError] = useState('');
+
+    // JWT Generator State
+    const [jwtAlgorithm, setJwtAlgorithm] = useState<'HS256' | 'HS384' | 'HS512'>('HS256');
+    const [jwtKeyLength, setJwtKeyLength] = useState(256);
+    const [jwtSecretKey, setJwtSecretKey] = useState('');
+    const [jwtCopied, setJwtCopied] = useState(false);
 
     const handleCopy = () => {
         navigator.clipboard.writeText(output);
@@ -362,6 +368,28 @@ const CryptoLab: React.FC = () => {
         setError('');
     };
 
+    // JWT SECRET KEY GENERATOR
+    const generateJWTSecret = () => {
+        const length = jwtKeyLength / 8; // Convert bits to bytes
+        const randomBytes = CryptoJS.lib.WordArray.random(length);
+        const secretKey = randomBytes.toString(CryptoJS.enc.Hex);
+        setJwtSecretKey(secretKey);
+    };
+
+    const copyJWTSecret = () => {
+        navigator.clipboard.writeText(jwtSecretKey);
+        setJwtCopied(true);
+        setTimeout(() => setJwtCopied(false), 2000);
+    };
+
+    const getKeyStrength = (length: number): { label: string, color: string, percentage: number } => {
+        if (length >= 512) return { label: 'Maximum Security', color: 'text-green-500', percentage: 100 };
+        if (length >= 384) return { label: 'Very Strong', color: 'text-green-400', percentage: 85 };
+        if (length >= 256) return { label: 'Strong', color: 'text-blue-400', percentage: 70 };
+        if (length >= 128) return { label: 'Moderate', color: 'text-yellow-400', percentage: 50 };
+        return { label: 'Weak', color: 'text-red-400', percentage: 30 };
+    };
+
     const renderTabContent = () => {
         switch (activeTab) {
             case 'encrypt':
@@ -443,6 +471,150 @@ const CryptoLab: React.FC = () => {
                         </div>
                     </div>
                 );
+
+            case 'jwt':
+                return (
+                    <div className="space-y-4">
+                        {/* Algorithm Selection */}
+                        <div>
+                            <label className="text-xs text-gray-400 font-bold mb-2 block">JWT ALGORITHM</label>
+                            <div className="grid grid-cols-3 gap-2">
+                                {(['HS256', 'HS384', 'HS512'] as const).map((algo) => (
+                                    <button
+                                        key={algo}
+                                        onClick={() => {
+                                            setJwtAlgorithm(algo);
+                                            if (algo === 'HS256') setJwtKeyLength(256);
+                                            else if (algo === 'HS384') setJwtKeyLength(384);
+                                            else setJwtKeyLength(512);
+                                        }}
+                                        className={`px-4 py-3 rounded font-bold text-sm transition-all ${jwtAlgorithm === algo
+                                                ? 'bg-green-600 text-black border-2 border-green-400'
+                                                : 'bg-gray-900 text-gray-400 border border-gray-700 hover:bg-gray-800 hover:text-green-400'
+                                            }`}
+                                    >
+                                        {algo}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="mt-2 text-xs text-gray-500">
+                                {jwtAlgorithm === 'HS256' && '• HMAC with SHA-256 - Most commonly used symmetric algorithm'}
+                                {jwtAlgorithm === 'HS384' && '• HMAC with SHA-384 - Stronger hashing for enhanced security'}
+                                {jwtAlgorithm === 'HS512' && '• HMAC with SHA-512 - Maximum security for sensitive applications'}
+                            </div>
+                        </div>
+
+                        {/* Key Length Selection */}
+                        <div>
+                            <label className="text-xs text-gray-400 font-bold mb-2 block">KEY LENGTH (bits)</label>
+                            <div className="grid grid-cols-4 gap-2">
+                                {[32, 64, 128, 256, 384, 512].map((length) => (
+                                    <button
+                                        key={length}
+                                        onClick={() => setJwtKeyLength(length)}
+                                        className={`px-3 py-2 rounded font-mono text-sm transition-all ${jwtKeyLength === length
+                                                ? 'bg-blue-600 text-black border-2 border-blue-400'
+                                                : 'bg-gray-900 text-gray-400 border border-gray-700 hover:bg-gray-800 hover:text-blue-400'
+                                            }`}
+                                    >
+                                        {length}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Key Strength Indicator */}
+                        <div>
+                            <div className="flex justify-between items-center mb-2">
+                                <label className="text-xs text-gray-400 font-bold">KEY STRENGTH</label>
+                                <span className={`text-xs font-bold ${getKeyStrength(jwtKeyLength).color}`}>
+                                    {getKeyStrength(jwtKeyLength).label}
+                                </span>
+                            </div>
+                            <div className="h-2 bg-gray-900 rounded-full overflow-hidden border border-gray-700">
+                                <div
+                                    className="h-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 transition-all duration-300"
+                                    style={{ width: `${getKeyStrength(jwtKeyLength).percentage}%` }}
+                                ></div>
+                            </div>
+                        </div>
+
+                        {/* Generate Button */}
+                        <button
+                            onClick={generateJWTSecret}
+                            className="w-full bg-green-600 hover:bg-green-500 text-black font-bold py-4 rounded transition-all flex items-center justify-center gap-2"
+                        >
+                            <Key size={18} />
+                            Generate {jwtAlgorithm} Secret Key ({jwtKeyLength} bits)
+                        </button>
+
+                        {/* Generated Secret Key Display */}
+                        {jwtSecretKey && (
+                            <div className="space-y-3">
+                                <div>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label className="text-xs text-gray-400 font-bold">GENERATED SECRET KEY</label>
+                                        <button
+                                            onClick={copyJWTSecret}
+                                            className="flex items-center gap-1 text-xs text-green-500 hover:text-green-400 transition-colors"
+                                        >
+                                            {jwtCopied ? <Check size={12} /> : <Copy size={12} />}
+                                            {jwtCopied ? 'Copied!' : 'Copy'}
+                                        </button>
+                                    </div>
+                                    <div className="bg-gray-900 border-2 border-green-500 rounded p-4">
+                                        <code className="text-green-400 font-mono text-sm break-all block">
+                                            {jwtSecretKey}
+                                        </code>
+                                    </div>
+                                </div>
+
+                                {/* Key Info */}
+                                <div className="grid grid-cols-3 gap-3">
+                                    <div className="bg-black border border-gray-700 rounded p-3 text-center">
+                                        <div className="text-xs text-gray-500 mb-1">Algorithm</div>
+                                        <div className="text-green-400 font-bold">{jwtAlgorithm}</div>
+                                    </div>
+                                    <div className="bg-black border border-gray-700 rounded p-3 text-center">
+                                        <div className="text-xs text-gray-500 mb-1">Length</div>
+                                        <div className="text-green-400 font-bold">{jwtKeyLength} bits</div>
+                                    </div>
+                                    <div className="bg-black border border-gray-700 rounded p-3 text-center">
+                                        <div className="text-xs text-gray-500 mb-1">Hex Length</div>
+                                        <div className="text-green-400 font-bold">{jwtSecretKey.length} chars</div>
+                                    </div>
+                                </div>
+
+                                {/* Usage Example */}
+                                <div className="bg-blue-900/20 border border-blue-500 rounded p-4">
+                                    <div className="text-xs text-blue-400 font-bold mb-2 flex items-center gap-2">
+                                        <AlertCircle size={14} />
+                                        Usage Example (Node.js)
+                                    </div>
+                                    <code className="text-blue-300 font-mono text-xs block">
+                                        const jwt = require('jsonwebtoken');<br />
+                                        const secret = '{jwtSecretKey.substring(0, 32)}...';<br />
+                                        const token = jwt.sign({'{payload}'}, secret, {'{'} algorithm: '{jwtAlgorithm}' {'}'});
+                                    </code>
+                                </div>
+
+                                {/* Security Notice */}
+                                <div className="bg-orange-900/20 border border-orange-500 rounded p-3 text-xs text-orange-400">
+                                    <div className="flex items-center gap-2 mb-1 font-bold">
+                                        <AlertCircle size={14} />
+                                        Security Best Practices
+                                    </div>
+                                    <ul className="text-orange-300 space-y-1 ml-4">
+                                        <li>• Store secret keys in environment variables</li>
+                                        <li>• Never commit secrets to version control</li>
+                                        <li>• Use at least 256 bits for production</li>
+                                        <li>• Rotate keys periodically</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
         }
     };
 
@@ -454,7 +626,7 @@ const CryptoLab: React.FC = () => {
                     <Key size={24} className="text-green-500" />
                     <div>
                         <h2 className="font-orbitron font-bold text-white text-xl">CRYPTOGRAPHY LAB</h2>
-                        <p className="text-xs text-gray-500">35+ Algorithms • Encryption, Encoding, Hashing, Converters</p>
+                        <p className="text-xs text-gray-500">40+ Algorithms • Encryption, Encoding, Hashing, JWT Generator</p>
                     </div>
                 </div>
 
@@ -465,6 +637,7 @@ const CryptoLab: React.FC = () => {
                     <TabButton active={activeTab === 'hash'} onClick={() => setActiveTab('hash')} label="Hashing" />
                     <TabButton active={activeTab === 'modern'} onClick={() => setActiveTab('modern')} label="Modern" />
                     <TabButton active={activeTab === 'converter'} onClick={() => setActiveTab('converter')} label="Converter" />
+                    <TabButton active={activeTab === 'jwt'} onClick={() => setActiveTab('jwt')} label="JWT Generator" />
                 </div>
             </div>
 

@@ -1,4 +1,0 @@
-SSN: 535-56-5224
-NAME: Person #144
-DOB: 26/2/1999
-ADDRESS: 144 Main Street, City, ST 51561

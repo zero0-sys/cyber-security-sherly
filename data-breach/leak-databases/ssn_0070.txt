@@ -1,4 +1,0 @@
-SSN: 597-82-7734
-NAME: Person #70
-DOB: 3/2/1970
-ADDRESS: 70 Main Street, City, ST 61906

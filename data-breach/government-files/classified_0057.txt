@@ -1,6 +1,0 @@
-CLASSIFICATION: TOP SECRET
-DOCUMENT_ID: DOC-57
-TITLE: Classified Document #57
-CLEARANCE_LEVEL: 3
-ISSUED: 2025-12-05T09:15:39.255Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

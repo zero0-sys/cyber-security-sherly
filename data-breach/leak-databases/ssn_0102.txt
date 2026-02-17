@@ -1,4 +1,0 @@
-SSN: 579-51-9687
-NAME: Person #102
-DOB: 26/5/1962
-ADDRESS: 102 Main Street, City, ST 17999

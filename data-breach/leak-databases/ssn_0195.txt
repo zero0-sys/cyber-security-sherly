@@ -1,4 +1,0 @@
-SSN: 267-50-4160
-NAME: Person #195
-DOB: 22/3/1976
-ADDRESS: 195 Main Street, City, ST 36793

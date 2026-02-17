@@ -1,5 +1,0 @@
-LOAN_ID: LN-69
-BORROWER: Borrower #69
-AMOUNT: $387309.55
-RATE: 9.76%
-TERM: 15 years

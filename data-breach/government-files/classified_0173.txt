@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-173
-TITLE: Classified Document #173
-CLEARANCE_LEVEL: 4
-ISSUED: 2025-03-11T07:44:43.243Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

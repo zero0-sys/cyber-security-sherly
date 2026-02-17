@@ -1,4 +1,0 @@
-SSN: 683-28-2473
-NAME: Person #49
-DOB: 26/12/1965
-ADDRESS: 49 Main Street, City, ST 58607

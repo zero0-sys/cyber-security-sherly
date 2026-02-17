@@ -1,5 +1,0 @@
-LOAN_ID: LN-48
-BORROWER: Borrower #48
-AMOUNT: $171498.74
-RATE: 0.33%
-TERM: 15 years

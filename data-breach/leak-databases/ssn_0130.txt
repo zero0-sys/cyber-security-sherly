@@ -1,4 +1,0 @@
-SSN: 115-54-3161
-NAME: Person #130
-DOB: 2/7/1965
-ADDRESS: 130 Main Street, City, ST 24229

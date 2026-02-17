@@ -1,4 +1,0 @@
-SSN: 577-80-6546
-NAME: Person #121
-DOB: 14/10/1973
-ADDRESS: 121 Main Street, City, ST 96762

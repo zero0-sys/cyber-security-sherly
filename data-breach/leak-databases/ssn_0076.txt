@@ -1,4 +1,0 @@
-SSN: 901-97-7529
-NAME: Person #76
-DOB: 19/1/1976
-ADDRESS: 76 Main Street, City, ST 31571

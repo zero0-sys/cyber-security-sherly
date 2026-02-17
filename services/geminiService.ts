@@ -1,9 +1,9 @@
 export const generateResponse = async (userMessage: string): Promise<string> => {
     try {
-        const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
+        const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
         if (!apiKey) {
-            return "Error: Gemini API key not configured. Please set VITE_GOOGLE_API_KEY in your environment.";
+            return "Error: Gemini API key not configured. Please set VITE_GEMINI_API_KEY in Netlify environment variables.";
         }
 
         const response = await fetch(

@@ -1,6 +1,0 @@
-CLASSIFICATION: SECRET
-DOCUMENT_ID: DOC-61
-TITLE: Classified Document #61
-CLEARANCE_LEVEL: 2
-ISSUED: 2025-11-07T23:22:04.786Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

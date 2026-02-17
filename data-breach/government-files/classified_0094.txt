@@ -1,6 +1,0 @@
-CLASSIFICATION: SECRET
-DOCUMENT_ID: DOC-94
-TITLE: Classified Document #94
-CLEARANCE_LEVEL: 5
-ISSUED: 2025-12-01T20:24:30.557Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

@@ -1,4 +1,0 @@
-SSN: 877-32-3035
-NAME: Person #165
-DOB: 24/12/1966
-ADDRESS: 165 Main Street, City, ST 81917

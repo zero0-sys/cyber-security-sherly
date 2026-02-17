@@ -1,6 +1,6 @@
 
 
-export type TabType = 'dashboard' | 'ai_chat' | 'tools' | 'terminal' | 'database' | 'attack' | 'docs' | 'about' | 'c2' | 'crypto' | 'map' | 'avatar' | 'targets' | 'code_editor';
+export type TabType = 'dashboard' | 'ai_chat' | 'tools' | 'terminal' | 'database' | 'attack' | 'docs' | 'about' | 'c2' | 'crypto' | 'map' | 'avatar' | 'targets' | 'code_editor' | 'fun';
 
 export interface LogEntry {
   id: string;

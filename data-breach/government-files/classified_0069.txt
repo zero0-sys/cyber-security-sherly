@@ -1,6 +1,0 @@
-CLASSIFICATION: TOP SECRET
-DOCUMENT_ID: DOC-69
-TITLE: Classified Document #69
-CLEARANCE_LEVEL: 5
-ISSUED: 2025-04-15T06:47:40.053Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

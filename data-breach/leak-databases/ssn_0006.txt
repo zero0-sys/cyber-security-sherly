@@ -1,4 +1,0 @@
-SSN: 859-22-7978
-NAME: Person #6
-DOB: 11/8/1992
-ADDRESS: 6 Main Street, City, ST 41680

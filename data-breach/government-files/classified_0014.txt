@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-14
-TITLE: Classified Document #14
-CLEARANCE_LEVEL: 5
-ISSUED: 2025-03-09T10:15:32.945Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

@@ -1,4 +1,0 @@
-SSN: 741-35-1860
-NAME: Person #33
-DOB: 16/6/1996
-ADDRESS: 33 Main Street, City, ST 43958

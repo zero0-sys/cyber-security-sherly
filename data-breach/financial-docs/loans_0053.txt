@@ -1,5 +1,0 @@
-LOAN_ID: LN-53
-BORROWER: Borrower #53
-AMOUNT: $360577.92
-RATE: 4.15%
-TERM: 30 years

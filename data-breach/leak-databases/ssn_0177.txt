@@ -1,4 +1,0 @@
-SSN: 139-72-8123
-NAME: Person #177
-DOB: 11/11/1999
-ADDRESS: 177 Main Street, City, ST 49503

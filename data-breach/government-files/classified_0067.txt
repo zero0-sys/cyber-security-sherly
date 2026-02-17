@@ -1,6 +1,0 @@
-CLASSIFICATION: SECRET
-DOCUMENT_ID: DOC-67
-TITLE: Classified Document #67
-CLEARANCE_LEVEL: 3
-ISSUED: 2026-01-14T10:26:16.739Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

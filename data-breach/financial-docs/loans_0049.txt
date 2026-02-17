@@ -1,5 +1,0 @@
-LOAN_ID: LN-49
-BORROWER: Borrower #49
-AMOUNT: $330149.77
-RATE: 6.89%
-TERM: 20 years

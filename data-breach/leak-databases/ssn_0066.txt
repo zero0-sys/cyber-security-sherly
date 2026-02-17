@@ -1,4 +1,0 @@
-SSN: 780-84-7060
-NAME: Person #66
-DOB: 12/1/1967
-ADDRESS: 66 Main Street, City, ST 21039

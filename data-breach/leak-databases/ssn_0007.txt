@@ -1,4 +1,0 @@
-SSN: 866-18-6456
-NAME: Person #7
-DOB: 7/6/1996
-ADDRESS: 7 Main Street, City, ST 76978

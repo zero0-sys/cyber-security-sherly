@@ -1,5 +1,0 @@
-LOAN_ID: LN-99
-BORROWER: Borrower #99
-AMOUNT: $285872.77
-RATE: 3.64%
-TERM: 15 years

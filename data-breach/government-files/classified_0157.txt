@@ -1,6 +1,0 @@
-CLASSIFICATION: SECRET
-DOCUMENT_ID: DOC-157
-TITLE: Classified Document #157
-CLEARANCE_LEVEL: 3
-ISSUED: 2025-12-21T17:20:05.017Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

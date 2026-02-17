@@ -1,5 +1,0 @@
-LOAN_ID: LN-86
-BORROWER: Borrower #86
-AMOUNT: $458261.77
-RATE: 8.15%
-TERM: 30 years

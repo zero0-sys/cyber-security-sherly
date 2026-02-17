@@ -1,4 +1,0 @@
-SSN: 918-27-3033
-NAME: Person #79
-DOB: 28/10/1966
-ADDRESS: 79 Main Street, City, ST 95279

@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-2
-TITLE: Classified Document #2
-CLEARANCE_LEVEL: 3
-ISSUED: 2025-05-12T10:19:11.000Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

@@ -1,5 +1,0 @@
-LOAN_ID: LN-36
-BORROWER: Borrower #36
-AMOUNT: $366316.88
-RATE: 7.54%
-TERM: 15 years

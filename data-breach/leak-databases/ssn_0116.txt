@@ -1,4 +1,0 @@
-SSN: 670-24-8809
-NAME: Person #116
-DOB: 17/10/1965
-ADDRESS: 116 Main Street, City, ST 91336

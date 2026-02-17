@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-182
-TITLE: Classified Document #182
-CLEARANCE_LEVEL: 3
-ISSUED: 2026-01-30T08:50:32.588Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

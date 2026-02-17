@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-20
-TITLE: Classified Document #20
-CLEARANCE_LEVEL: 1
-ISSUED: 2025-03-14T20:15:20.477Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

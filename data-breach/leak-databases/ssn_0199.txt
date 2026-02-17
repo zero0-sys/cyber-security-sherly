@@ -1,4 +1,0 @@
-SSN: 447-68-5917
-NAME: Person #199
-DOB: 5/4/1998
-ADDRESS: 199 Main Street, City, ST 90363

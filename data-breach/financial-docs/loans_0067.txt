@@ -1,5 +1,0 @@
-LOAN_ID: LN-67
-BORROWER: Borrower #67
-AMOUNT: $172481.08
-RATE: 5.03%
-TERM: 20 years

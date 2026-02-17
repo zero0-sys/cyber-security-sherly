@@ -1,6 +1,0 @@
-CLASSIFICATION: TOP SECRET
-DOCUMENT_ID: DOC-6
-TITLE: Classified Document #6
-CLEARANCE_LEVEL: 2
-ISSUED: 2026-01-10T09:26:13.692Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

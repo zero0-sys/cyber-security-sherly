@@ -1,5 +1,0 @@
-LOAN_ID: LN-164
-BORROWER: Borrower #164
-AMOUNT: $99997.00
-RATE: 7.83%
-TERM: 30 years

@@ -1,5 +1,0 @@
-LOAN_ID: LN-26
-BORROWER: Borrower #26
-AMOUNT: $302070.02
-RATE: 7.69%
-TERM: 30 years

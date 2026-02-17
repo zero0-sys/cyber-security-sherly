@@ -1,5 +1,0 @@
-LOAN_ID: LN-177
-BORROWER: Borrower #177
-AMOUNT: $38185.88
-RATE: 8.94%
-TERM: 15 years

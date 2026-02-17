@@ -1,6 +1,0 @@
-CLASSIFICATION: TOP SECRET
-DOCUMENT_ID: DOC-72
-TITLE: Classified Document #72
-CLEARANCE_LEVEL: 3
-ISSUED: 2025-10-17T01:10:04.037Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

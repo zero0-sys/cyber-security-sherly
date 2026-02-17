@@ -1,6 +1,0 @@
-CLASSIFICATION: SECRET
-DOCUMENT_ID: DOC-97
-TITLE: Classified Document #97
-CLEARANCE_LEVEL: 3
-ISSUED: 2025-06-11T19:01:42.898Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

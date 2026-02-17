@@ -1,4 +1,0 @@
-SSN: 966-84-2920
-NAME: Person #142
-DOB: 20/6/1992
-ADDRESS: 142 Main Street, City, ST 99178

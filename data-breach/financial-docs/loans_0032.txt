@@ -1,5 +1,0 @@
-LOAN_ID: LN-32
-BORROWER: Borrower #32
-AMOUNT: $17044.69
-RATE: 0.33%
-TERM: 30 years

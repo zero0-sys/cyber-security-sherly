@@ -1,4 +1,0 @@
-SSN: 575-94-5189
-NAME: Person #85
-DOB: 25/1/1958
-ADDRESS: 85 Main Street, City, ST 59073

@@ -1,4 +1,0 @@
-SSN: 823-10-2563
-NAME: Person #83
-DOB: 15/3/1996
-ADDRESS: 83 Main Street, City, ST 38903

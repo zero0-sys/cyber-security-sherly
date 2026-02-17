@@ -1,5 +1,0 @@
-LOAN_ID: LN-88
-BORROWER: Borrower #88
-AMOUNT: $217566.76
-RATE: 8.55%
-TERM: 20 years

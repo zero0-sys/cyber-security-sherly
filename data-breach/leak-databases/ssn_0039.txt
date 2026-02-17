@@ -1,4 +1,0 @@
-SSN: 392-87-4728
-NAME: Person #39
-DOB: 12/6/1966
-ADDRESS: 39 Main Street, City, ST 47038

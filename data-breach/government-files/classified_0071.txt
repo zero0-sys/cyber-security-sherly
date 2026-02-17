@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-71
-TITLE: Classified Document #71
-CLEARANCE_LEVEL: 2
-ISSUED: 2025-05-15T11:41:12.624Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

@@ -1,5 +1,0 @@
-LOAN_ID: LN-27
-BORROWER: Borrower #27
-AMOUNT: $55503.50
-RATE: 3.83%
-TERM: 15 years

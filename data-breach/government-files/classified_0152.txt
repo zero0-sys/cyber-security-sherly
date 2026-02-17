@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-152
-TITLE: Classified Document #152
-CLEARANCE_LEVEL: 3
-ISSUED: 2026-01-10T14:44:21.550Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

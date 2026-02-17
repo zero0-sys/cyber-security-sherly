@@ -1,5 +1,0 @@
-LOAN_ID: LN-7
-BORROWER: Borrower #7
-AMOUNT: $129255.56
-RATE: 1.58%
-TERM: 20 years

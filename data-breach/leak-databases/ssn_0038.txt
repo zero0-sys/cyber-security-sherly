@@ -1,4 +1,0 @@
-SSN: 450-51-4084
-NAME: Person #38
-DOB: 13/8/1959
-ADDRESS: 38 Main Street, City, ST 53901

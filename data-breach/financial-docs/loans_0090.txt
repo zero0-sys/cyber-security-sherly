@@ -1,5 +1,0 @@
-LOAN_ID: LN-90
-BORROWER: Borrower #90
-AMOUNT: $373690.61
-RATE: 2.66%
-TERM: 15 years

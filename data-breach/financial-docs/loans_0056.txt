@@ -1,5 +1,0 @@
-LOAN_ID: LN-56
-BORROWER: Borrower #56
-AMOUNT: $358983.83
-RATE: 2.58%
-TERM: 30 years

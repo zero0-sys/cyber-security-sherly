@@ -1,5 +1,0 @@
-LOAN_ID: LN-6
-BORROWER: Borrower #6
-AMOUNT: $235130.21
-RATE: 2.88%
-TERM: 15 years

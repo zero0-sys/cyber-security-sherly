@@ -1,4 +1,0 @@
-SSN: 391-43-6645
-NAME: Person #184
-DOB: 12/2/1965
-ADDRESS: 184 Main Street, City, ST 82592

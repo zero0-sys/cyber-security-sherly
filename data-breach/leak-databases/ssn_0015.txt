@@ -1,4 +1,0 @@
-SSN: 918-79-2570
-NAME: Person #15
-DOB: 15/10/1993
-ADDRESS: 15 Main Street, City, ST 21362

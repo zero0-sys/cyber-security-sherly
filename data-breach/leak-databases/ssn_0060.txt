@@ -1,4 +1,0 @@
-SSN: 300-92-2741
-NAME: Person #60
-DOB: 18/8/1998
-ADDRESS: 60 Main Street, City, ST 20612

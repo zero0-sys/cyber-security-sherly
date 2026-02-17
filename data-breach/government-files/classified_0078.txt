@@ -1,6 +1,0 @@
-CLASSIFICATION: TOP SECRET
-DOCUMENT_ID: DOC-78
-TITLE: Classified Document #78
-CLEARANCE_LEVEL: 4
-ISSUED: 2025-11-13T04:14:38.802Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

@@ -1,4 +1,0 @@
-SSN: 709-23-7151
-NAME: Person #172
-DOB: 16/8/1957
-ADDRESS: 172 Main Street, City, ST 77189

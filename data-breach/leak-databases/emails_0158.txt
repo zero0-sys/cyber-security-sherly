@@ -1,6 +1,0 @@
-MESSAGE_ID: 158
-FROM: sender158@company.com
-TO: recipient158@example.com
-SUBJECT: Important Document #158
-DATE: 2026-01-03T01:58:29.136Z
-CONTENT: This is a confidential email containing sensitive information...

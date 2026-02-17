@@ -1,6 +1,0 @@
-CLASSIFICATION: TOP SECRET
-DOCUMENT_ID: DOC-153
-TITLE: Classified Document #153
-CLEARANCE_LEVEL: 4
-ISSUED: 2025-06-04T02:08:11.627Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

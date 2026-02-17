@@ -1,4 +1,0 @@
-SSN: 428-88-9551
-NAME: Person #54
-DOB: 17/5/1986
-ADDRESS: 54 Main Street, City, ST 58831

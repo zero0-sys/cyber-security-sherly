@@ -1,4 +1,0 @@
-SSN: 148-68-1539
-NAME: Person #62
-DOB: 3/11/1991
-ADDRESS: 62 Main Street, City, ST 47255

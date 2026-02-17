@@ -1,5 +1,0 @@
-LOAN_ID: LN-21
-BORROWER: Borrower #21
-AMOUNT: $315635.99
-RATE: 0.85%
-TERM: 15 years

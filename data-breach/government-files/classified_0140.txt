@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-140
-TITLE: Classified Document #140
-CLEARANCE_LEVEL: 1
-ISSUED: 2025-08-01T14:48:14.340Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

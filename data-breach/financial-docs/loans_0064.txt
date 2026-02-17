@@ -1,5 +1,0 @@
-LOAN_ID: LN-64
-BORROWER: Borrower #64
-AMOUNT: $473145.22
-RATE: 8.76%
-TERM: 20 years

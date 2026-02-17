@@ -1,4 +1,0 @@
-SSN: 685-73-6539
-NAME: Person #182
-DOB: 18/5/1962
-ADDRESS: 182 Main Street, City, ST 61570

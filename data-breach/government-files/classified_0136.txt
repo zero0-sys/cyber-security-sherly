@@ -1,6 +1,0 @@
-CLASSIFICATION: SECRET
-DOCUMENT_ID: DOC-136
-TITLE: Classified Document #136
-CLEARANCE_LEVEL: 2
-ISSUED: 2025-12-06T22:45:09.443Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

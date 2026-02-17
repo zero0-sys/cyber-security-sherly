@@ -1,4 +1,0 @@
-SSN: 555-83-1920
-NAME: Person #168
-DOB: 1/4/1965
-ADDRESS: 168 Main Street, City, ST 70657

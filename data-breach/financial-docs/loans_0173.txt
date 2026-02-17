@@ -1,5 +1,0 @@
-LOAN_ID: LN-173
-BORROWER: Borrower #173
-AMOUNT: $92624.20
-RATE: 8.22%
-TERM: 30 years

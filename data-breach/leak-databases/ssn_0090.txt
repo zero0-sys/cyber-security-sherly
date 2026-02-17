@@ -1,4 +1,0 @@
-SSN: 633-83-4474
-NAME: Person #90
-DOB: 18/8/1956
-ADDRESS: 90 Main Street, City, ST 22421

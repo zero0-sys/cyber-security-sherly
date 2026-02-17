@@ -1,4 +1,0 @@
-SSN: 492-48-4191
-NAME: Person #191
-DOB: 2/1/1988
-ADDRESS: 191 Main Street, City, ST 54358

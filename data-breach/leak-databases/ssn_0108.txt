@@ -1,4 +1,0 @@
-SSN: 202-78-8795
-NAME: Person #108
-DOB: 12/3/1958
-ADDRESS: 108 Main Street, City, ST 28495

@@ -1,6 +1,0 @@
-CLASSIFICATION: TOP SECRET
-DOCUMENT_ID: DOC-27
-TITLE: Classified Document #27
-CLEARANCE_LEVEL: 3
-ISSUED: 2026-01-26T22:09:39.702Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

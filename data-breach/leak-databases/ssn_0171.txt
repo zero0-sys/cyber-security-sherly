@@ -1,4 +1,0 @@
-SSN: 476-41-4367
-NAME: Person #171
-DOB: 14/4/1963
-ADDRESS: 171 Main Street, City, ST 46826

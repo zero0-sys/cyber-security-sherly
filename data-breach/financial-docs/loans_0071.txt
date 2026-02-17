@@ -1,5 +1,0 @@
-LOAN_ID: LN-71
-BORROWER: Borrower #71
-AMOUNT: $163986.93
-RATE: 0.30%
-TERM: 30 years

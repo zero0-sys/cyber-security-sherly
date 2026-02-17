@@ -1,4 +1,0 @@
-SSN: 589-68-6809
-NAME: Person #96
-DOB: 22/12/1955
-ADDRESS: 96 Main Street, City, ST 53095

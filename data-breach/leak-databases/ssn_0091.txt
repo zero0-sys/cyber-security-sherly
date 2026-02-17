@@ -1,4 +1,0 @@
-SSN: 370-60-3517
-NAME: Person #91
-DOB: 9/9/1998
-ADDRESS: 91 Main Street, City, ST 21814

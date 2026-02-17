@@ -1,4 +1,0 @@
-SSN: 595-32-1013
-NAME: Person #10
-DOB: 19/10/1967
-ADDRESS: 10 Main Street, City, ST 76137

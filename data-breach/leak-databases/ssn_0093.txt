@@ -1,4 +1,0 @@
-SSN: 739-56-6673
-NAME: Person #93
-DOB: 22/8/1971
-ADDRESS: 93 Main Street, City, ST 37969

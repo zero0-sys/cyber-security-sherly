@@ -1,4 +1,0 @@
-SSN: 509-97-2767
-NAME: Person #124
-DOB: 26/1/1957
-ADDRESS: 124 Main Street, City, ST 58934

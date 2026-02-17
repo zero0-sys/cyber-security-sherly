@@ -1,6 +1,0 @@
-CLASSIFICATION: SECRET
-DOCUMENT_ID: DOC-19
-TITLE: Classified Document #19
-CLEARANCE_LEVEL: 5
-ISSUED: 2025-08-07T00:50:21.609Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

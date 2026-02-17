@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-98
-TITLE: Classified Document #98
-CLEARANCE_LEVEL: 4
-ISSUED: 2026-01-03T21:54:45.641Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

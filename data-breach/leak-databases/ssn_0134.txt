@@ -1,4 +1,0 @@
-SSN: 295-88-4239
-NAME: Person #134
-DOB: 2/4/1958
-ADDRESS: 134 Main Street, City, ST 55800

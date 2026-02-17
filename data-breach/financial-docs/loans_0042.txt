@@ -1,5 +1,0 @@
-LOAN_ID: LN-42
-BORROWER: Borrower #42
-AMOUNT: $434932.62
-RATE: 9.47%
-TERM: 15 years

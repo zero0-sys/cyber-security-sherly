@@ -1,4 +1,0 @@
-SSN: 717-26-7637
-NAME: Person #67
-DOB: 2/9/1970
-ADDRESS: 67 Main Street, City, ST 90828

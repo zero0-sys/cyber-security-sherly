@@ -1,4 +1,0 @@
-SSN: 855-18-7883
-NAME: Person #47
-DOB: 27/1/1957
-ADDRESS: 47 Main Street, City, ST 14657

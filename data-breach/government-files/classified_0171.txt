@@ -1,6 +1,0 @@
-CLASSIFICATION: TOP SECRET
-DOCUMENT_ID: DOC-171
-TITLE: Classified Document #171
-CLEARANCE_LEVEL: 2
-ISSUED: 2025-11-13T19:53:58.955Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

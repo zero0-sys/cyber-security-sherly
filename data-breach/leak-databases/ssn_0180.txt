@@ -1,4 +1,0 @@
-SSN: 807-53-4508
-NAME: Person #180
-DOB: 16/2/1996
-ADDRESS: 180 Main Street, City, ST 19646

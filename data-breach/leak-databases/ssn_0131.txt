@@ -1,4 +1,0 @@
-SSN: 674-18-4136
-NAME: Person #131
-DOB: 17/8/1965
-ADDRESS: 131 Main Street, City, ST 83300

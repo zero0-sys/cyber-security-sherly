@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-116
-TITLE: Classified Document #116
-CLEARANCE_LEVEL: 2
-ISSUED: 2025-11-24T05:50:12.480Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

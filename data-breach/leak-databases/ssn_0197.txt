@@ -1,4 +1,0 @@
-SSN: 750-22-7428
-NAME: Person #197
-DOB: 10/11/1979
-ADDRESS: 197 Main Street, City, ST 58381

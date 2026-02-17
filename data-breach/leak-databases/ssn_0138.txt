@@ -1,4 +1,0 @@
-SSN: 584-48-8092
-NAME: Person #138
-DOB: 8/8/1998
-ADDRESS: 138 Main Street, City, ST 35337

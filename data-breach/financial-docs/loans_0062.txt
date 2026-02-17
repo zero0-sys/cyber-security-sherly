@@ -1,5 +1,0 @@
-LOAN_ID: LN-62
-BORROWER: Borrower #62
-AMOUNT: $162946.36
-RATE: 1.55%
-TERM: 30 years

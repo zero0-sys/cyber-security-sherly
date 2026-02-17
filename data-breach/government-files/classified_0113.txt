@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-113
-TITLE: Classified Document #113
-CLEARANCE_LEVEL: 4
-ISSUED: 2025-03-07T22:12:27.056Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

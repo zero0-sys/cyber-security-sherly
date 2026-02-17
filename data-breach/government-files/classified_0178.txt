@@ -1,6 +1,0 @@
-CLASSIFICATION: SECRET
-DOCUMENT_ID: DOC-178
-TITLE: Classified Document #178
-CLEARANCE_LEVEL: 4
-ISSUED: 2025-03-23T18:55:20.379Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

@@ -1,4 +1,0 @@
-SSN: 494-70-5770
-NAME: Person #137
-DOB: 13/4/1981
-ADDRESS: 137 Main Street, City, ST 39718

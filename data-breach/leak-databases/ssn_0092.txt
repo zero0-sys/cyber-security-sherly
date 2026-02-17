@@ -1,4 +1,0 @@
-SSN: 295-98-2974
-NAME: Person #92
-DOB: 24/11/1966
-ADDRESS: 92 Main Street, City, ST 43434

@@ -1,4 +1,0 @@
-SSN: 957-95-9804
-NAME: Person #103
-DOB: 3/9/1966
-ADDRESS: 103 Main Street, City, ST 39098

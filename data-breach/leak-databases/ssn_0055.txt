@@ -1,4 +1,0 @@
-SSN: 931-14-1628
-NAME: Person #55
-DOB: 6/1/1995
-ADDRESS: 55 Main Street, City, ST 86486

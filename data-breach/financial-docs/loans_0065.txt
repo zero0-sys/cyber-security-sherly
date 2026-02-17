@@ -1,5 +1,0 @@
-LOAN_ID: LN-65
-BORROWER: Borrower #65
-AMOUNT: $157538.85
-RATE: 3.24%
-TERM: 30 years

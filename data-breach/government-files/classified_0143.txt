@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-143
-TITLE: Classified Document #143
-CLEARANCE_LEVEL: 4
-ISSUED: 2025-02-16T22:54:45.823Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

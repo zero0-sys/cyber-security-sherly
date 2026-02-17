@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-200
-TITLE: Classified Document #200
-CLEARANCE_LEVEL: 1
-ISSUED: 2025-07-08T02:23:30.788Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

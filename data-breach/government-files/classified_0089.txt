@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-89
-TITLE: Classified Document #89
-CLEARANCE_LEVEL: 5
-ISSUED: 2025-11-07T03:46:02.233Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

@@ -1,6 +1,0 @@
-CLASSIFICATION: TOP SECRET
-DOCUMENT_ID: DOC-9
-TITLE: Classified Document #9
-CLEARANCE_LEVEL: 5
-ISSUED: 2025-02-27T08:40:04.205Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

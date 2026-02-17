@@ -1,4 +1,0 @@
-SSN: 230-24-4171
-NAME: Person #8
-DOB: 28/9/1974
-ADDRESS: 8 Main Street, City, ST 52943

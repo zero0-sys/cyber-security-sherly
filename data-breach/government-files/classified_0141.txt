@@ -1,6 +1,0 @@
-CLASSIFICATION: TOP SECRET
-DOCUMENT_ID: DOC-141
-TITLE: Classified Document #141
-CLEARANCE_LEVEL: 2
-ISSUED: 2025-02-18T22:59:55.927Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

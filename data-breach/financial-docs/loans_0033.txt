@@ -1,5 +1,0 @@
-LOAN_ID: LN-33
-BORROWER: Borrower #33
-AMOUNT: $275387.98
-RATE: 0.63%
-TERM: 15 years

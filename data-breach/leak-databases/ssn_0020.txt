@@ -1,4 +1,0 @@
-SSN: 868-51-4508
-NAME: Person #20
-DOB: 6/5/1986
-ADDRESS: 20 Main Street, City, ST 31077

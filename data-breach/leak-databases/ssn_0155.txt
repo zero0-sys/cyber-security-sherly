@@ -1,4 +1,0 @@
-SSN: 838-88-6234
-NAME: Person #155
-DOB: 10/8/1951
-ADDRESS: 155 Main Street, City, ST 61375

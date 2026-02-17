@@ -1,5 +1,0 @@
-LOAN_ID: LN-76
-BORROWER: Borrower #76
-AMOUNT: $382866.97
-RATE: 2.23%
-TERM: 20 years

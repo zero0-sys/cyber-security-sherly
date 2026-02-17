@@ -1,4 +1,0 @@
-SSN: 641-91-9627
-NAME: Person #193
-DOB: 9/3/1987
-ADDRESS: 193 Main Street, City, ST 10799

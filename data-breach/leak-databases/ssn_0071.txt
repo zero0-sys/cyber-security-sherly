@@ -1,4 +1,0 @@
-SSN: 140-12-3701
-NAME: Person #71
-DOB: 9/11/1982
-ADDRESS: 71 Main Street, City, ST 59172

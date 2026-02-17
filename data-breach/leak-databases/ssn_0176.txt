@@ -1,4 +1,0 @@
-SSN: 794-81-5989
-NAME: Person #176
-DOB: 14/8/1995
-ADDRESS: 176 Main Street, City, ST 86856

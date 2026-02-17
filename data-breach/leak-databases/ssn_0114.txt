@@ -1,4 +1,0 @@
-SSN: 695-25-2945
-NAME: Person #114
-DOB: 19/10/1951
-ADDRESS: 114 Main Street, City, ST 21739

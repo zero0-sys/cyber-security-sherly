@@ -1,6 +1,0 @@
-CLASSIFICATION: SECRET
-DOCUMENT_ID: DOC-184
-TITLE: Classified Document #184
-CLEARANCE_LEVEL: 5
-ISSUED: 2025-07-24T15:41:26.488Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

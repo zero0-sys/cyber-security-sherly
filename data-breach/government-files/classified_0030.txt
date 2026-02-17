@@ -1,6 +1,0 @@
-CLASSIFICATION: TOP SECRET
-DOCUMENT_ID: DOC-30
-TITLE: Classified Document #30
-CLEARANCE_LEVEL: 1
-ISSUED: 2025-08-16T15:41:04.169Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

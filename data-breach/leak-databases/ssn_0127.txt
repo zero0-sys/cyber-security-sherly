@@ -1,4 +1,0 @@
-SSN: 211-20-4400
-NAME: Person #127
-DOB: 27/6/1992
-ADDRESS: 127 Main Street, City, ST 78084

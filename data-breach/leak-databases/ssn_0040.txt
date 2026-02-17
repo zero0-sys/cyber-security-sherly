@@ -1,4 +1,0 @@
-SSN: 606-43-8389
-NAME: Person #40
-DOB: 5/7/1991
-ADDRESS: 40 Main Street, City, ST 54024

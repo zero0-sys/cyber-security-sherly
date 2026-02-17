@@ -1,4 +1,0 @@
-SSN: 910-81-6628
-NAME: Person #95
-DOB: 1/7/1958
-ADDRESS: 95 Main Street, City, ST 60990

@@ -186,20 +186,21 @@ const WorldMap: React.FC = () => {
         {/* Leaflet Map */}
         <div className="flex-1 relative">
           <MapContainer
-            center={[20, 0]}
-            zoom={2}
-            style={{ height: '100%', width: '100%', background: '#0a0a0a' }}
-            className="z-0"
-            zoomControl={true}
-            minZoom={2}
-            maxZoom={6}
+            {...{
+              center: [20, 0] as [number, number],
+              zoom: 2,
+              style: { height: '100%', width: '100%', background: '#0a0a0a' },
+              className: 'z-0',
+              zoomControl: true,
+              minZoom: 2,
+              maxZoom: 6
+            } as any}
           >
             {/* Dark tile layer - CartoDB Dark Matter */}
             <TileLayer
-              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-              className="map-tiles"
+              {...{ url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' } as any}
             />
+
 
             <MapController attacks={attacks} />
 
@@ -207,7 +208,7 @@ const WorldMap: React.FC = () => {
             {realThreats.slice(0, 50).map((threat) => (
               <CircleMarker
                 key={threat.id}
-                center={[threat.lat, threat.lon]}
+                center={[threat.lat, threat.lon] as [number, number]}
                 radius={5}
                 pathOptions={{
                   color: '#ff00ff',

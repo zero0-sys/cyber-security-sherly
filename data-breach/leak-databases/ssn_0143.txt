@@ -1,4 +1,0 @@
-SSN: 651-73-7401
-NAME: Person #143
-DOB: 26/6/1958
-ADDRESS: 143 Main Street, City, ST 67438

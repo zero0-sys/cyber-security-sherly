@@ -1,4 +1,0 @@
-SSN: 287-82-4409
-NAME: Person #164
-DOB: 15/12/1984
-ADDRESS: 164 Main Street, City, ST 65053

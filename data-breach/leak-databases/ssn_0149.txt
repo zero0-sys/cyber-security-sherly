@@ -1,4 +1,0 @@
-SSN: 936-44-7644
-NAME: Person #149
-DOB: 6/3/1967
-ADDRESS: 149 Main Street, City, ST 35561

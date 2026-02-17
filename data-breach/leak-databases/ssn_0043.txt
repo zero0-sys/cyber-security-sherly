@@ -1,4 +1,0 @@
-SSN: 124-17-8983
-NAME: Person #43
-DOB: 14/10/1955
-ADDRESS: 43 Main Street, City, ST 31616

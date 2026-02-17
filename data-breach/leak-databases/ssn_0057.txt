@@ -1,4 +1,0 @@
-SSN: 605-81-6757
-NAME: Person #57
-DOB: 28/1/1958
-ADDRESS: 57 Main Street, City, ST 36075

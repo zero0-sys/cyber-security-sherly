@@ -1,5 +1,0 @@
-LOAN_ID: LN-190
-BORROWER: Borrower #190
-AMOUNT: $21946.91
-RATE: 7.55%
-TERM: 20 years

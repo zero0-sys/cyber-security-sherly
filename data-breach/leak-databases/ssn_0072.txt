@@ -1,4 +1,0 @@
-SSN: 571-48-4074
-NAME: Person #72
-DOB: 11/10/1997
-ADDRESS: 72 Main Street, City, ST 82570

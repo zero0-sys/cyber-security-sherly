@@ -1,4 +1,0 @@
-SSN: 721-95-3488
-NAME: Person #2
-DOB: 16/4/1961
-ADDRESS: 2 Main Street, City, ST 53551

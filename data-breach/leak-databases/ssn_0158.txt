@@ -1,4 +1,0 @@
-SSN: 658-30-9944
-NAME: Person #158
-DOB: 23/8/1988
-ADDRESS: 158 Main Street, City, ST 28939

@@ -1,5 +1,0 @@
-LOAN_ID: LN-98
-BORROWER: Borrower #98
-AMOUNT: $258638.52
-RATE: 1.99%
-TERM: 30 years

@@ -9,7 +9,7 @@ interface Point3D {
     x: number;
     y: number;
     z: number;
-    isActive?: boolean;
+    isActive?: boolean; // Flag for special effects (like speech wave)
 }
 
 interface Particle {
@@ -26,6 +26,7 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking, gesture }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const animationRef = useRef<number>(0);
 
+    // Refs to store state and particles to prevent re-initialization (flashing)
     const particlesRef = useRef<Particle[]>([]);
     const isSpeakingRef = useRef(isSpeaking);
     const gestureRef = useRef(gesture);
@@ -38,7 +39,8 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking, gesture }) => {
         gestureRef.current = gesture;
     }, [gesture]);
 
-    const PARTICLES_COUNT = 6000;
+    // Physics constants - Reduced slightly for a lighter, "thinner" feel
+    const PARTICLES_COUNT = 4500;
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -46,8 +48,9 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking, gesture }) => {
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        const torsoCount = 1800;
-        const headCount = 900;
+        // Define counts in shared scope - reduced for slimmer build
+        const torsoCount = 1200;
+        const headCount = 600;
 
         const handleResize = () => {
             if (canvas.parentElement) {
@@ -58,6 +61,7 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking, gesture }) => {
         window.addEventListener('resize', handleResize);
         handleResize();
 
+        // Initialize Particles ONLY ONCE to prevent resetting
         if (particlesRef.current.length === 0) {
             for (let i = 0; i < PARTICLES_COUNT; i++) {
                 particlesRef.current.push({
@@ -72,6 +76,9 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking, gesture }) => {
             }
         }
 
+        // --------------------------
+        // 3D Math Helpers
+        // --------------------------
         const rotateX = (p: Point3D, angle: number): Point3D => ({
             x: p.x,
             y: p.y * Math.cos(angle) - p.z * Math.sin(angle),
@@ -102,7 +109,8 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking, gesture }) => {
 
         const project = (p: Point3D, cx: number, cy: number) => {
             const fov = 450;
-            const scale = fov / (fov + p.z - 180);
+            // ZOOM LOGIC: -360 Brings it much CLOSER (Forward)
+            const scale = fov / (fov + p.z - 360);
             return {
                 x: p.x * scale + cx,
                 y: p.y * scale + cy,
@@ -110,6 +118,10 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking, gesture }) => {
                 visible: scale > 0
             };
         };
+
+        // --------------------------
+        // Volumetric Body Generators
+        // --------------------------
 
         const getSpherePoint = (radius: number, ox: number, oy: number, oz: number): Point3D => {
             let x, y, z, d;
@@ -138,6 +150,9 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking, gesture }) => {
             };
         };
 
+        // --------------------------
+        // Skeletal Rig & Animation
+        // --------------------------
         const generatePose = (t: number) => {
             const targetPoints: Point3D[] = [];
             const phase = t * 0.005;
@@ -145,13 +160,20 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking, gesture }) => {
             const speaking = isSpeakingRef.current;
             const currentGesture = gestureRef.current;
 
+            // --- Animation Variables ---
             let torsoRotY = 0;
             let headRotY = 0;
             let headNod = 0;
 
+            // Default static arm/leg positions
+            // Moved arms closer to body (x: 16 instead of 22) for narrower shoulders
             let rArm = { x: 0, z: 0.15, elbow: 0.2 };
             let lArm = { x: 0, z: -0.15, elbow: 0.2 };
+            // Legs
+            let rLeg = { x: 0, z: 0, knee: 0.1 };
+            let lLeg = { x: 0, z: 0, knee: 0.1 };
 
+            // Gesture Logic
             if (currentGesture === 'wave') {
                 rArm.z = 2.5; rArm.x = 0; rArm.elbow = 0.5 + Math.sin(phase * 4) * 0.5;
                 headRotY = 0.3;
@@ -161,39 +183,53 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking, gesture }) => {
                 headNod = 0.3; headRotY = -0.3;
             }
 
+            // --- Speaking Logic (Movement) ---
             if (speaking) {
+                // More noticeable nod
                 headNod += Math.sin(t * 0.1) * 0.08;
+                // Torso sway
                 torsoRotY += Math.sin(t * 0.05) * 0.05;
+                // Subtle hand gestures
                 rArm.z += Math.sin(t * 0.1) * 0.2;
                 lArm.z -= Math.sin(t * 0.12) * 0.1;
                 rArm.elbow += Math.sin(t * 0.1) * 0.1;
             }
 
+            // --- Construction ---
+
+            // 1. Torso (Slimmer)
+            // Radius reduced from 16 to 11
             for (let i = 0; i < torsoCount; i++) {
-                let p = getCylinderPoint(16, 55, 0, -55, 0);
-                if (p.y > -20) { p.x *= 0.85; p.z *= 0.85; }
-                if (p.y < -40) { p.x *= 1.5; p.z *= 1.2; }
+                let p = getCylinderPoint(11, 55, 0, -55, 0);
+                // Taper waist slightly more for "teenager" look
+                if (p.y > -20) { p.x *= 0.8; p.z *= 0.8; }
                 let pFinal = rotateY(p, torsoRotY);
                 targetPoints.push(pFinal);
             }
 
-            const headY = -68;
+            // 2. Head (Smaller)
+            const headY = -68; // Neck position
             for (let i = 0; i < headCount; i++) {
-                let p = getSpherePoint(13, 0, 0, 0);
-                p.y *= 1.1;
+                // Radius reduced from 13 to 10
+                let p = getSpherePoint(10, 0, 0, 0);
+                p.y *= 1.1; // Elongate
 
                 let isActive = false;
 
+                // SPEECH WAVE VISUALIZER ON FACE
                 if (speaking) {
-                    if (p.z > 8 && p.y > 2 && p.y < 10 && Math.abs(p.x) < 9) {
+                    // Target the mouth area
+                    if (p.z > 6 && p.y > 1 && p.y < 8 && Math.abs(p.x) < 7) {
+                        // Wave moving across face
                         const wave = Math.sin(p.x * 0.6 + t * 0.2);
                         if (wave > 0.4) {
                             isActive = true;
-                            p.z += 2.5;
+                            p.z += 2.0; // Pop out effect
                         }
                     }
                 }
 
+                // Transformations
                 let pFinal = translate(p, 0, headY, 0);
                 pFinal = translate(pFinal, 0, -headY, 0);
                 pFinal = rotateX(pFinal, headNod);
@@ -204,48 +240,79 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking, gesture }) => {
                 targetPoints.push(pFinal);
             }
 
+            // 3. Limbs Helper
             const addLimb = (
                 origin: Point3D,
                 length1: number,
                 length2: number,
-                angle: { x: number, z: number, elbow: number },
+                angle: { x: number, z: number, elbow: number }, // elbow/knee bend
                 isLeft: boolean,
-                thickness: number
+                thickness: number,
+                isLeg: boolean = false
             ) => {
-                const limbCount = 450;
+                const limbCount = 300; // Reduced count per limb
 
+                // Upper
                 for (let i = 0; i < limbCount; i++) {
                     let p = getCylinderPoint(thickness, length1, 0, 0, 0);
-                    p = rotateX(p, angle.x); p = rotateZ(p, angle.z);
+
+                    if (!isLeg) {
+                        p = rotateX(p, angle.x); p = rotateZ(p, angle.z);
+                    } else {
+                        p = rotateX(p, angle.x); // Legs mainly rotate X for walking (if animated)
+                    }
+
                     p = translate(p, origin.x, origin.y, origin.z);
                     p = rotateY(p, torsoRotY);
                     targetPoints.push(p);
                 }
 
+                // Lower
                 for (let i = 0; i < limbCount; i++) {
                     let p = getCylinderPoint(thickness * 0.8, length2, 0, 0, 0);
-                    let elbowAngle = angle.elbow;
-                    p = rotateX(p, elbowAngle);
-                    p = translate(p, 0, length1, 0);
-                    p = rotateX(p, angle.x); p = rotateZ(p, angle.z);
+
+                    if (!isLeg) {
+                        // Arm elbow logic
+                        let elbowAngle = angle.elbow;
+                        p = rotateX(p, elbowAngle);
+                        p = translate(p, 0, length1, 0);
+                        p = rotateX(p, angle.x); p = rotateZ(p, angle.z);
+                    } else {
+                        // Leg knee logic (bend backwards)
+                        let kneeAngle = angle.elbow; // Reusing 'elbow' prop for knee
+                        p = rotateX(p, kneeAngle);
+                        p = translate(p, 0, length1, 0);
+                        p = rotateX(p, angle.x);
+                    }
+
                     p = translate(p, origin.x, origin.y, origin.z);
                     p = rotateY(p, torsoRotY);
                     targetPoints.push(p);
                 }
             };
 
-            addLimb({ x: 22, y: -50, z: 0 }, 28, 25, { x: rArm.x, z: -rArm.z, elbow: -Math.abs(rArm.elbow) }, false, 5.5);
-            addLimb({ x: -22, y: -50, z: 0 }, 28, 25, { x: lArm.x, z: -lArm.z, elbow: -Math.abs(lArm.elbow) }, true, 5.5);
+            // Arms - Narrower shoulders (x: +/- 16), Thinner (thickness: 3.5)
+            addLimb({ x: 16, y: -50, z: 0 }, 28, 25, { x: rArm.x, z: -rArm.z, elbow: -Math.abs(rArm.elbow) }, false, 3.5, false);
+            addLimb({ x: -16, y: -50, z: 0 }, 28, 25, { x: lArm.x, z: -lArm.z, elbow: -Math.abs(lArm.elbow) }, true, 3.5, false);
+
+            // Legs - Added for complete figure, thinner (4.0)
+            addLimb({ x: 7, y: 0, z: 0 }, 32, 30, { x: rLeg.x, z: 0, elbow: Math.abs(rLeg.knee) }, false, 4.0, true);
+            addLimb({ x: -7, y: 0, z: 0 }, 32, 30, { x: lLeg.x, z: 0, elbow: Math.abs(lLeg.knee) }, true, 4.0, true);
 
             return targetPoints;
         };
 
+        // --------------------------
+        // Render Loop
+        // --------------------------
         const render = (time: number) => {
+            // Clear canvas fully to remove trails/blur effect for a cleaner look
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.shadowBlur = 0;
 
             const cx = canvas.width / 2;
-            const cy = canvas.height / 2 + 150;
+            // Adjusted CY to center the body including legs
+            const cy = canvas.height / 2 + 100;
 
             const targets = generatePose(time);
             const particles = particlesRef.current;
@@ -254,6 +321,7 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking, gesture }) => {
                 const targetIndex = i % targets.length;
                 const target = targets[targetIndex];
 
+                // High lerp speed for solid "Hologram" feel
                 const lerpSpeed = 0.8;
 
                 p.x += (target.x - p.x) * lerpSpeed;
@@ -263,12 +331,14 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking, gesture }) => {
                 const proj = project({ x: p.x, y: p.y, z: p.z }, cx, cy);
 
                 if (proj.visible) {
-                    const size = Math.max(0.2, proj.scale * 20);
+                    // Increased size multiplier for boldness
+                    const size = Math.max(0.2, proj.scale * 15); // Slightly reduced from 20 for cleaner look
 
                     if (Math.random() < 0.02) p.char = Math.random() > 0.5 ? '1' : '0';
 
-                    let color = 'rgba(34, 197, 94, 0.9)';
+                    let color = 'rgba(34, 197, 94, 0.9)'; // Dense Green
 
+                    // White highlight for voice wave on face
                     if (target.isActive) {
                         color = '#ffffff';
                     }
@@ -288,7 +358,7 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking, gesture }) => {
             window.removeEventListener('resize', handleResize);
             cancelAnimationFrame(animationRef.current);
         };
-    }, []);
+    }, []); // Empty dependency array -> No re-init on prop change
 
     return (
         <canvas

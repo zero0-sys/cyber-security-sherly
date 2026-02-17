@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-74
-TITLE: Classified Document #74
-CLEARANCE_LEVEL: 5
-ISSUED: 2025-03-09T09:20:38.223Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

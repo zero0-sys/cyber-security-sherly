@@ -1,4 +1,0 @@
-SSN: 895-63-5936
-NAME: Person #161
-DOB: 14/7/1983
-ADDRESS: 161 Main Street, City, ST 70684

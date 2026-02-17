@@ -1,4 +1,0 @@
-SSN: 948-48-9424
-NAME: Person #173
-DOB: 17/1/1979
-ADDRESS: 173 Main Street, City, ST 33520

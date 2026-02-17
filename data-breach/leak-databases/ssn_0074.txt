@@ -1,4 +1,0 @@
-SSN: 708-85-3794
-NAME: Person #74
-DOB: 28/7/1966
-ADDRESS: 74 Main Street, City, ST 76748

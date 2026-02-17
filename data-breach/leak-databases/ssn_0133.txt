@@ -1,4 +1,0 @@
-SSN: 186-74-3928
-NAME: Person #133
-DOB: 23/6/1974
-ADDRESS: 133 Main Street, City, ST 45359

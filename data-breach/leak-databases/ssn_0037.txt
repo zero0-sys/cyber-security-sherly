@@ -1,4 +1,0 @@
-SSN: 907-81-1885
-NAME: Person #37
-DOB: 13/10/1959
-ADDRESS: 37 Main Street, City, ST 72649

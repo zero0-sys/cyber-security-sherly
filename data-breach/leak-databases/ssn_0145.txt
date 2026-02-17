@@ -1,4 +1,0 @@
-SSN: 945-94-5101
-NAME: Person #145
-DOB: 26/3/1972
-ADDRESS: 145 Main Street, City, ST 79505

@@ -1,5 +1,0 @@
-LOAN_ID: LN-52
-BORROWER: Borrower #52
-AMOUNT: $11919.40
-RATE: 1.30%
-TERM: 20 years

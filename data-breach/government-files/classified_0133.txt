@@ -1,6 +1,0 @@
-CLASSIFICATION: SECRET
-DOCUMENT_ID: DOC-133
-TITLE: Classified Document #133
-CLEARANCE_LEVEL: 4
-ISSUED: 2025-04-03T22:29:00.167Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

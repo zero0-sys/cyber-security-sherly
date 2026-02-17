@@ -1,4 +1,0 @@
-SSN: 677-83-2589
-NAME: Person #104
-DOB: 24/10/1998
-ADDRESS: 104 Main Street, City, ST 99918

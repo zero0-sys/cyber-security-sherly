@@ -1,5 +1,0 @@
-LOAN_ID: LN-60
-BORROWER: Borrower #60
-AMOUNT: $13787.77
-RATE: 9.01%
-TERM: 15 years

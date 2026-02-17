@@ -1,5 +1,0 @@
-LOAN_ID: LN-178
-BORROWER: Borrower #178
-AMOUNT: $98900.07
-RATE: 9.59%
-TERM: 20 years

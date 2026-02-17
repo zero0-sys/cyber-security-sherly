@@ -1,6 +1,0 @@
-CLASSIFICATION: TOP SECRET
-DOCUMENT_ID: DOC-156
-TITLE: Classified Document #156
-CLEARANCE_LEVEL: 2
-ISSUED: 2025-04-21T01:48:26.997Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

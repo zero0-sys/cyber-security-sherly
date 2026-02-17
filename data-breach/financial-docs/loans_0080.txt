@@ -1,5 +1,0 @@
-LOAN_ID: LN-80
-BORROWER: Borrower #80
-AMOUNT: $497210.16
-RATE: 9.87%
-TERM: 30 years

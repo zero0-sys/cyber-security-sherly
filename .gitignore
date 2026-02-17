@@ -57,3 +57,7 @@ scripts/
 .netlify/
 .vercel/
 ai_sherly_llmindex_rag/
+
+# Data Breach (Local Only)
+data-breach/
+data-breach/

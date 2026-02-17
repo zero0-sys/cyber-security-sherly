@@ -1,4 +1,0 @@
-SSN: 851-95-9915
-NAME: Person #12
-DOB: 5/3/1992
-ADDRESS: 12 Main Street, City, ST 63068

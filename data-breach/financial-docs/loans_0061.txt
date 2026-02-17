@@ -1,5 +1,0 @@
-LOAN_ID: LN-61
-BORROWER: Borrower #61
-AMOUNT: $63841.86
-RATE: 1.49%
-TERM: 20 years

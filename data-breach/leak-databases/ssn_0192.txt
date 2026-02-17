@@ -1,4 +1,0 @@
-SSN: 116-16-1920
-NAME: Person #192
-DOB: 10/1/1996
-ADDRESS: 192 Main Street, City, ST 78057

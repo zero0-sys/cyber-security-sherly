@@ -1,4 +1,0 @@
-SSN: 570-89-8469
-NAME: Person #110
-DOB: 2/12/1987
-ADDRESS: 110 Main Street, City, ST 76208

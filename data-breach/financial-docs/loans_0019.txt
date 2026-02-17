@@ -1,5 +1,0 @@
-LOAN_ID: LN-19
-BORROWER: Borrower #19
-AMOUNT: $42441.55
-RATE: 6.57%
-TERM: 20 years

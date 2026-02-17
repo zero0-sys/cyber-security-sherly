@@ -1,4 +1,0 @@
-SSN: 968-18-6786
-NAME: Person #198
-DOB: 19/11/1969
-ADDRESS: 198 Main Street, City, ST 15019

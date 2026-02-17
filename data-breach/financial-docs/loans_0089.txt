@@ -1,5 +1,0 @@
-LOAN_ID: LN-89
-BORROWER: Borrower #89
-AMOUNT: $237694.97
-RATE: 9.37%
-TERM: 30 years

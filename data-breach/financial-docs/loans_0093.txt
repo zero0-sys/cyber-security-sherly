@@ -1,5 +1,0 @@
-LOAN_ID: LN-93
-BORROWER: Borrower #93
-AMOUNT: $402970.51
-RATE: 7.90%
-TERM: 15 years

@@ -1,4 +1,0 @@
-SSN: 689-50-2294
-NAME: Person #81
-DOB: 28/2/1962
-ADDRESS: 81 Main Street, City, ST 82313

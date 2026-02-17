@@ -1,5 +1,0 @@
-LOAN_ID: LN-45
-BORROWER: Borrower #45
-AMOUNT: $29303.33
-RATE: 5.14%
-TERM: 15 years

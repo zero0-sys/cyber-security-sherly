@@ -1,6 +1,0 @@
-CLASSIFICATION: TOP SECRET
-DOCUMENT_ID: DOC-48
-TITLE: Classified Document #48
-CLEARANCE_LEVEL: 4
-ISSUED: 2025-12-24T04:25:33.986Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

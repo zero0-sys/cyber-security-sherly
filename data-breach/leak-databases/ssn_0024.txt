@@ -1,4 +1,0 @@
-SSN: 227-38-2671
-NAME: Person #24
-DOB: 15/11/1998
-ADDRESS: 24 Main Street, City, ST 81221

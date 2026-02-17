@@ -1,6 +1,0 @@
-CLASSIFICATION: SECRET
-DOCUMENT_ID: DOC-127
-TITLE: Classified Document #127
-CLEARANCE_LEVEL: 3
-ISSUED: 2025-04-21T01:30:45.579Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

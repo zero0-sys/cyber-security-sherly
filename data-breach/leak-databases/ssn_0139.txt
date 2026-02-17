@@ -1,4 +1,0 @@
-SSN: 505-14-2549
-NAME: Person #139
-DOB: 23/4/1984
-ADDRESS: 139 Main Street, City, ST 96245

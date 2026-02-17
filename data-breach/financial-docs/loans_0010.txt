@@ -1,5 +1,0 @@
-LOAN_ID: LN-10
-BORROWER: Borrower #10
-AMOUNT: $297495.92
-RATE: 3.94%
-TERM: 20 years

@@ -1,4 +1,0 @@
-SSN: 346-26-4462
-NAME: Person #3
-DOB: 6/3/1970
-ADDRESS: 3 Main Street, City, ST 28341

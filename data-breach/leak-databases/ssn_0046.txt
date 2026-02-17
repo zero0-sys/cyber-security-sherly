@@ -1,4 +1,0 @@
-SSN: 603-38-4891
-NAME: Person #46
-DOB: 24/2/1962
-ADDRESS: 46 Main Street, City, ST 40532

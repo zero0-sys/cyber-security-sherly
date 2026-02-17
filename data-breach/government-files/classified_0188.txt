@@ -1,6 +1,0 @@
-CLASSIFICATION: CONFIDENTIAL
-DOCUMENT_ID: DOC-188
-TITLE: Classified Document #188
-CLEARANCE_LEVEL: 4
-ISSUED: 2025-07-01T05:04:45.791Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

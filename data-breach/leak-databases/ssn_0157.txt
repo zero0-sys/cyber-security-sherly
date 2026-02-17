@@ -1,4 +1,0 @@
-SSN: 416-55-9851
-NAME: Person #157
-DOB: 4/8/1992
-ADDRESS: 157 Main Street, City, ST 53459

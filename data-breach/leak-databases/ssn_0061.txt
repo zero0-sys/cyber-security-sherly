@@ -1,4 +1,0 @@
-SSN: 260-27-3777
-NAME: Person #61
-DOB: 16/4/1971
-ADDRESS: 61 Main Street, City, ST 85970

@@ -1,4 +1,0 @@
-SSN: 235-38-5434
-NAME: Person #4
-DOB: 15/1/1984
-ADDRESS: 4 Main Street, City, ST 42173

@@ -1,4 +1,0 @@
-SSN: 772-37-1626
-NAME: Person #128
-DOB: 11/5/1972
-ADDRESS: 128 Main Street, City, ST 48245

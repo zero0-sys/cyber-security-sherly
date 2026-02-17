@@ -1,4 +1,0 @@
-SSN: 944-65-8326
-NAME: Person #194
-DOB: 24/6/1954
-ADDRESS: 194 Main Street, City, ST 34176

@@ -4,7 +4,7 @@ import {
   Zap, FileText, Info, Globe, Lock, Search,
   Wifi, Bot, Database, Menu, X, ChevronRight, Server, Eye, Cpu, Radio, Layers,
   Bug, User, Laptop, Key, Map as MapIcon, Crosshair, Skull, UserCheck, Users, Target, Code, ShieldAlert, LogOut,
-  Disc, FolderOpen, Smartphone, Share2
+  Disc, FolderOpen, Smartphone, Share2, Gamepad2
 } from 'lucide-react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -23,10 +23,17 @@ import DigitalSoul from './components/DigitalSoul';
 import TargetList from './components/TargetList';
 import CodeEditor from './components/CodeEditor';
 import LoginScreen from './components/LoginScreen';
+import LoginPage from './components/LoginPage';
+import SecretPage from './components/SecretPage';
+import FunHub from './components/FunHub';
 import { TabType, LogEntry, Tool } from './types';
 
 // --- Main App Component ---
 const App: React.FC = () => {
+  // Morse Code Gate State
+  const [morseUnlocked, setMorseUnlocked] = useState(false);
+  const [showSecretPage, setShowSecretPage] = useState(false);
+
   // Login State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
@@ -177,6 +184,8 @@ const App: React.FC = () => {
         return <ToolsView onLaunch={(tool) => setActiveTool(tool)} />;
       case 'code_editor':
         return <CodeEditor />;
+      case 'fun':
+        return <FunHub />;
       case 'docs':
         return <DocsView />;
       case 'about':
@@ -186,7 +195,28 @@ const App: React.FC = () => {
     }
   };
 
-  // --- RENDER LOGIN SCREEN IF NOT AUTHENTICATED ---
+  // --- STAGE 1: MORSE CODE GATE ---
+  if (!morseUnlocked) {
+    return (
+      <div className="w-screen h-screen bg-black text-white overflow-hidden select-none font-sans">
+        <LoginPage onUnlock={() => {
+          setMorseUnlocked(true);
+          setShowSecretPage(true);
+        }} />
+      </div>
+    );
+  }
+
+  // --- STAGE 1.5: SECRET PAGE TRANSITION ---
+  if (showSecretPage) {
+    return (
+      <div className="w-screen h-screen bg-black text-white overflow-hidden select-none font-sans">
+        <SecretPage onProceed={() => setShowSecretPage(false)} />
+      </div>
+    );
+  }
+
+  // --- STAGE 2: USERNAME/PASSWORD LOGIN ---
   if (!isAuthenticated) {
     return <LoginScreen onLogin={handleLogin} />;
   }
@@ -302,7 +332,8 @@ const SidebarContent: React.FC<{ activeTab: TabType, onTabChange: (t: TabType) =
       <NavButton active={activeTab === 'targets'} onClick={() => onTabChange('targets')} icon={<Target size={18} />} label="Wanted List" badge="NEW" />
       <NavButton active={activeTab === 'tools'} onClick={() => onTabChange('tools')} icon={<Search size={18} />} label="Tool Armory" />
       <NavButton active={activeTab === 'code_editor'} onClick={() => onTabChange('code_editor')} icon={<Code size={18} />} label="Code Editor" />
-      <NavButton active={activeTab === 'attack'} onClick={() => onTabChange('attack')} icon={<Zap size={18} />} label="Attack Sim" />
+      <NavButton active={activeTab === 'fun'} onClick={() => onTabChange('fun')} icon={<Gamepad2 size={18} />} label="Fun" badge="UBER" />
+      <NavButton active={activeTab === 'attack'} onClick={() => onTabChange('attack')} icon={<Zap size={18} />} label="Attack Tools" />
       <NavButton active={activeTab === 'c2'} onClick={() => onTabChange('c2')} icon={<Laptop size={18} />} label="Command & Control" badge="RAT" />
       <NavButton active={activeTab === 'crypto'} onClick={() => onTabChange('crypto')} icon={<Key size={18} />} label="Cryptography" />
       <NavButton active={activeTab === 'database'} onClick={() => onTabChange('database')} icon={<Database size={18} />} label="Data Breach" badge="LEAK" />
@@ -621,12 +652,139 @@ const DocsView = () => (
       <FileText size={32} className="text-green-500" />
       <h2 className="text-2xl font-orbitron text-white">System Documentation</h2>
     </div>
-    <div className="space-y-8 text-gray-300 max-w-4xl">
+    <div className="space-y-8 text-gray-300 max-w-4xl pb-10">
+
       <section>
-        <h3 className="text-green-400 text-lg font-bold mb-2 flex items-center gap-2"><Info size={16} /> 1.0 Overview</h3>
-        <p className="leading-relaxed">AI Sherly is an advanced, high-fidelity cyber security simulation environment designed for educational purposes. It replicates a Security Operations Center (SOC) dashboard, providing tools for network analysis, threat detection, and offensive security simulations.</p>
+        <h3 className="text-green-400 text-lg font-bold mb-2 flex items-center gap-2 font-orbitron"><Info size={16} /> 1.0 Overview</h3>
+        <p className="leading-relaxed mb-4">
+          AI Sherly is an advanced, high-fidelity cyber security simulation environment designed for educational purposes. It replicates a Security Operations Center (SOC) dashboard, providing tools for network analysis, threat detection, and offensive security simulations. The system is built on a Kali Linux Rolling kernel foundation, providing a realistic environment for security professionals and students.
+        </p>
       </section>
-      {/* ... remaining docs content ... */}
+
+      <section>
+        <h3 className="text-green-400 text-lg font-bold mb-2 flex items-center gap-2 font-orbitron"><Activity size={16} /> 2.0 Core Modules</h3>
+
+        <div className="mb-4">
+          <h4 className="text-white font-bold mb-1">2.1 Dashboard</h4>
+          <p className="text-sm border-l-2 border-green-900 pl-3">
+            The central command hub providing real-time situational awareness.
+            <br />• <strong>Network Traffic Analysis:</strong> Monitors inbound and outbound packet flow in real-time.
+            <br />• <strong>RF Spectrum Analyzer:</strong> Visualizes radio frequency activity across 2.4GHz and 5.0GHz bands.
+            <br />• <strong>System Event Logs:</strong> Stream of latest security events, warnings, and system alerts.
+            <br />• <strong>Honeypot Stats:</strong> Tracks interception rates across SSH, FTP, HTTP, and other protocols.
+          </p>
+        </div>
+
+        <div className="mb-4">
+          <h4 className="text-white font-bold mb-1">2.2 AI Sherly Chat</h4>
+          <p className="text-sm border-l-2 border-green-900 pl-3">
+            An intelligent assistant powered by generative AI. Capable of explaining complex security concepts, generating code snippets (Python, Bash, etc.), helping with penetration testing methodologies, and providing real-time guidance on tool usage.
+          </p>
+        </div>
+
+        <div className="mb-4">
+          <h4 className="text-white font-bold mb-1">2.3 Terminal CLI</h4>
+          <p className="text-sm border-l-2 border-green-900 pl-3">
+            A fully simulated Kali Linux terminal environment.
+            <br />• Supports standard commands: <code>ls</code>, <code>cd</code>, <code>cat</code>, <code>whoami</code>.
+            <br />• Specialized security tools: <code>nmap</code> (network scanning), <code>hydra</code> (brute force), <code>sqlmap</code> (database injection).
+            <br />• File system navigation and script execution capabilities.
+          </p>
+        </div>
+
+        <div className="mb-4">
+          <h4 className="text-white font-bold mb-1">2.4 Global Threat Map</h4>
+          <p className="text-sm border-l-2 border-green-900 pl-3">
+            Interactive 3D geospatial visualization of cyber attacks. Tracks origin and destination of threats, displaying attack types (DDoS, Malware, Phishing) and intensity in real-time.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3 className="text-green-400 text-lg font-bold mb-2 flex items-center gap-2 font-orbitron"><Zap size={16} /> 3.0 Offensive Operations</h3>
+
+        <div className="mb-4">
+          <h4 className="text-white font-bold mb-1">3.1 Wanted List (Targets)</h4>
+          <p className="text-sm border-l-2 border-green-900 pl-3">
+            Database of high-value targets (HVT). Displays profiles, criminal records, bounties, and current status (Active, Captured, MIA). Used for tracking cybercriminals and nation-state actors.
+          </p>
+        </div>
+
+        <div className="mb-4">
+          <h4 className="text-white font-bold mb-1">3.2 Tool Armory</h4>
+          <p className="text-sm border-l-2 border-green-900 pl-3">
+            Comprehensive catalog of elite cybersecurity tools categorized by function:
+            <br />• <strong>Reconnaissance:</strong> Nmap, Shodan, Maltego.
+            <br />• <strong>Exploitation:</strong> Metasploit, Cobalt Strike, SQLMap.
+            <br />• <strong>Sniffing:</strong> Wireshark, Bettercap.
+            <br />• <strong>Cracking:</strong> John the Ripper, Hashcat, Hydra.
+            <br />• <strong>Privacy:</strong> Tor, Proxychains.
+          </p>
+        </div>
+
+        <div className="mb-4">
+          <h4 className="text-white font-bold mb-1">3.3 Attack Tools</h4>
+          <p className="text-sm border-l-2 border-green-900 pl-3">
+            Dedicated interface for launching specific attack vectors:
+            <br />• <strong>SQL Injection:</strong> Test database vulnerabilities.
+            <br />• <strong>XSS (Cross-Site Scripting):</strong> Validate input sanitization.
+            <br />• <strong>Brute Force:</strong> Test password strength against dictionaries.
+            <br />• <strong>DDoS Simulation:</strong> Stress test network resilience.
+          </p>
+        </div>
+
+        <div className="mb-4">
+          <h4 className="text-white font-bold mb-1">3.4 Command & Control (C2)</h4>
+          <p className="text-sm border-l-2 border-green-900 pl-3">
+            Remote Access Trojan (RAT) management dashboard. Monitor infected bots, send commands to zombie networks, manage botnets, and visualize global infection spread.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3 className="text-green-400 text-lg font-bold mb-2 flex items-center gap-2 font-orbitron"><Lock size={16} /> 4.0 Security & Utilities</h3>
+
+        <div className="mb-4">
+          <h4 className="text-white font-bold mb-1">4.1 Cryptography Lab</h4>
+          <p className="text-sm border-l-2 border-green-900 pl-3">
+            Advanced suite for encryption and hashing operations.
+            <br />• <strong>Hashing:</strong> MD5, SHA-1, SHA-256, SHA-512 generation.
+            <br />• <strong>Encryption/Decryption:</strong> AES, RSA, Base64 encoding/decoding.
+            <br />• <strong>Key Management:</strong> Generate and verify public/private key pairs.
+          </p>
+        </div>
+
+        <div className="mb-4">
+          <h4 className="text-white font-bold mb-1">4.2 Data Breach Monitor</h4>
+          <p className="text-sm border-l-2 border-green-900 pl-3">
+            Searchable database of leaked credentials and compromised entities. Access citizen data, password hashes, and exposure status (Leaked, Encrypted, Sold).
+          </p>
+        </div>
+
+        <div className="mb-4">
+          <h4 className="text-white font-bold mb-1">4.3 Code Editor</h4>
+          <p className="text-sm border-l-2 border-green-900 pl-3">
+            Integrated development environment (IDE) for writing and debugging scripts. Supports Python, JavaScript, and Shell scripting with syntax highlighting.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3 className="text-green-400 text-lg font-bold mb-2 flex items-center gap-2 font-orbitron"><Gamepad2 size={16} /> 5.0 Entertainment Sector</h3>
+
+        <div className="mb-4">
+          <h4 className="text-white font-bold mb-1">5.1 Fun Hub</h4>
+          <p className="text-sm border-l-2 border-green-900 pl-3">
+            A recreational zone for downtime and creativity.
+            <br />• <strong>Maze Runner:</strong> Algorithmic pathfinding game. Test your logic by solving complex mazes.
+            <br />• <strong>Art Studio:</strong> New Digital creative suite.
+            <br />&nbsp;&nbsp;- <strong>Layer System:</strong> Professional layer management with groups and blending modes.
+            <br />&nbsp;&nbsp;- <strong>Brush Engine:</strong> Procedural brushes (Cloud, Water, Calligraphy) with customizable physics.
+            <br />&nbsp;&nbsp;- <strong>Tools:</strong> Vector selection, gradient fills, and color theory tools.
+          </p>
+        </div>
+      </section>
+
     </div>
   </div>
 );

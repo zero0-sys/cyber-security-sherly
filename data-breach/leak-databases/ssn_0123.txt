@@ -1,4 +1,0 @@
-SSN: 761-28-8772
-NAME: Person #123
-DOB: 11/2/1982
-ADDRESS: 123 Main Street, City, ST 56037

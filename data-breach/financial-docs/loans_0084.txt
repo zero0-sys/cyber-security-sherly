@@ -1,5 +1,0 @@
-LOAN_ID: LN-84
-BORROWER: Borrower #84
-AMOUNT: $348483.78
-RATE: 7.27%
-TERM: 15 years

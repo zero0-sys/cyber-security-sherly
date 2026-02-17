@@ -1,6 +1,0 @@
-CLASSIFICATION: TOP SECRET
-DOCUMENT_ID: DOC-93
-TITLE: Classified Document #93
-CLEARANCE_LEVEL: 4
-ISSUED: 2025-07-01T22:44:19.093Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

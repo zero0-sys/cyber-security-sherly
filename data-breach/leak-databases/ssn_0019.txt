@@ -1,4 +1,0 @@
-SSN: 300-55-9968
-NAME: Person #19
-DOB: 13/9/1951
-ADDRESS: 19 Main Street, City, ST 91605

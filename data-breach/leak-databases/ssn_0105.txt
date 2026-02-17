@@ -1,4 +1,0 @@
-SSN: 295-20-3105
-NAME: Person #105
-DOB: 15/11/1955
-ADDRESS: 105 Main Street, City, ST 96972

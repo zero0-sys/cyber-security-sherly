@@ -1,5 +1,0 @@
-LOAN_ID: LN-94
-BORROWER: Borrower #94
-AMOUNT: $462344.28
-RATE: 2.15%
-TERM: 20 years

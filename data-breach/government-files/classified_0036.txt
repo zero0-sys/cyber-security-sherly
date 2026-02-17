@@ -1,6 +1,0 @@
-CLASSIFICATION: TOP SECRET
-DOCUMENT_ID: DOC-36
-TITLE: Classified Document #36
-CLEARANCE_LEVEL: 2
-ISSUED: 2025-08-07T18:55:11.938Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

@@ -1,5 +1,0 @@
-LOAN_ID: LN-46
-BORROWER: Borrower #46
-AMOUNT: $39753.83
-RATE: 2.95%
-TERM: 20 years

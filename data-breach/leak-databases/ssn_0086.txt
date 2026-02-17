@@ -1,4 +1,0 @@
-SSN: 457-55-2653
-NAME: Person #86
-DOB: 22/7/1974
-ADDRESS: 86 Main Street, City, ST 88454

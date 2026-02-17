@@ -1,6 +1,0 @@
-CLASSIFICATION: SECRET
-DOCUMENT_ID: DOC-43
-TITLE: Classified Document #43
-CLEARANCE_LEVEL: 4
-ISSUED: 2025-09-29T13:53:29.058Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

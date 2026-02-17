@@ -1,4 +1,0 @@
-SSN: 909-89-8262
-NAME: Person #148
-DOB: 2/7/1981
-ADDRESS: 148 Main Street, City, ST 55139

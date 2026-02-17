@@ -1,11 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Upload, Download, Trash2, Folder, File, FolderPlus, RefreshCw, Share2, AlertCircle, CheckCircle } from 'lucide-react';
+import { Upload, Download, Trash2, Folder, File, FolderPlus, RefreshCw, Share2, AlertCircle, CheckCircle, Eye, EyeOff, Search, Database } from 'lucide-react';
+import CryptoJS from 'crypto-js';
 
 interface FileItem {
     name: string;
     type: 'file' | 'directory';
     size: number;
     modified: Date;
+}
+
+interface SchoolStudent {
+    id: string;
+    name: string;
+    email: string;
+    password: string;
+    initialPassword: string;
+    loginStatus: string;
+    createdAt: string;
+    province: string;
+    city: string;
+    schoolName: string;
 }
 
 const DatabaseViewer: React.FC = () => {
@@ -18,9 +32,168 @@ const DatabaseViewer: React.FC = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [uploadProgress, setUploadProgress] = useState(0);
 
+    // School data states
+    const [activeTab, setActiveTab] = useState<'files' | 'school'>('files');
+    const [schoolData, setSchoolData] = useState<SchoolStudent[]>([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showPasswords, setShowPasswords] = useState(false);
+    const [loadingSchool, setLoadingSchool] = useState(false);
+
+    // Password protection
+    const [isLocked, setIsLocked] = useState(true);
+    const [pinInput, setPinInput] = useState('');
+    const [showPinModal, setShowPinModal] = useState(false);
+    const [attemptCount, setAttemptCount] = useState(0);
+    const [isBlocked, setIsBlocked] = useState(false);
+    const [lastAttemptTime, setLastAttemptTime] = useState(0);
+    const CORRECT_PIN = '8994';
+    const MAX_ATTEMPTS = 3;
+    const MIN_ATTEMPT_INTERVAL = 500; // 500ms anti brute force
+
+    // Check if blocked on mount
+    useEffect(() => {
+        const blocked = localStorage.getItem('schoolDataBlocked');
+        const attempts = localStorage.getItem('schoolDataAttempts');
+        if (blocked === 'true') {
+            setIsBlocked(true);
+            setAttemptCount(MAX_ATTEMPTS);
+        } else if (attempts) {
+            setAttemptCount(parseInt(attempts));
+        }
+    }, []);
+
     useEffect(() => {
         loadFiles();
     }, [currentPath]);
+
+    useEffect(() => {
+        if (activeTab === 'school') {
+            if (isLocked) {
+                setShowPinModal(true);
+            } else if (schoolData.length === 0) {
+                loadSchoolData();
+            }
+        }
+    }, [activeTab, isLocked]);
+
+    const handlePinSubmit = () => {
+        // Anti brute force: check time between attempts
+        const now = Date.now();
+        if (now - lastAttemptTime < MIN_ATTEMPT_INTERVAL) {
+            alert('⚠️ Terlalu cepat! Tunggu sebentar sebelum mencoba lagi.');
+            setPinInput('');
+            return;
+        }
+        setLastAttemptTime(now);
+
+        // Check if already blocked
+        if (isBlocked) {
+            alert('🚫 AKSES DIBLOKIR PERMANEN! Anda telah gagal 3 kali.');
+            setPinInput('');
+            return;
+        }
+
+        if (pinInput === CORRECT_PIN) {
+            setIsLocked(false);
+            setShowPinModal(false);
+            setPinInput('');
+            setAttemptCount(0);
+            localStorage.removeItem('schoolDataAttempts');
+            localStorage.removeItem('schoolDataBlocked');
+            if (schoolData.length === 0) {
+                loadSchoolData();
+            }
+        } else {
+            const newAttemptCount = attemptCount + 1;
+            setAttemptCount(newAttemptCount);
+            localStorage.setItem('schoolDataAttempts', newAttemptCount.toString());
+
+            if (newAttemptCount >= MAX_ATTEMPTS) {
+                setIsBlocked(true);
+                localStorage.setItem('schoolDataBlocked', 'true');
+                alert(`🚫 AKSES DIBLOKIR PERMANEN!\n\nAnda telah gagal ${MAX_ATTEMPTS} kali.\nFolder Data Sekolah tidak bisa diakses lagi.`);
+                setShowPinModal(false);
+                setActiveTab('files');
+            } else {
+                const remaining = MAX_ATTEMPTS - newAttemptCount;
+                alert(`❌ PIN SALAH!\n\nPercobaan ${newAttemptCount}/${MAX_ATTEMPTS}\nSisa kesempatan: ${remaining}x`);
+            }
+            setPinInput('');
+        }
+    };
+
+    const loadSchoolData = async () => {
+        setLoadingSchool(true);
+        try {
+            let csvText = '';
+
+            try {
+                // Try fetching encrypted data (production ready)
+                const encryptedResponse = await fetch('/data-breach/encrypted_data.json');
+                if (encryptedResponse.ok) {
+                    const json = await encryptedResponse.json();
+                    if (json.data) {
+                        const bytes = CryptoJS.AES.decrypt(json.data, 'sherly-secure-breach-key-2024');
+                        const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+                        if (decrypted) {
+                            csvText = decrypted;
+                            console.log('🔓 Successfully decrypted protected data');
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn('Could not load encrypted data, falling back to raw CSV if available');
+            }
+
+            // Fallback to raw CSV (local dev only)
+            if (!csvText) {
+                try {
+                    const response = await fetch('/data-breach/data sekolah/data sekolah sman binsus.csv');
+                    if (response.ok) {
+                        csvText = await response.text();
+                    }
+                } catch (e) {
+                    console.error('Failed to load raw CSV');
+                }
+            }
+
+            if (!csvText) throw new Error('No data source available');
+
+            // Parse CSV with better handling
+            const lines = csvText.trim().split('\n');
+            const students: SchoolStudent[] = [];
+
+            // Skip header (line 0), start from line 1
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+
+                const values = line.split(',');
+                if (values.length >= 16) {
+                    students.push({
+                        id: values[0] || '',
+                        province: values[1] || '',
+                        city: values[2] || '',
+                        schoolName: values[4] || '',
+                        name: values[8] || '',
+                        email: values[7] || '',
+                        createdAt: values[9] || '',
+                        loginStatus: values[11] || '',
+                        initialPassword: values[14] || '',
+                        password: values[15] || ''
+                    });
+                }
+            }
+
+            console.log(`✓ Loaded ${students.length} students from CSV (Expected: 1064)`);
+            setSchoolData(students);
+            setLoadingSchool(false);
+        } catch (error) {
+            console.error('Failed to load school data:', error);
+            showMessage('error', 'Gagal memuat data sekolah');
+            setLoadingSchool(false);
+        }
+    };
 
     const loadFiles = async () => {
         setLoading(true);
@@ -303,6 +476,145 @@ const DatabaseViewer: React.FC = () => {
                 )}
             </div>
 
+            {/* Tab Selector */}
+            <div className="border-b border-green-900 bg-black/20">
+                <div className="flex">
+                    <button
+                        onClick={() => setActiveTab('files')}
+                        className={`flex items-center gap-2 px-6 py-3 font-mono text-sm transition-colors ${activeTab === 'files'
+                            ? 'bg-green-900/30 text-green-400 border-b-2 border-green-500'
+                            : 'text-gray-500 hover:text-gray-300'
+                            }`}
+                    >
+                        <Folder size={16} />
+                        Files
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('school')}
+                        className={`flex items-center gap-2 px-6 py-3 font-mono text-sm transition-colors ${activeTab === 'school'
+                            ? 'bg-green-900/30 text-green-400 border-b-2 border-green-500'
+                            : 'text-gray-500 hover:text-gray-300'
+                            }`}
+                    >
+                        <Database size={16} />
+                        Data Sekolah ({schoolData.length})
+                    </button>
+                </div>
+            </div>
+
+            {/* PIN Modal */}
+            {showPinModal && (
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+                    <div className="bg-gray-900 border-2 border-green-500 rounded-lg p-8 max-w-md w-full mx-4">
+                        <div className="text-center mb-6">
+                            <div className="text-6xl mb-4">{isBlocked ? '🚫' : '🔒'}</div>
+                            <h2 className="text-2xl font-bold text-green-400 mb-2">
+                                {isBlocked ? 'AKSES DIBLOKIR' : 'FOLDER TERKUNCI'}
+                            </h2>
+                            {isBlocked ? (
+                                <p className="text-red-400 text-sm font-bold">
+                                    Anda telah gagal {MAX_ATTEMPTS} kali.<br />
+                                    Akses folder ini diblokir permanen!
+                                </p>
+                            ) : (
+                                <>
+                                    <p className="text-gray-400 text-sm">Masukkan PIN untuk akses Data Sekolah</p>
+                                    {attemptCount > 0 && (
+                                        <p className="text-yellow-400 text-xs mt-2">
+                                            ⚠️ Percobaan: {attemptCount}/{MAX_ATTEMPTS} | Sisa: {MAX_ATTEMPTS - attemptCount}x
+                                        </p>
+                                    )}
+                                </>
+                            )}
+                        </div>
+
+                        {!isBlocked && (
+                            <>
+                                <input
+                                    type="password"
+                                    value={pinInput}
+                                    onChange={(e) => setPinInput(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handlePinSubmit()}
+                                    placeholder="Masukkan PIN (4 digit)"
+                                    maxLength={4}
+                                    className="w-full px-4 py-3 bg-black border-2 border-green-900 rounded text-green-400 font-mono text-xl text-center focus:border-green-500 focus:outline-none mb-4"
+                                    autoFocus
+                                />
+
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={handlePinSubmit}
+                                        className="flex-1 px-6 py-3 rounded bg-green-600 hover:bg-green-500 text-black font-bold transition-colors"
+                                    >
+                                        Buka
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setShowPinModal(false);
+                                            setPinInput('');
+                                            setActiveTab('files');
+                                        }}
+                                        className="flex-1 px-6 py-3 rounded bg-gray-700 hover:bg-gray-600 text-white font-bold transition-colors"
+                                    >
+                                        Batal
+                                    </button>
+                                </div>
+                            </>
+                        )}
+
+                        {isBlocked && (
+                            <button
+                                onClick={() => {
+                                    setShowPinModal(false);
+                                    setActiveTab('files');
+                                }}
+                                className="w-full px-6 py-3 rounded bg-red-600 hover:bg-red-500 text-white font-bold transition-colors"
+                            >
+                                Tutup
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* School Data View */}
+            {activeTab === 'school' && !isLocked && (
+                <>
+                    {/* Search and Controls */}
+                    <div className="p-4 space-y-3">
+                        <div className="flex flex-wrap gap-3">
+                            <div className="flex-1 min-w-[200px] relative">
+                                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                                <input
+                                    type="text"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    placeholder="Search by name or email..."
+                                    className="w-full pl-10 pr-4 py-2 bg-black border border-green-900 rounded text-green-400 font-mono text-sm focus:border-green-500 focus:outline-none"
+                                />
+                            </div>
+                            <button
+                                onClick={() => setShowPasswords(!showPasswords)}
+                                className={`flex items-center gap-2 px-4 py-2 rounded font-bold text-sm transition-colors ${showPasswords
+                                    ? 'bg-red-600 hover:bg-red-500 text-white'
+                                    : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                                    }`}
+                            >
+                                {showPasswords ? <EyeOff size={16} /> : <Eye size={16} />}
+                                {showPasswords ? 'Hide' : 'Show'} Passwords
+                            </button>
+                        </div>
+
+                        {/* Stats */}
+                        <div className="flex gap-4 text-xs text-gray-500 font-mono">
+                            <span>Total: {schoolData.length} siswa</span>
+                            <span>•</span>
+                            <span className="text-yellow-500">⚠️ Password sama untuk semua akun</span>
+                        </div>
+                    </div>
+                </>
+            )}
+
             {/* Message */}
             {message && (
                 <div className={`mx-4 mt-3 p-3 rounded border flex items-center gap-2 ${message.type === 'success'
@@ -314,82 +626,171 @@ const DatabaseViewer: React.FC = () => {
                 </div>
             )}
 
-            {/* File List */}
+            {/* File List / School Data Table */}
             <div className="flex-1 overflow-y-auto p-4">
-                {loading ? (
-                    <div className="text-center text-gray-500 py-8">Loading...</div>
-                ) : files.length === 0 ? (
-                    <div className="text-center text-gray-600 py-12">
-                        <Folder size={48} className="mx-auto mb-3 opacity-50" />
-                        <p>No files yet. Upload your first file!</p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 gap-2">
-                        {files.map((file, index) => (
-                            <div
-                                key={index}
-                                className={`p-3 rounded border transition-all ${file.type === 'directory'
-                                    ? 'bg-blue-900/10 border-blue-900 hover:bg-blue-900/20 cursor-pointer'
-                                    : 'bg-gray-900/50 border-gray-800 hover:bg-gray-900'
-                                    }`}
-                                onClick={() => file.type === 'directory' && navigateToFolder(file.name)}
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                                        {file.type === 'directory' ? (
-                                            <Folder size={20} className="text-blue-400 flex-shrink-0" />
-                                        ) : (
-                                            <File size={20} className="text-green-400 flex-shrink-0" />
+                {activeTab === 'files' ? (
+                    // Files View
+                    loading ? (
+                        <div className="text-center text-gray-500 py-8">Loading...</div>
+                    ) : files.length === 0 ? (
+                        <div className="text-center text-gray-600 py-12">
+                            <Folder size={48} className="mx-auto mb-3 opacity-50" />
+                            <p>No files yet. Upload your first file!</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-2">
+                            {files.map((file, index) => (
+                                <div
+                                    key={index}
+                                    className={`p-3 rounded border transition-all ${file.type === 'directory'
+                                        ? 'bg-blue-900/10 border-blue-900 hover:bg-blue-900/20 cursor-pointer'
+                                        : 'bg-gray-900/50 border-gray-800 hover:bg-gray-900'
+                                        }`}
+                                    onClick={() => file.type === 'directory' && navigateToFolder(file.name)}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                                            {file.type === 'directory' ? (
+                                                <Folder size={20} className="text-blue-400 flex-shrink-0" />
+                                            ) : (
+                                                <File size={20} className="text-green-400 flex-shrink-0" />
+                                            )}
+                                            <div className="min-w-0 flex-1">
+                                                <p className="text-white font-mono text-sm truncate">{file.name}</p>
+                                                <p className="text-xs text-gray-500">
+                                                    {file.type === 'file' && formatSize(file.size)}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {file.type === 'file' && (
+                                            <div className="flex items-center gap-1 flex-shrink-0 ml-2" onClick={(e) => e.stopPropagation()}>
+                                                <button
+                                                    onClick={() => handleDownload(file.name)}
+                                                    className="p-2 hover:bg-green-900/30 rounded transition-colors text-green-500 hover:text-green-400"
+                                                    title="Download"
+                                                >
+                                                    <Download size={16} />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(file.name, 'file')}
+                                                    className="p-2 hover:bg-red-900/30 rounded transition-colors text-red-500 hover:text-red-400"
+                                                    title="Delete"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
                                         )}
-                                        <div className="min-w-0 flex-1">
-                                            <p className="text-white font-mono text-sm truncate">{file.name}</p>
-                                            <p className="text-xs text-gray-500">
-                                                {file.type === 'file' && formatSize(file.size)}
-                                            </p>
+
+                                        {file.type === 'directory' && (
+                                            <div className="flex items-center gap-1 flex-shrink-0 ml-2" onClick={(e) => e.stopPropagation()}>
+                                                <button
+                                                    onClick={() => handleDelete(file.name, 'directory')}
+                                                    className="p-2 hover:bg-red-900/30 rounded transition-colors text-red-500 hover:text-red-400"
+                                                    title="Delete"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )
+                ) : (
+                    // School Data View
+                    loadingSchool ? (
+                        <div className="text-center text-gray-500 py-8">Loading school data...</div>
+                    ) : (
+                        <div className="space-y-2">
+                            {schoolData
+                                .filter(student =>
+                                    student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    student.email.toLowerCase().includes(searchTerm.toLowerCase())
+                                )
+                                .map((student, index) => (
+                                    <div
+                                        key={index}
+                                        className="p-4 rounded border border-gray-800 bg-gray-900/50 hover:bg-gray-900/70 transition-all"
+                                    >
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            {/* Student Info */}
+                                            <div>
+                                                <p className="text-sm text-gray-400 mb-1 font-semibold">Nama Siswa</p>
+                                                <p className="text-white font-mono text-base">{student.name || '-'}</p>
+                                            </div>
+
+                                            {/* Email */}
+                                            <div>
+                                                <p className="text-sm text-gray-400 mb-1 font-semibold">Email Belajar.id</p>
+                                                <p className="text-green-400 font-mono text-sm break-all">{student.email || '-'}</p>
+                                            </div>
+
+                                            {/* Password */}
+                                            <div>
+                                                <p className="text-sm text-gray-400 mb-1 font-semibold">Password</p>
+                                                <p className="text-red-400 font-mono text-sm break-all">
+                                                    {showPasswords ? (student.password || '-') : '••••••••••••••'}
+                                                </p>
+                                            </div>
+
+                                            {/* Login Status */}
+                                            <div>
+                                                <p className="text-sm text-gray-400 mb-1 font-semibold">Status Login</p>
+                                                <span className={`inline-block px-3 py-1.5 rounded text-sm font-mono ${student.loginStatus === 'Aktif'
+                                                    ? 'bg-green-900/30 text-green-400'
+                                                    : 'bg-gray-800 text-gray-500'
+                                                    }`}>
+                                                    {student.loginStatus || '-'}
+                                                </span>
+                                            </div>
+
+                                            {/* Created At */}
+                                            <div>
+                                                <p className="text-sm text-gray-400 mb-1 font-semibold">Tanggal Dibuat</p>
+                                                <p className="text-gray-300 font-mono text-sm">{student.createdAt || '-'}</p>
+                                            </div>
+
+                                            {/* City */}
+                                            <div>
+                                                <p className="text-sm text-gray-400 mb-1 font-semibold">Kota</p>
+                                                <p className="text-gray-300 font-mono text-sm">{student.city || '-'}</p>
+                                            </div>
                                         </div>
                                     </div>
+                                ))}
 
-                                    {file.type === 'file' && (
-                                        <div className="flex items-center gap-1 flex-shrink-0 ml-2" onClick={(e) => e.stopPropagation()}>
-                                            <button
-                                                onClick={() => handleDownload(file.name)}
-                                                className="p-2 hover:bg-green-900/30 rounded transition-colors text-green-500 hover:text-green-400"
-                                                title="Download"
-                                            >
-                                                <Download size={16} />
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(file.name, 'file')}
-                                                className="p-2 hover:bg-red-900/30 rounded transition-colors text-red-500 hover:text-red-400"
-                                                title="Delete"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                        </div>
-                                    )}
-
-                                    {file.type === 'directory' && (
-                                        <div className="flex items-center gap-1 flex-shrink-0 ml-2" onClick={(e) => e.stopPropagation()}>
-                                            <button
-                                                onClick={() => handleDelete(file.name, 'directory')}
-                                                className="p-2 hover:bg-red-900/30 rounded transition-colors text-red-500 hover:text-red-400"
-                                                title="Delete"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            {schoolData.filter(student =>
+                                student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                student.email.toLowerCase().includes(searchTerm.toLowerCase())
+                            ).length === 0 && (
+                                    <div className="text-center text-gray-600 py-12">
+                                        <Search size={48} className="mx-auto mb-3 opacity-50" />
+                                        <p>No students found matching "{searchTerm}"</p>
+                                    </div>
+                                )}
+                        </div>
+                    )
                 )}
             </div>
 
             {/* Footer Stats */}
             <div className="p-3 border-t border-green-900 bg-black/50 flex justify-between text-xs text-gray-600 font-mono">
-                <span>{files.length} items</span>
-                <span>Backend: /data-breach{currentPath}</span>
+                {activeTab === 'files' ? (
+                    <>
+                        <span>{files.length} items</span>
+                        <span>Backend: /data-breach{currentPath}</span>
+                    </>
+                ) : (
+                    <>
+                        <span>{schoolData.filter(s =>
+                            s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            s.email.toLowerCase().includes(searchTerm.toLowerCase())
+                        ).length} / {schoolData.length} siswa</span>
+                        <span className="text-red-500">⚠️ Data Breach</span>
+                    </>
+                )}
             </div>
         </div>
     );

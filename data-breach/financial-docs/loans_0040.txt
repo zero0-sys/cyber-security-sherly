@@ -1,5 +1,0 @@
-LOAN_ID: LN-40
-BORROWER: Borrower #40
-AMOUNT: $30122.82
-RATE: 0.98%
-TERM: 20 years

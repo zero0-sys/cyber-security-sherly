@@ -1,6 +1,0 @@
-CLASSIFICATION: SECRET
-DOCUMENT_ID: DOC-73
-TITLE: Classified Document #73
-CLEARANCE_LEVEL: 4
-ISSUED: 2025-03-17T00:47:58.592Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

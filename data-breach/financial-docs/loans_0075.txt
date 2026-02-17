@@ -1,5 +1,0 @@
-LOAN_ID: LN-75
-BORROWER: Borrower #75
-AMOUNT: $466571.54
-RATE: 7.61%
-TERM: 15 years

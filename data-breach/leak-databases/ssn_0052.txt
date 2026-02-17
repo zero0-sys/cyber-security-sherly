@@ -1,4 +1,0 @@
-SSN: 851-70-5062
-NAME: Person #52
-DOB: 17/10/1964
-ADDRESS: 52 Main Street, City, ST 93874

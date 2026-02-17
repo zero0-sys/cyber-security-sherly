@@ -1,4 +1,0 @@
-SSN: 332-82-4260
-NAME: Person #119
-DOB: 15/11/1956
-ADDRESS: 119 Main Street, City, ST 36040

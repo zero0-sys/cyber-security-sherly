@@ -1,6 +1,0 @@
-CLASSIFICATION: SECRET
-DOCUMENT_ID: DOC-148
-TITLE: Classified Document #148
-CLEARANCE_LEVEL: 4
-ISSUED: 2025-11-29T07:35:12.891Z
-CONTENT: [REDACTED] - This document contains sensitive national security information.

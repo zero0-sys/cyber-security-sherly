@@ -1,4 +1,0 @@
-SSN: 162-46-5213
-NAME: Person #21
-DOB: 5/8/1957
-ADDRESS: 21 Main Street, City, ST 37283

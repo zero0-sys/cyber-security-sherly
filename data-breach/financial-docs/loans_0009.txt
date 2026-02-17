@@ -1,5 +1,0 @@
-LOAN_ID: LN-9
-BORROWER: Borrower #9
-AMOUNT: $90081.12
-RATE: 5.43%
-TERM: 15 years

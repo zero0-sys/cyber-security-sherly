@@ -1,4 +1,0 @@
-SSN: 893-75-6665
-NAME: Person #98
-DOB: 16/6/1982
-ADDRESS: 98 Main Street, City, ST 14644

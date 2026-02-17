@@ -1,4 +1,0 @@
-SSN: 214-74-2871
-NAME: Person #32
-DOB: 28/1/1975
-ADDRESS: 32 Main Street, City, ST 93473

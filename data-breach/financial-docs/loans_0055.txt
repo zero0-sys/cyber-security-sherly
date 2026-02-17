@@ -1,5 +1,0 @@
-LOAN_ID: LN-55
-BORROWER: Borrower #55
-AMOUNT: $201667.31
-RATE: 5.75%
-TERM: 20 years

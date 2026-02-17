@@ -1,4 +1,0 @@
-SSN: 545-63-8751
-NAME: Person #69
-DOB: 23/9/1999
-ADDRESS: 69 Main Street, City, ST 46220

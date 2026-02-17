@@ -1,5 +1,0 @@
-LOAN_ID: LN-68
-BORROWER: Borrower #68
-AMOUNT: $465221.00
-RATE: 8.81%
-TERM: 30 years

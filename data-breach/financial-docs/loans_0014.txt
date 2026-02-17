@@ -1,5 +1,0 @@
-LOAN_ID: LN-14
-BORROWER: Borrower #14
-AMOUNT: $292991.61
-RATE: 6.66%
-TERM: 30 years
