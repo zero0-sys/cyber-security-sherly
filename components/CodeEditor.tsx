@@ -112,11 +112,7 @@ const CodeEditor: React.FC = () => {
     setTerminalOutput(prev => `${prev}$ Saving ${currentFile.name}...\n`);
 
     try {
-      const backendUrl = import.meta.env.VITE_API_URL || '';
-
-      if (!backendUrl) {
-        throw new Error('VITE_API_URL not configured. Check ENV_SETUP.md');
-      }
+      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
       const res = await fetch(`${backendUrl}/api/scripts/save`, {
         method: 'POST',
@@ -151,11 +147,7 @@ const CodeEditor: React.FC = () => {
     setTerminalOutput(prev => `${prev}$ Executing ${currentFile.name}...\n`);
 
     try {
-      const backendUrl = import.meta.env.VITE_API_URL || '';
-
-      if (!backendUrl) {
-        throw new Error('VITE_API_URL not configured. Set in Netlify with Railway URL');
-      }
+      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
       const res = await fetch(`${backendUrl}/api/execute/code`, {
         method: 'POST',
@@ -503,8 +495,8 @@ const CodeEditor: React.FC = () => {
               <div
                 key={index}
                 className={`flex items-center gap-2 px-3 py-2 border-r border-gray-800 cursor-pointer group min-w-0 ${activeFile === index
-                    ? 'bg-gray-950 text-white'
-                    : 'bg-gray-900 text-gray-400 hover:bg-gray-850'
+                  ? 'bg-gray-950 text-white'
+                  : 'bg-gray-900 text-gray-400 hover:bg-gray-850'
                   }`}
                 onClick={() => setActiveFile(index)}
               >

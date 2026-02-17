@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, CircleMarker, useMap } from 'react-leaflet';
-import { Activity, AlertTriangle, Shield, Zap, Target, MapPin, Globe } from 'lucide-react';
+import { Activity, AlertTriangle, Shield, Zap, Target, MapPin, Globe, ChevronLeft, ChevronRight } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -59,6 +59,7 @@ const WorldMap: React.FC = () => {
     sqli: 0,
     bruteforce: 0,
   });
+  const [statsCollapsed, setStatsCollapsed] = useState(false);
 
   // Fetch real GeoIP threats
   useEffect(() => {
@@ -165,9 +166,19 @@ const WorldMap: React.FC = () => {
                 <p className="text-[10px] text-green-600">Real Geographic Visualization with Leaflet.js</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 bg-green-500/10 border border-green-500/30 rounded px-2 py-1">
-              <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-[10px] text-green-400 font-mono font-bold">LIVE</span>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setStatsCollapsed(!statsCollapsed)}
+                className="px-2 py-1 bg-green-900/30 hover:bg-green-900/50 border border-green-500/30 rounded text-green-400 text-xs font-mono flex items-center gap-1"
+                title={statsCollapsed ? "Show Statistics" : "Hide Statistics"}
+              >
+                {statsCollapsed ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
+                {statsCollapsed ? 'Stats' : 'Hide'}
+              </button>
+              <div className="flex items-center gap-2 bg-green-500/10 border border-green-500/30 rounded px-2 py-1">
+                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-[10px] text-green-400 font-mono font-bold">LIVE</span>
+              </div>
             </div>
           </div>
         </div>
@@ -255,54 +266,56 @@ const WorldMap: React.FC = () => {
         </div>
       </div>
 
-      {/* Stats Panel */}
-      <div className="w-full lg:w-72 flex flex-col bg-black border border-green-900/50 rounded-lg overflow-hidden">
-        <div className="p-3 border-b border-green-900/50 bg-black/80">
-          <h3 className="font-orbitron font-bold text-white text-sm flex items-center gap-2">
-            <Activity size={14} className="text-green-500" />
-            ATTACK STATISTICS
-          </h3>
-          <p className="text-[9px] text-green-700 mt-0.5">Real-Time GeoIP Data</p>
-        </div>
+      {/* Stats Panel - Collapsible */}
+      {!statsCollapsed && (
+        <div className="w-full lg:w-72 flex flex-col bg-black border border-green-900/50 rounded-lg overflow-hidden">
+          <div className="p-3 border-b border-green-900/50 bg-black/80">
+            <h3 className="font-orbitron font-bold text-white text-sm flex items-center gap-2">
+              <Activity size={14} className="text-green-500" />
+              ATTACK STATISTICS
+            </h3>
+            <p className="text-[9px] text-green-700 mt-0.5">Real-Time GeoIP Data</p>
+          </div>
 
-        <div className="p-3 space-y-2 border-b border-green-900/50">
-          <StatCard label="Total Attacks" value={stats.total} color="green" />
-          <StatCard label="DDoS Attacks" value={stats.ddos} color="red" />
-          <StatCard label="Malware" value={stats.malware} color="orange" />
-          <StatCard label="Port Scans" value={stats.portscan} color="yellow" />
-          <StatCard label="SQL Injection" value={stats.sqli} color="blue" />
-          <StatCard label="Brute Force" value={stats.bruteforce} color="purple" />
-        </div>
+          <div className="p-3 space-y-2 border-b border-green-900/50">
+            <StatCard label="Total Attacks" value={stats.total} color="green" />
+            <StatCard label="DDoS Attacks" value={stats.ddos} color="red" />
+            <StatCard label="Malware" value={stats.malware} color="orange" />
+            <StatCard label="Port Scans" value={stats.portscan} color="yellow" />
+            <StatCard label="SQL Injection" value={stats.sqli} color="blue" />
+            <StatCard label="Brute Force" value={stats.bruteforce} color="purple" />
+          </div>
 
-        <div className="flex-1 overflow-y-auto p-3">
-          <h3 className="font-bold text-white text-xs mb-2 flex items-center gap-1.5">
-            <MapPin size={12} className="text-pink-500" />
-            RECENT ATTACKS
-          </h3>
-          <div className="space-y-1.5 max-h-96">
-            {attacks.slice().reverse().map(attack => (
-              <div
-                key={attack.id}
-                className="p-2 rounded bg-gray-900/40 border border-gray-800/50 text-[10px] hover:border-pink-900/50 transition-all animate-fade-in"
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-white text-[11px]">{attack.type}</span>
-                  <span className={`font-mono text-[9px] ${getSeverityTextColor(attack.severity)}`}>
-                    {attack.severity.toUpperCase()}
-                  </span>
-                </div>
-                <div className="text-gray-500 font-mono text-[9px] leading-tight">
-                  <div className="text-pink-400 mb-0.5">{attack.ip}</div>
-                  <div>{attack.source.city}, {attack.source.country} → {attack.target.city}, {attack.target.country}</div>
-                  <div className="text-gray-600 text-[8px] mt-0.5">
-                    {attack.timestamp.toLocaleTimeString()}
+          <div className="flex-1 overflow-y-auto p-3">
+            <h3 className="font-bold text-white text-xs mb-2 flex items-center gap-1.5">
+              <MapPin size={12} className="text-pink-500" />
+              RECENT ATTACKS
+            </h3>
+            <div className="space-y-1.5 max-h-96">
+              {attacks.slice().reverse().map(attack => (
+                <div
+                  key={attack.id}
+                  className="p-2 rounded bg-gray-900/40 border border-gray-800/50 text-[10px] hover:border-pink-900/50 transition-all animate-fade-in"
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-bold text-white text-[11px]">{attack.type}</span>
+                    <span className={`font-mono text-[9px] ${getSeverityTextColor(attack.severity)}`}>
+                      {attack.severity.toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="text-gray-500 font-mono text-[9px] leading-tight">
+                    <div className="text-pink-400 mb-0.5">{attack.ip}</div>
+                    <div>{attack.source.city}, {attack.source.country} → {attack.target.city}, {attack.target.country}</div>
+                    <div className="text-gray-600 text-[8px] mt-0.5">
+                      {attack.timestamp.toLocaleTimeString()}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <style>{`
         .leaflet-container {
