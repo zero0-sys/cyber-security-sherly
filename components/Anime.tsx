@@ -97,7 +97,13 @@ const Anime: React.FC = () => {
     };
 
     // Watch Episode
-    const handleWatch = async (slug: string) => {
+    const handleWatch = async (slug: string, directUrl?: string) => {
+        // If episode has a direct streaming URL (from AniList), open it
+        if (directUrl) {
+            window.open(directUrl, '_blank', 'noopener,noreferrer');
+            return;
+        }
+
         setLoading(true);
         setError('');
         try {
@@ -240,7 +246,7 @@ const Anime: React.FC = () => {
                                                 {selectedAnime.episodes.map((ep, i) => (
                                                     <button
                                                         key={i}
-                                                        onClick={() => handleWatch(ep.slug)}
+                                                        onClick={() => handleWatch(ep.slug, ep.url || undefined)}
                                                         className="px-3 py-2 bg-gray-800 hover:bg-pink-600/20 hover:text-pink-400 border border-gray-700 hover:border-pink-600/50 rounded text-xs transition-colors truncate text-left"
                                                     >
                                                         {ep.title}
