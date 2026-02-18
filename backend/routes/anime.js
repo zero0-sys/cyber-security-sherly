@@ -180,21 +180,21 @@ router.get('/detail/:id', async (req, res) => {
     }
 });
 
-// GET Watch - returns HTTPS embed URL for gogoanime player
+// GET Watch - returns HTTPS embed URL
 router.get('/watch/:slug', async (req, res) => {
     try {
         const { slug } = req.params;
 
-        // Always use HTTPS to avoid mixed content errors
-        const embedUrl = `https://www1.gogoanime3.co/videos/${slug}`;
-        const altEmbedUrl = `https://embtaku.pro/videos/${slug}`;
+        // embtaku.pro is HTTPS-only and works with gogoanime slugs
+        const embedUrl = `https://embtaku.pro/videos/${slug}`;
+        const altEmbedUrl = `https://gogoanime.bid/videos/${slug}`;
 
         res.json({
             title: slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
             streamUrl: embedUrl,
             servers: [
-                { name: 'GogoAnime', url: embedUrl },
-                { name: 'EmbTaku', url: altEmbedUrl }
+                { name: 'Server 1', url: embedUrl },
+                { name: 'Server 2', url: altEmbedUrl }
             ],
             prevSlug: null,
             nextSlug: null
