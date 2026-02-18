@@ -30,21 +30,11 @@ import { TabType, LogEntry, Tool } from './types';
 
 // --- Main App Component ---
 const App: React.FC = () => {
-  // Check existing session FIRST — restore all gate states from localStorage
-  const existingSession = (() => {
-    try {
-      const raw = localStorage.getItem('sherlySession');
-      return raw ? JSON.parse(raw) : null;
-    } catch { return null; }
-  })();
-
-  // Morse Code Gate State — skip if session exists
-  const [morseUnlocked, setMorseUnlocked] = useState(() => !!existingSession);
-  const [showSecretPage, setShowSecretPage] = useState(false);
-
-  // Login State — restore from session
-  const [isAuthenticated, setIsAuthenticated] = useState(() => !!existingSession);
-  const [username, setUsername] = useState(() => existingSession?.username || '');
+  // No login gates — always authenticated
+  const [morseUnlocked] = useState(true);
+  const [showSecretPage] = useState(false);
+  const [isAuthenticated] = useState(true);
+  const [username] = useState('operator');
 
   // Restore navigation state from localStorage
   const [activeTab, setActiveTab] = useState<TabType>(() => {
@@ -70,14 +60,11 @@ const App: React.FC = () => {
     }
   }, [activeTab, isAuthenticated]);
 
-  // Logout handler
+  // Logout handler (reloads page to reset state)
   const handleLogout = () => {
     localStorage.removeItem('sherlySession');
     localStorage.removeItem('sherlyActiveTab');
-    setIsAuthenticated(false);
-    setMorseUnlocked(false);
-    setUsername('');
-    setActiveTab('dashboard');
+    window.location.reload();
   };
 
   // Data Simulation Effect (Only runs if authenticated)
@@ -157,10 +144,6 @@ const App: React.FC = () => {
     return () => clearInterval(interval);
   }, [isAuthenticated]);
 
-  const handleLogin = React.useCallback((name: string) => {
-    setUsername(name);
-    setIsAuthenticated(true);
-  }, []);
 
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
@@ -204,31 +187,6 @@ const App: React.FC = () => {
     }
   };
 
-  // --- STAGE 1: MORSE CODE GATE ---
-  if (!morseUnlocked) {
-    return (
-      <div className="w-screen h-screen bg-black text-white overflow-hidden select-none font-sans">
-        <LoginPage onUnlock={() => {
-          setMorseUnlocked(true);
-          setShowSecretPage(true);
-        }} />
-      </div>
-    );
-  }
-
-  // --- STAGE 1.5: SECRET PAGE TRANSITION ---
-  if (showSecretPage) {
-    return (
-      <div className="w-screen h-screen bg-black text-white overflow-hidden select-none font-sans">
-        <SecretPage onProceed={() => setShowSecretPage(false)} />
-      </div>
-    );
-  }
-
-  // --- STAGE 2: USERNAME/PASSWORD LOGIN ---
-  if (!isAuthenticated) {
-    return <LoginScreen onLogin={handleLogin} />;
-  }
   // Use h-[100dvh] for better mobile support (addresses the "can't move" issue on mobile browsers)
   return (
     <div className="flex h-[100dvh] bg-black text-green-400 overflow-hidden relative font-mono selection:bg-green-500 selection:text-black">
