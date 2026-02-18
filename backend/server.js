@@ -25,6 +25,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+// Trust proxy (required for Railway / reverse proxies)
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(cors({
     origin: '*', // Allow all origins for network access
@@ -34,14 +37,18 @@ app.use(express.json());
 
 // Rate limiting
 const uploadLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 10, // 10 uploads per window
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
     message: 'Too many file uploads, please try again later.'
 });
 
 const apiLimiter = rateLimit({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    max: 100, // 100 requests per minute
+    windowMs: 1 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
     message: 'Too many requests, please try again later.'
 });
 
