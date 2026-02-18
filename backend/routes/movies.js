@@ -5,7 +5,7 @@ import cheerio from 'cheerio';
 const router = express.Router();
 
 // Base URL for LK21 (can be overridden by env)
-const BASE_URL = process.env.LK21_URL || 'https://tv15.lk21official.my';
+const BASE_URL = process.env.LK21_URL || 'https://tv8.lk21official.cc';
 
 // Helper to scrape search results
 const scrapeSearch = (html, protocol, host) => {
