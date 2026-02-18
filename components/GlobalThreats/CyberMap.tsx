@@ -32,6 +32,9 @@ const CyberMap: React.FC<CyberMapProps> = ({ attacks }) => {
             maxZoom: 19
         }).addTo(map);
 
+        // Force background to black to hide white grid lines
+        map.getContainer().style.background = '#050505';
+
         const svg = d3.select(map.getPanes().overlayPane).append("svg");
         const g = svg.append("g").attr("class", "leaflet-zoom-hide");
 

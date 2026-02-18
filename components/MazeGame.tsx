@@ -200,9 +200,9 @@ for (const dir of path) {
 }`;
 
 const MazeGame: React.FC = () => {
-    const [level, setLevel] = useState(1);
-    const [mazeSize, setMazeSize] = useState(10);
-    const [maze, setMaze] = useState<Cell[][]>(() => generateMaze(10));
+    const [level, setLevel] = useState(() => parseInt(localStorage.getItem('mazeLevel') || '1'));
+    const [mazeSize, setMazeSize] = useState(() => Math.min(10 + (parseInt(localStorage.getItem('mazeLevel') || '1')) * 2, 25));
+    const [maze, setMaze] = useState<Cell[][]>(() => generateMaze(Math.min(10 + (parseInt(localStorage.getItem('mazeLevel') || '1')) * 2, 25)));
     const [mousePos, setMousePos] = useState<Position>({ x: 1, y: 1 });
     const [trail, setTrail] = useState<Position[]>([{ x: 1, y: 1 }]);
     const [language, setLanguage] = useState<'javascript' | 'python'>('javascript');
@@ -231,6 +231,7 @@ const MazeGame: React.FC = () => {
         const newSize = Math.min(10 + newLevel * 2, 25); // Increase size, max 25x25
         setLevel(newLevel);
         setMazeSize(newSize);
+        localStorage.setItem('mazeLevel', newLevel.toString());
         const newMaze = generateMaze(newSize);
         setMaze(newMaze);
         resetProgress();
