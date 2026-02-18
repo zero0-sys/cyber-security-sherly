@@ -11,8 +11,8 @@ const VALID_PASSWORD = "183923";
 const MAX_ATTEMPTS = 3;
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
-  // Morse code stage — always start from morse when LoginScreen is shown
-  const [loginStage, setLoginStage] = useState<'morse' | 'credentials'>('morse');
+  // Skip morse — go straight to credentials
+  const [loginStage, setLoginStage] = useState<'morse' | 'credentials'>('credentials');
   const [morseInput, setMorseInput] = useState<string[]>([]);
   const [morseError, setMorseError] = useState('');
   const CORRECT_MORSE = ['--', '----', '--', '---'];
