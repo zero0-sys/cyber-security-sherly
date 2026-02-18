@@ -1,0 +1,21 @@
+# Railway Nixpacks Configuration for Backend Root
+# This file is used when Railway Root Directory is set to "backend"
+
+[phases.setup]
+nixPkgs = [
+  'nodejs_20',
+  'python3',
+  'python3Packages.pip',
+  'gcc',
+  'go',
+  'rustc',
+  'ruby',
+  'php',
+  'bash'
+]
+
+[phases.install]
+cmds = ['npm install']
+
+[start]
+cmd = 'node server.js'

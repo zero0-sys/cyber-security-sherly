@@ -151,10 +151,36 @@ const CodeEditor: React.FC = () => {
       return;
     }
 
+    // CSS Live Preview
+    if (currentFile.language === 'css' || currentFile.name.endsWith('.css')) {
+      setIsHtmlPreview(true);
+      const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    ${currentFile.content}
+                </style>
+            </head>
+            <body style="font-family: sans-serif; padding: 20px;">
+                <h1>CSS Preview</h1>
+                <p>This is a sample paragraph to demonstrate the styles.</p>
+                <div class="box">Sample Box Div</div>
+                <button>Sample Button</button>
+                <input type="text" placeholder="Sample Input" />
+                <br/><br/>
+                <small>Edit CSS to change appearance.</small>
+            </body>
+            </html>
+        `;
+      setOutput(htmlContent);
+      setTerminalOutput(prev => `${prev}$ Starting Live Preview for ${currentFile.name}...\n`);
+      return;
+    }
+
     setIsHtmlPreview(false);
     setIsExecuting(true);
     setOutput('⚡ Executing code...\n');
-    setTerminalOutput(prev => `${prev}$ Executing ${currentFile.name}...\n`);
 
     try {
       const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
@@ -588,13 +614,13 @@ const CodeEditor: React.FC = () => {
               <button
                 onClick={handleExecute}
                 disabled={isExecuting || openFiles.length === 0}
-                className={`flex items-center gap-2 px-4 py-1.5 rounded transition-colors text-xs font-bold ${openFiles[activeFile]?.language === 'html'
-                  ? 'bg-purple-600 hover:bg-purple-500 text-white'
-                  : 'bg-green-600 hover:bg-green-500 text-black'
+                className={`flex items-center gap-2 px-4 py-1.5 rounded transition-colors text-xs font-bold ${['html', 'css'].includes(openFiles[activeFile]?.language)
+                    ? 'bg-purple-600 hover:bg-purple-500 text-white'
+                    : 'bg-green-600 hover:bg-green-500 text-black'
                   } disabled:bg-gray-700 disabled:text-gray-500`}
               >
-                {openFiles[activeFile]?.language === 'html' ? <Globe size={14} /> : <Play size={14} />}
-                {isExecuting ? 'Menjalankan...' : (openFiles[activeFile]?.language === 'html' ? 'Live Preview' : 'Eksekusi')}
+                {['html', 'css'].includes(openFiles[activeFile]?.language) ? <Globe size={14} /> : <Play size={14} />}
+                {isExecuting ? 'Menjalankan...' : (['html', 'css'].includes(openFiles[activeFile]?.language) ? 'Live Preview' : 'Eksekusi')}
               </button>
             </div>
           </div>
