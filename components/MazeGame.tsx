@@ -85,64 +85,7 @@ const generateMaze = (size: number): Cell[][] => {
     return maze;
 };
 
-// Python to JavaScript transpiler examples
-const PYTHON_TEMPLATE = `# Python Pathfinding Code (BFS for Shortest Path)
-# Available functions:
-# - move_up(), move_down(), move_left(), move_right()
-# - get_position(): Returns {'x': x, 'y': y}
-# - is_wall(x, y): Returns True/False
-# - is_end(x, y): Returns True/False
 
-def find_shortest_path():
-    # Breadth-First Search (BFS) for optimal path
-    start_pos = get_position()
-    start_key = str(start_pos['x']) + ',' + str(start_pos['y'])
-    
-    queue = [start_pos]
-    visited = {start_key}
-    parent = {} # To reconstruct path
-    
-    while len(queue) > 0:
-        current = queue.pop(0)
-        curr_key = str(current['x']) + ',' + str(current['y'])
-        
-        if is_end(current['x'], current['y']):
-            # Backtrack to find path
-            path = []
-            while curr_key in parent:
-                prev_info = parent[curr_key]
-                path.insert(0, prev_info['dir'])
-                curr_key = prev_info['key']
-            return path
-            
-        # Check all 4 directions
-        moves = [
-            {'dx': 0, 'dy': -1, 'name': 'up'},
-            {'dx': 0, 'dy': 1, 'name': 'down'},
-            {'dx': -1, 'dy': 0, 'name': 'left'},
-            {'dx': 1, 'dy': 0, 'name': 'right'}
-        ]
-        
-        for move in moves:
-            nx = current['x'] + move['dx']
-            ny = current['y'] + move['dy']
-            n_key = str(nx) + ',' + str(ny)
-            
-            if not is_wall(nx, ny) and n_key not in visited:
-                visited.add(n_key)
-                queue.append({'x': nx, 'y': ny})
-                parent[n_key] = {'key': curr_key, 'dir': move['name']}
-                
-    return []
-
-# Execute and follow path
-path = find_shortest_path()
-for move in path:
-    if move == 'up': move_up()
-    elif move == 'down': move_down()
-    elif move == 'left': move_left()
-    elif move == 'right': move_right()
-`;
 
 const JS_TEMPLATE = `// JavaScript Pathfinding (BFS for Shortest Path)
 
@@ -202,10 +145,22 @@ for (const dir of path) {
 const MazeGame: React.FC = () => {
     const [level, setLevel] = useState(() => parseInt(localStorage.getItem('mazeLevel') || '1'));
     const [mazeSize, setMazeSize] = useState(() => Math.min(10 + (parseInt(localStorage.getItem('mazeLevel') || '1')) * 2, 25));
-    const [maze, setMaze] = useState<Cell[][]>(() => generateMaze(Math.min(10 + (parseInt(localStorage.getItem('mazeLevel') || '1')) * 2, 25)));
+    const [maze, setMaze] = useState<Cell[][]>(() => {
+        const saved = localStorage.getItem('mazeMap');
+        if (saved) {
+            try {
+                return JSON.parse(saved);
+            } catch (e) {
+                console.error("Failed to parse saved maze", e);
+            }
+        }
+        const initialSize = Math.min(10 + (parseInt(localStorage.getItem('mazeLevel') || '1')) * 2, 25);
+        const newMaze = generateMaze(initialSize);
+        localStorage.setItem('mazeMap', JSON.stringify(newMaze));
+        return newMaze;
+    });
     const [mousePos, setMousePos] = useState<Position>({ x: 1, y: 1 });
     const [trail, setTrail] = useState<Position[]>([{ x: 1, y: 1 }]);
-    const [language, setLanguage] = useState<'javascript' | 'python'>('javascript');
     const [code, setCode] = useState(JS_TEMPLATE);
     const [isRunning, setIsRunning] = useState(false);
     const [gameStatus, setGameStatus] = useState<'idle' | 'running' | 'win' | 'error'>('idle');
@@ -234,6 +189,7 @@ const MazeGame: React.FC = () => {
         localStorage.setItem('mazeLevel', newLevel.toString());
         const newMaze = generateMaze(newSize);
         setMaze(newMaze);
+        localStorage.setItem('mazeMap', JSON.stringify(newMaze));
         resetProgress();
     };
 
@@ -252,13 +208,11 @@ const MazeGame: React.FC = () => {
     const newMaze = () => {
         const newMaze = generateMaze(mazeSize);
         setMaze(newMaze);
+        localStorage.setItem('mazeMap', JSON.stringify(newMaze));
         resetProgress();
     };
 
-    const switchLanguage = (lang: 'javascript' | 'python') => {
-        setLanguage(lang);
-        setCode(lang === 'javascript' ? JS_TEMPLATE : PYTHON_TEMPLATE);
-    };
+
 
     const runCode = async () => {
         resetProgress();
@@ -317,171 +271,12 @@ const MazeGame: React.FC = () => {
             // Create AsyncFunction constructor
             const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
 
-            if (language === 'javascript') {
-                const userFunction = new AsyncFunction(
-                    'moveUp', 'moveDown', 'moveLeft', 'moveRight',
-                    'getPosition', 'isWall', 'isEnd',
-                    code
-                );
-                await userFunction(moveUp, moveDown, moveLeft, moveRight, getPosition, isWall, isEnd);
-            } else {
-                // Python to JS - indentation-aware transpiler
-                const lines = code.split('\n');
-                const jsLines: string[] = [];
-                const indentStack: number[] = [0]; // Track indentation levels for closing braces
-
-                for (let i = 0; i < lines.length; i++) {
-                    let line = lines[i];
-
-                    // Skip empty lines and comments
-                    if (line.trim() === '' || line.trim().startsWith('#')) {
-                        jsLines.push('');
-                        continue;
-                    }
-
-                    // Calculate indentation
-                    const indent = line.length - line.trimStart().length;
-                    const trimmed = line.trimStart();
-
-                    // Close blocks when indentation decreases
-                    while (indentStack.length > 1 && indent < indentStack[indentStack.length - 1]) {
-                        indentStack.pop();
-                        const closingIndent = ' '.repeat(indentStack[indentStack.length - 1]);
-                        jsLines.push(closingIndent + '}');
-                    }
-
-                    const currentIndent = ' '.repeat(indent);
-                    let jsLine = trimmed;
-
-                    // --- Transform Python constructs ---
-
-                    // Function def
-                    if (/^def\s+/.test(jsLine)) {
-                        jsLine = jsLine.replace(/^def\s+(\w+)\s*\(([^)]*)\)\s*:/, 'async function $1($2) {');
-                        indentStack.push(indent + 4);
-                        jsLines.push(currentIndent + jsLine);
-                        continue;
-                    }
-
-                    // For loop: for x in y:
-                    if (/^for\s+/.test(jsLine)) {
-                        jsLine = jsLine.replace(/^for\s+(\w+)\s+in\s+(.+):$/, 'for (const $1 of $2) {');
-                        indentStack.push(indent + 4);
-                        jsLines.push(currentIndent + jsLine);
-                        continue;
-                    }
-
-                    // While loop
-                    if (/^while\s+/.test(jsLine)) {
-                        jsLine = jsLine.replace(/^while\s+(.+):$/, 'while ($1) {');
-                        indentStack.push(indent + 4);
-                        jsLines.push(currentIndent + jsLine);
-                        continue;
-                    }
-
-                    // elif
-                    if (/^elif\s+/.test(jsLine)) {
-                        jsLine = jsLine.replace(/^elif\s+(.+):$/, '} else if ($1) {');
-                        // Pop and re-push (same block level)
-                        if (indentStack.length > 1 && indentStack[indentStack.length - 1] === indent + 4) {
-                            // already at correct level
-                        } else {
-                            indentStack.push(indent + 4);
-                        }
-                        jsLines.push(currentIndent + jsLine);
-                        continue;
-                    }
-
-                    // if statement (must be after elif check)
-                    if (/^if\s+/.test(jsLine)) {
-                        jsLine = jsLine.replace(/^if\s+(.+):$/, 'if ($1) {');
-                        indentStack.push(indent + 4);
-                        jsLines.push(currentIndent + jsLine);
-                        continue;
-                    }
-
-                    // else:
-                    if (/^else\s*:/.test(jsLine)) {
-                        jsLine = '} else {';
-                        jsLines.push(currentIndent + jsLine);
-                        continue;
-                    }
-
-                    // return statement
-                    if (/^return\s/.test(jsLine)) {
-                        // just keep as-is, transform contents below
-                    }
-
-                    // Now do inline replacements on the line
-                    // Python API to JS API
-                    jsLine = jsLine.replace(/move_up\(\)/g, 'await moveUp()');
-                    jsLine = jsLine.replace(/move_down\(\)/g, 'await moveDown()');
-                    jsLine = jsLine.replace(/move_left\(\)/g, 'await moveLeft()');
-                    jsLine = jsLine.replace(/move_right\(\)/g, 'await moveRight()');
-                    jsLine = jsLine.replace(/get_position\(\)/g, 'getPosition()');
-                    jsLine = jsLine.replace(/is_wall\b/g, 'isWall');
-                    jsLine = jsLine.replace(/is_end\b/g, 'isEnd');
-
-                    // str(x) -> String(x)
-                    jsLine = jsLine.replace(/\bstr\(/g, 'String(');
-
-                    // len(x) -> x.length  (simple case)
-                    jsLine = jsLine.replace(/\blen\(([^)]+)\)/g, '$1.length');
-
-                    // Python set literal {val} -> new Set([val])
-                    // visited = {start_key} -> visited = new Set([start_key])
-                    jsLine = jsLine.replace(/^(\w+)\s*=\s*\{(\w+)\}\s*$/, '$1 = new Set([$2])');
-
-                    // Python dict literal {} (empty) -> new Map() or just {}
-                    // parent = {} -> parent = {}  (this is fine for JS too)
-
-                    // .add( -> .add(  (Set.add is same in JS)
-                    // .append( -> .push(
-                    jsLine = jsLine.replace(/\.append\(/g, '.push(');
-                    // .insert(0, x) -> .unshift(x)
-                    jsLine = jsLine.replace(/\.insert\(0,\s*/g, '.unshift(');
-                    // .pop(0) -> .shift()
-                    jsLine = jsLine.replace(/\.pop\(0\)/g, '.shift()');
-
-                    // "x not in y" -> !y.has(x) for Sets
-                    jsLine = jsLine.replace(/(\w+)\s+not\s+in\s+(\w+)/g, '!$2.has($1)');
-                    // Plain "x in y" is left as-is — JS `in` operator works on Objects
-
-                    // Boolean/None
-                    jsLine = jsLine.replace(/\bTrue\b/g, 'true');
-                    jsLine = jsLine.replace(/\bFalse\b/g, 'false');
-                    jsLine = jsLine.replace(/\bNone\b/g, 'null');
-
-                    // Logic operators
-                    jsLine = jsLine.replace(/\bnot\s+/g, '!');
-                    jsLine = jsLine.replace(/\band\b/g, '&&');
-                    jsLine = jsLine.replace(/\bor\b/g, '||');
-
-                    // Variable declarations: simple assignments without let/const
-                    // Add let for first assignment (approximate, works for template)
-                    if (/^\w+\s*=\s/.test(jsLine) && !/^(let|const|var|return)\s/.test(jsLine)) {
-                        jsLine = 'let ' + jsLine;
-                    }
-
-                    jsLines.push(currentIndent + jsLine);
-                }
-
-                // Close any remaining open blocks
-                while (indentStack.length > 1) {
-                    indentStack.pop();
-                    const closingIndent = ' '.repeat(indentStack[indentStack.length - 1]);
-                    jsLines.push(closingIndent + '}');
-                }
-
-                const pythonToJs = jsLines.join('\n');
-
-                const userFunction = new AsyncFunction(
-                    'moveUp', 'moveDown', 'moveLeft', 'moveRight',
-                    'getPosition', 'isWall', 'isEnd',
-                    pythonToJs
-                );
-                await userFunction(moveUp, moveDown, moveLeft, moveRight, getPosition, isWall, isEnd);
-            }
+            const userFunction = new AsyncFunction(
+                'moveUp', 'moveDown', 'moveLeft', 'moveRight',
+                'getPosition', 'isWall', 'isEnd',
+                code
+            );
+            await userFunction(moveUp, moveDown, moveLeft, moveRight, getPosition, isWall, isEnd);
 
             // Check win condition
             if (currentPos.x === mazeSize - 2 && currentPos.y === mazeSize - 2) {
@@ -649,26 +444,7 @@ const MazeGame: React.FC = () => {
                             <Code size={16} />
                             Code Editor
                         </h3>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => switchLanguage('javascript')}
-                                className={`px-3 py-1 rounded text-xs font-bold transition-all ${language === 'javascript'
-                                    ? 'bg-yellow-600 text-black'
-                                    : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
-                                    }`}
-                            >
-                                JavaScript
-                            </button>
-                            <button
-                                onClick={() => switchLanguage('python')}
-                                className={`px-3 py-1 rounded text-xs font-bold transition-all ${language === 'python'
-                                    ? 'bg-blue-600 text-black'
-                                    : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
-                                    }`}
-                            >
-                                Python
-                            </button>
-                        </div>
+
                     </div>
                     <textarea
                         value={code}
