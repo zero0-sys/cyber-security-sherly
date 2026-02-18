@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import CryptoJS from 'crypto-js';
-import { Lock, Unlock, Hash, Key, Copy, Check, AlertCircle } from 'lucide-react';
-
-type TabType = 'encrypt' | 'encode' | 'hash' | 'modern' | 'converter' | 'jwt';
+import { Lock, Unlock, Hash, Key, Copy, Check, AlertCircle, ChevronDown, ChevronRight, Code, FileCode, Shield } from 'lucide-react';
 
 const CryptoLab: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<TabType>('encrypt');
+    // Accordion State
+    const [expandedSection, setExpandedSection] = useState<string | null>('encrypt');
+
+    const toggleSection = (section: string) => {
+        setExpandedSection(expandedSection === section ? null : section);
+    };
+
+    // Global Input/Output State
     const [input, setInput] = useState('');
     const [output, setOutput] = useState('');
     const [key, setKey] = useState('mysecretkey123');
@@ -24,353 +29,55 @@ const CryptoLab: React.FC = () => {
         setTimeout(() => setCopied(false), 2000);
     };
 
+    // --- CRYPTO LOGIC (Keep existing logic) ---
+
     // ENCRYPTION FUNCTIONS
-    const encryptAES = () => {
-        try {
-            const encrypted = CryptoJS.AES.encrypt(input, key).toString();
-            setOutput(encrypted);
-            setError('');
-        } catch (e: any) {
-            setError(`Encryption failed: ${e.message}`);
-        }
-    };
-
-    const decryptAES = () => {
-        try {
-            const decrypted = CryptoJS.AES.decrypt(input, key).toString(CryptoJS.enc.Utf8);
-            setOutput(decrypted || 'Decryption failed - check key');
-            setError('');
-        } catch (e: any) {
-            setError(`Decryption failed: ${e.message}`);
-        }
-    };
-
-    const encryptTripleDES = () => {
-        try {
-            const encrypted = CryptoJS.TripleDES.encrypt(input, key).toString();
-            setOutput(encrypted);
-            setError('');
-        } catch (e: any) {
-            setError(`Encryption failed: ${e.message}`);
-        }
-    };
-
-    const decryptTripleDES = () => {
-        try {
-            const decrypted = CryptoJS.TripleDES.decrypt(input, key).toString(CryptoJS.enc.Utf8);
-            setOutput(decrypted || 'Decryption failed - check key');
-            setError('');
-        } catch (e: any) {
-            setError(`Decryption failed: ${e.message}`);
-        }
-    };
-
-    const encryptRC4 = () => {
-        try {
-            const encrypted = CryptoJS.RC4.encrypt(input, key).toString();
-            setOutput(encrypted);
-            setError('');
-        } catch (e: any) {
-            setError(`Encryption failed: ${e.message}`);
-        }
-    };
-
-    const decryptRC4 = () => {
-        try {
-            const decrypted = CryptoJS.RC4.decrypt(input, key).toString(CryptoJS.enc.Utf8);
-            setOutput(decrypted || 'Decryption failed - check key');
-            setError('');
-        } catch (e: any) {
-            setError(`Decryption failed: ${e.message}`);
-        }
-    };
-
-    const encryptRabbit = () => {
-        try {
-            const encrypted = CryptoJS.Rabbit.encrypt(input, key).toString();
-            setOutput(encrypted);
-            setError('');
-        } catch (e: any) {
-            setError(`Encryption failed: ${e.message}`);
-        }
-    };
-
-    const decryptRabbit = () => {
-        try {
-            const decrypted = CryptoJS.Rabbit.decrypt(input, key).toString(CryptoJS.enc.Utf8);
-            setOutput(decrypted || 'Decryption failed - check key');
-            setError('');
-        } catch (e: any) {
-            setError(`Decryption failed: ${e.message}`);
-        }
-    };
+    const encryptAES = () => { try { setOutput(CryptoJS.AES.encrypt(input, key).toString()); setError(''); } catch (e: any) { setError(`Encryption failed: ${e.message}`); } };
+    const decryptAES = () => { try { setOutput(CryptoJS.AES.decrypt(input, key).toString(CryptoJS.enc.Utf8) || 'Decryption failed'); setError(''); } catch (e: any) { setError(`Decryption failed: ${e.message}`); } };
+    const encryptTripleDES = () => { try { setOutput(CryptoJS.TripleDES.encrypt(input, key).toString()); setError(''); } catch (e: any) { setError(`Encryption failed: ${e.message}`); } };
+    const decryptTripleDES = () => { try { setOutput(CryptoJS.TripleDES.decrypt(input, key).toString(CryptoJS.enc.Utf8) || 'Decryption failed'); setError(''); } catch (e: any) { setError(`Decryption failed: ${e.message}`); } };
+    const encryptRC4 = () => { try { setOutput(CryptoJS.RC4.encrypt(input, key).toString()); setError(''); } catch (e: any) { setError(`Encryption failed: ${e.message}`); } };
+    const decryptRC4 = () => { try { setOutput(CryptoJS.RC4.decrypt(input, key).toString(CryptoJS.enc.Utf8) || 'Decryption failed'); setError(''); } catch (e: any) { setError(`Decryption failed: ${e.message}`); } };
+    const encryptRabbit = () => { try { setOutput(CryptoJS.Rabbit.encrypt(input, key).toString()); setError(''); } catch (e: any) { setError(`Encryption failed: ${e.message}`); } };
+    const decryptRabbit = () => { try { setOutput(CryptoJS.Rabbit.decrypt(input, key).toString(CryptoJS.enc.Utf8) || 'Decryption failed'); setError(''); } catch (e: any) { setError(`Decryption failed: ${e.message}`); } };
 
     // ENCODING FUNCTIONS
-    const encodeBase64 = () => {
-        const encoded = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(input));
-        setOutput(encoded);
-        setError('');
-    };
-
-    const decodeBase64 = () => {
-        try {
-            const decoded = CryptoJS.enc.Base64.parse(input).toString(CryptoJS.enc.Utf8);
-            setOutput(decoded);
-            setError('');
-        } catch (e: any) {
-            setError(`Decoding failed: ${e.message}`);
-        }
-    };
-
-    const encodeHex = () => {
-        const encoded = CryptoJS.enc.Hex.stringify(CryptoJS.enc.Utf8.parse(input));
-        setOutput(encoded);
-        setError('');
-    };
-
-    const decodeHex = () => {
-        try {
-            const decoded = CryptoJS.enc.Hex.parse(input).toString(CryptoJS.enc.Utf8);
-            setOutput(decoded);
-            setError('');
-        } catch (e: any) {
-            setError(`Decoding failed: ${e.message}`);
-        }
-    };
-
-    const encodeBinary = () => {
-        const binary = input.split('').map(char =>
-            char.charCodeAt(0).toString(2).padStart(8, '0')
-        ).join(' ');
-        setOutput(binary);
-        setError('');
-    };
-
-    const decodeBinary = () => {
-        try {
-            const decoded = input.split(' ').map(bin =>
-                String.fromCharCode(parseInt(bin, 2))
-            ).join('');
-            setOutput(decoded);
-            setError('');
-        } catch (e: any) {
-            setError(`Decoding failed: ${e.message}`);
-        }
-    };
-
-    const encodeURL = () => {
-        const encoded = encodeURIComponent(input);
-        setOutput(encoded);
-        setError('');
-    };
-
-    const decodeURL = () => {
-        try {
-            const decoded = decodeURIComponent(input);
-            setOutput(decoded);
-            setError('');
-        } catch (e: any) {
-            setError(`Decoding failed: ${e.message}`);
-        }
-    };
-
-    const encodeHTML = () => {
-        const encoded = input
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-        setOutput(encoded);
-        setError('');
-    };
-
-    const rot13 = () => {
-        const result = input.replace(/[a-zA-Z]/g, char => {
-            const start = char <= 'Z' ? 65 : 97;
-            return String.fromCharCode((char.charCodeAt(0) - start + 13) % 26 + start);
-        });
-        setOutput(result);
-        setError('');
-    };
-
-    const caesarCipher = (shift: number) => {
-        const result = input.replace(/[a-zA-Z]/g, char => {
-            const start = char <= 'Z' ? 65 : 97;
-            return String.fromCharCode((char.charCodeAt(0) - start + shift) % 26 + start);
-        });
-        setOutput(result);
-        setError('');
-    };
-
-    // ADDITIONAL CONVERTERS
-    const atbashCipher = () => {
-        const result = input.replace(/[a-zA-Z]/g, char => {
-            const isUpper = char <= 'Z';
-            const start = isUpper ? 65 : 97;
-            const offset = char.charCodeAt(0) - start;
-            return String.fromCharCode(start + (25 - offset));
-        });
-        setOutput(result);
-        setError('');
-    };
-
-    const morseEncode = () => {
-        const morseCode: { [key: string]: string } = {
-            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
-            'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
-            'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
-            'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
-            'Y': '-.--', 'Z': '--..', '0': '-----', '1': '.----', '2': '..---',
-            '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...',
-            '8': '---..', '9': '----.', ' ': '/'
-        };
-        const result = input.toUpperCase().split('').map(char => morseCode[char] || char).join(' ');
-        setOutput(result);
-        setError('');
-    };
-
-    const morseDecode = () => {
-        const morseReverse: { [key: string]: string } = {
-            '.-': 'A', '-...': 'B', '-.-.': 'C', '-..': 'D', '.': 'E', '..-.': 'F',
-            '--.': 'G', '....': 'H', '..': 'I', '.---': 'J', '-.-': 'K', '.-..': 'L',
-            '--': 'M', '-.': 'N', '---': 'O', '.--.': 'P', '--.-': 'Q', '.-.': 'R',
-            '...': 'S', '-': 'T', '..-': 'U', '...-': 'V', '.--': 'W', '-..-': 'X',
-            '-.--': 'Y', '--..': 'Z', '-----': '0', '.----': '1', '..---': '2',
-            '...--': '3', '....-': '4', '.....': '5', '-....': '6', '--...': '7',
-            '---..': '8', '----.': '9', '/': ' '
-        };
-        try {
-            const result = input.split(' ').map(code => morseReverse[code] || code).join('');
-            setOutput(result);
-            setError('');
-        } catch (e: any) {
-            setError(`Decoding failed: ${e.message}`);
-        }
-    };
-
-    const octalEncode = () => {
-        const result = input.split('').map(char =>
-            '\\' + char.charCodeAt(0).toString(8).padStart(3, '0')
-        ).join('');
-        setOutput(result);
-        setError('');
-    };
-
-    const decimalEncode = () => {
-        const result = input.split('').map(char => char.charCodeAt(0)).join(' ');
-        setOutput(result);
-        setError('');
-    };
-
-    const decimalDecode = () => {
-        try {
-            const result = input.split(' ').map(code =>
-                String.fromCharCode(parseInt(code))
-            ).join('');
-            setOutput(result);
-            setError('');
-        } catch (e: any) {
-            setError(`Decoding failed: ${e.message}`);
-        }
-    };
-
-    const reverseString = () => {
-        setOutput(input.split('').reverse().join(''));
-        setError('');
-    };
-
-    const toUpperCase = () => {
-        setOutput(input.toUpperCase());
-        setError('');
-    };
-
-    const toLowerCase = () => {
-        setOutput(input.toLowerCase());
-        setError('');
-    };
-
-    const unicodeEscape = () => {
-        const result = input.split('').map(char =>
-            '\\u' + char.charCodeAt(0).toString(16).padStart(4, '0')
-        ).join('');
-        setOutput(result);
-        setError('');
-    };
-
-    const jsonBeautify = () => {
-        try {
-            const parsed = JSON.parse(input);
-            setOutput(JSON.stringify(parsed, null, 2));
-            setError('');
-        } catch (e: any) {
-            setError(`Invalid JSON: ${e.message}`);
-        }
-    };
-
-    const jsonMinify = () => {
-        try {
-            const parsed = JSON.parse(input);
-            setOutput(JSON.stringify(parsed));
-            setError('');
-        } catch (e: any) {
-            setError(`Invalid JSON: ${e.message}`);
-        }
-    };
+    const encodeBase64 = () => { setOutput(CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(input))); setError(''); };
+    const decodeBase64 = () => { try { setOutput(CryptoJS.enc.Base64.parse(input).toString(CryptoJS.enc.Utf8)); setError(''); } catch (e: any) { setError(`Decoding failed: ${e.message}`); } };
+    const encodeHex = () => { setOutput(CryptoJS.enc.Hex.stringify(CryptoJS.enc.Utf8.parse(input))); setError(''); };
+    const decodeHex = () => { try { setOutput(CryptoJS.enc.Hex.parse(input).toString(CryptoJS.enc.Utf8)); setError(''); } catch (e: any) { setError(`Decoding failed: ${e.message}`); } };
+    const encodeBinary = () => { setOutput(input.split('').map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join(' ')); setError(''); };
+    const decodeBinary = () => { try { setOutput(input.split(' ').map(b => String.fromCharCode(parseInt(b, 2))).join('')); setError(''); } catch (e: any) { setError(`Decoding failed: ${e.message}`); } };
+    const encodeURL = () => { setOutput(encodeURIComponent(input)); setError(''); };
+    const decodeURL = () => { try { setOutput(decodeURIComponent(input)); setError(''); } catch (e: any) { setError(`Decoding failed: ${e.message}`); } };
+    const encodeHTML = () => { setOutput(input.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')); setError(''); };
+    const rot13 = () => { setOutput(input.replace(/[a-zA-Z]/g, c => String.fromCharCode((c.charCodeAt(0) - (c <= 'Z' ? 65 : 97) + 13) % 26 + (c <= 'Z' ? 65 : 97)))); setError(''); };
+    const caesarCipher = (shift: number) => { setOutput(input.replace(/[a-zA-Z]/g, c => String.fromCharCode((c.charCodeAt(0) - (c <= 'Z' ? 65 : 97) + shift) % 26 + (c <= 'Z' ? 65 : 97)))); setError(''); };
 
     // HASHING FUNCTIONS
-    const hashMD5 = () => {
-        const hash = CryptoJS.MD5(input).toString();
-        setOutput(hash);
-        setError('');
-    };
-
-    const hashSHA1 = () => {
-        const hash = CryptoJS.SHA1(input).toString();
-        setOutput(hash);
-        setError('');
-    };
-
-    const hashSHA256 = () => {
-        const hash = CryptoJS.SHA256(input).toString();
-        setOutput(hash);
-        setError('');
-    };
-
-    const hashSHA512 = () => {
-        const hash = CryptoJS.SHA512(input).toString();
-        setOutput(hash);
-        setError('');
-    };
-
-    const hashSHA3 = () => {
-        const hash = CryptoJS.SHA3(input).toString();
-        setOutput(hash);
-        setError('');
-    };
-
-    const hashRIPEMD160 = () => {
-        const hash = CryptoJS.RIPEMD160(input).toString();
-        setOutput(hash);
-        setError('');
-    };
+    const hashMD5 = () => { setOutput(CryptoJS.MD5(input).toString()); setError(''); };
+    const hashSHA1 = () => { setOutput(CryptoJS.SHA1(input).toString()); setError(''); };
+    const hashSHA256 = () => { setOutput(CryptoJS.SHA256(input).toString()); setError(''); };
+    const hashSHA512 = () => { setOutput(CryptoJS.SHA512(input).toString()); setError(''); };
+    const hashSHA3 = () => { setOutput(CryptoJS.SHA3(input).toString()); setError(''); };
+    const hashRIPEMD160 = () => { setOutput(CryptoJS.RIPEMD160(input).toString()); setError(''); };
 
     // MODERN FUNCTIONS
-    const generateHMAC = () => {
-        const hmac = CryptoJS.HmacSHA256(input, key).toString();
-        setOutput(hmac);
-        setError('');
-    };
+    const generateHMAC = () => { setOutput(CryptoJS.HmacSHA256(input, key).toString()); setError(''); };
+    const generatePBKDF2 = () => { setOutput(CryptoJS.PBKDF2(input, key, { keySize: 256 / 32, iterations: 1000 }).toString()); setError(''); };
 
-    const generatePBKDF2 = () => {
-        const derived = CryptoJS.PBKDF2(input, key, { keySize: 256 / 32, iterations: 1000 }).toString();
-        setOutput(derived);
-        setError('');
-    };
+    // CONVERTERS
+    const atbashCipher = () => { setOutput(input.replace(/[a-zA-Z]/g, c => String.fromCharCode((c <= 'Z' ? 65 : 97) + (25 - (c.charCodeAt(0) - (c <= 'Z' ? 65 : 97)))))); setError(''); };
+    const reverseString = () => { setOutput(input.split('').reverse().join('')); setError(''); };
+    const toUpperCase = () => { setOutput(input.toUpperCase()); setError(''); };
+    const toLowerCase = () => { setOutput(input.toLowerCase()); setError(''); };
+    const unicodeEscape = () => { setOutput(input.split('').map(c => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0')).join('')); setError(''); };
+    const jsonBeautify = () => { try { setOutput(JSON.stringify(JSON.parse(input), null, 2)); setError(''); } catch (e: any) { setError(`Invalid JSON: ${e.message}`); } };
+    const jsonMinify = () => { try { setOutput(JSON.stringify(JSON.parse(input))); setError(''); } catch (e: any) { setError(`Invalid JSON: ${e.message}`); } };
 
-    // JWT SECRET KEY GENERATOR
+    // JWT FUNCTIONS (Keep existing logic)
     const generateJWTSecret = () => {
-        const length = jwtKeyLength / 8; // Convert bits to bytes
+        const length = jwtKeyLength / 8;
         const randomBytes = CryptoJS.lib.WordArray.random(length);
         const secretKey = randomBytes.toString(CryptoJS.enc.Hex);
         setJwtSecretKey(secretKey);
@@ -390,12 +97,74 @@ const CryptoLab: React.FC = () => {
         return { label: 'Weak', color: 'text-red-400', percentage: 30 };
     };
 
-    const renderTabContent = () => {
-        switch (activeTab) {
-            case 'encrypt':
-                return (
-                    <div className="space-y-3">
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+
+    return (
+        <div className="flex flex-col h-full bg-black">
+            {/* Header */}
+            <div className="p-4 border-b border-green-900 shrink-0">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-900/20 rounded border border-green-500/50">
+                        <Key size={20} className="text-green-500" />
+                    </div>
+                    <div>
+                        <h2 className="font-orbitron font-bold text-white text-xl">CRYPTOGRAPHY LAB</h2>
+                        <p className="text-xs text-gray-500 font-mono">Advanced Algo Suite v2.0</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Content - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+
+                {/* Global Inputs (Sticky-ish feel by being top of scroll) */}
+                <div className="space-y-4">
+                    {/* Key Input (Always visible but optional) */}
+                    <div>
+                        <label className="text-xs text-green-500/70 font-bold mb-1 block flex items-center gap-2">
+                            <Key size={12} /> SECRET KEY (Optional)
+                        </label>
+                        <input
+                            type="text"
+                            value={key}
+                            onChange={(e) => setKey(e.target.value)}
+                            className="w-full bg-black border border-green-900 rounded px-3 py-2 text-green-400 font-mono text-xs focus:border-green-500 focus:outline-none placeholder-green-900"
+                            placeholder="Enter encryption key..."
+                        />
+                    </div>
+
+                    {/* Input Textarea */}
+                    <div>
+                        <label className="text-xs text-green-500/70 font-bold mb-1 block flex items-center gap-2">
+                            <Code size={12} /> INPUT DATA
+                        </label>
+                        <textarea
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            className="w-full h-24 bg-black border border-green-900 rounded p-3 text-green-400 font-mono text-sm resize-none focus:border-green-500 focus:outline-none placeholder-green-900"
+                            placeholder="Enter text to process..."
+                        />
+                    </div>
+                </div>
+
+                {/* Error Message */}
+                {error && (
+                    <div className="bg-red-900/10 border border-red-500/50 rounded p-2 flex items-center gap-2 text-red-400 text-xs">
+                        <AlertCircle size={14} />
+                        {error}
+                    </div>
+                )}
+
+                {/* ACCORDION SECTIONS */}
+                <div className="space-y-2">
+
+                    {/* 1. Encryption */}
+                    <AccordionSection
+                        title="Encryption Algorithms"
+                        icon={<Lock size={16} />}
+                        isOpen={expandedSection === 'encrypt'}
+                        onToggle={() => toggleSection('encrypt')}
+                    >
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                             <ActionButton icon={<Lock size={14} />} label="AES Encrypt" onClick={encryptAES} />
                             <ActionButton icon={<Unlock size={14} />} label="AES Decrypt" onClick={decryptAES} variant="secondary" />
                             <ActionButton icon={<Lock size={14} />} label="3DES Encrypt" onClick={encryptTripleDES} />
@@ -405,299 +174,147 @@ const CryptoLab: React.FC = () => {
                             <ActionButton icon={<Lock size={14} />} label="Rabbit Encrypt" onClick={encryptRabbit} />
                             <ActionButton icon={<Unlock size={14} />} label="Rabbit Decrypt" onClick={decryptRabbit} variant="secondary" />
                         </div>
-                    </div>
-                );
+                    </AccordionSection>
 
-            case 'encode':
-                return (
-                    <div className="space-y-3">
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                            <ActionButton icon={<Key size={14} />} label="Base64 Encode" onClick={encodeBase64} />
-                            <ActionButton icon={<Key size={14} />} label="Base64 Decode" onClick={decodeBase64} variant="secondary" />
-                            <ActionButton icon={<Key size={14} />} label="Hex Encode" onClick={encodeHex} />
-                            <ActionButton icon={<Key size={14} />} label="Hex Decode" onClick={decodeHex} variant="secondary" />
-                            <ActionButton icon={<Key size={14} />} label="Binary Encode" onClick={encodeBinary} />
-                            <ActionButton icon={<Key size={14} />} label="Binary Decode" onClick={decodeBinary} variant="secondary" />
-                            <ActionButton icon={<Key size={14} />} label="URL Encode" onClick={encodeURL} />
-                            <ActionButton icon={<Key size={14} />} label="URL Decode" onClick={decodeURL} variant="secondary" />
-                            <ActionButton icon={<Key size={14} />} label="HTML Encode" onClick={encodeHTML} />
-                            <ActionButton icon={<Key size={14} />} label="ROT13" onClick={rot13} />
-                            <ActionButton icon={<Key size={14} />} label="Caesar +3" onClick={() => caesarCipher(3)} />
-                            <ActionButton icon={<Key size={14} />} label="Caesar -3" onClick={() => caesarCipher(-3)} variant="secondary" />
+                    {/* 2. Encoding */}
+                    <AccordionSection
+                        title="Encoding / Decoding"
+                        icon={<FileCode size={16} />}
+                        isOpen={expandedSection === 'encode'}
+                        onToggle={() => toggleSection('encode')}
+                    >
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            <ActionButton icon={<Code size={14} />} label="Base64 Gen" onClick={encodeBase64} />
+                            <ActionButton icon={<Code size={14} />} label="Base64 Dec" onClick={decodeBase64} variant="secondary" />
+                            <ActionButton icon={<Code size={14} />} label="Hex Gen" onClick={encodeHex} />
+                            <ActionButton icon={<Code size={14} />} label="Hex Dec" onClick={decodeHex} variant="secondary" />
+                            <ActionButton icon={<Code size={14} />} label="Binary Gen" onClick={encodeBinary} />
+                            <ActionButton icon={<Code size={14} />} label="Binary Dec" onClick={decodeBinary} variant="secondary" />
+                            <ActionButton icon={<Code size={14} />} label="URL Enc" onClick={encodeURL} />
+                            <ActionButton icon={<Code size={14} />} label="URL Dec" onClick={decodeURL} variant="secondary" />
+                            <ActionButton icon={<Code size={14} />} label="HTML Enc" onClick={encodeHTML} />
+                            <ActionButton icon={<Code size={14} />} label="ROT13" onClick={rot13} />
+                            <ActionButton icon={<Code size={14} />} label="Caesar +3" onClick={() => caesarCipher(3)} />
+                            <ActionButton icon={<Code size={14} />} label="Caesar -3" onClick={() => caesarCipher(-3)} variant="secondary" />
                         </div>
-                    </div>
-                );
+                    </AccordionSection>
 
-            case 'hash':
-                return (
-                    <div className="space-y-3">
+                    {/* 3. Hashing */}
+                    <AccordionSection
+                        title="Hashing Algorithms"
+                        icon={<Hash size={16} />}
+                        isOpen={expandedSection === 'hash'}
+                        onToggle={() => toggleSection('hash')}
+                    >
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                             <ActionButton icon={<Hash size={14} />} label="MD5" onClick={hashMD5} />
                             <ActionButton icon={<Hash size={14} />} label="SHA-1" onClick={hashSHA1} />
                             <ActionButton icon={<Hash size={14} />} label="SHA-256" onClick={hashSHA256} />
                             <ActionButton icon={<Hash size={14} />} label="SHA-512" onClick={hashSHA512} />
-                            <ActionButton icon={<Hash size={14} />} label="SHA3" onClick={hashSHA3} />
+                            <ActionButton icon={<Hash size={14} />} label="SHA-3" onClick={hashSHA3} />
                             <ActionButton icon={<Hash size={14} />} label="RIPEMD-160" onClick={hashRIPEMD160} />
                         </div>
-                    </div>
-                );
+                    </AccordionSection>
 
-            case 'modern':
-                return (
-                    <div className="space-y-3">
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                            <ActionButton icon={<Key size={14} />} label="HMAC-SHA256" onClick={generateHMAC} />
-                            <ActionButton icon={<Key size={14} />} label="PBKDF2" onClick={generatePBKDF2} />
+                    {/* 4. Modern */}
+                    <AccordionSection
+                        title="Modern Cryptography"
+                        icon={<Shield size={16} />}
+                        isOpen={expandedSection === 'modern'}
+                        onToggle={() => toggleSection('modern')}
+                    >
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <ActionButton icon={<Key size={14} />} label="HMAC-SHA256 (Uses Key)" onClick={generateHMAC} />
+                            <ActionButton icon={<Key size={14} />} label="PBKDF2 Key Derivation" onClick={generatePBKDF2} />
                         </div>
-                    </div>
-                );
+                    </AccordionSection>
 
-            case 'converter':
-                return (
-                    <div className="space-y-3">
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                            <ActionButton icon={<Key size={14} />} label="Atbash Cipher" onClick={atbashCipher} />
-                            <ActionButton icon={<Key size={14} />} label="Morse Encode" onClick={morseEncode} />
-                            <ActionButton icon={<Key size={14} />} label="Morse Decode" onClick={morseDecode} variant="secondary" />
-                            <ActionButton icon={<Key size={14} />} label="Octal Encode" onClick={octalEncode} />
-                            <ActionButton icon={<Key size={14} />} label="Decimal Encode" onClick={decimalEncode} />
-                            <ActionButton icon={<Key size={14} />} label="Decimal Decode" onClick={decimalDecode} variant="secondary" />
-                            <ActionButton icon={<Key size={14} />} label="Reverse" onClick={reverseString} />
-                            <ActionButton icon={<Key size={14} />} label="UPPERCASE" onClick={toUpperCase} />
-                            <ActionButton icon={<Key size={14} />} label="lowercase" onClick={toLowerCase} />
-                            <ActionButton icon={<Key size={14} />} label="Unicode Escape" onClick={unicodeEscape} />
-                            <ActionButton icon={<Key size={14} />} label="JSON Beautify" onClick={jsonBeautify} />
-                            <ActionButton icon={<Key size={14} />} label="JSON Minify" onClick={jsonMinify} variant="secondary" />
+                    {/* 5. Converters */}
+                    <AccordionSection
+                        title="Text Converters"
+                        icon={<Code size={16} />}
+                        isOpen={expandedSection === 'converter'}
+                        onToggle={() => toggleSection('converter')}
+                    >
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            <ActionButton icon={<Code size={14} />} label="Reverse" onClick={reverseString} />
+                            <ActionButton icon={<Code size={14} />} label="UPPERCASE" onClick={toUpperCase} />
+                            <ActionButton icon={<Code size={14} />} label="lowercase" onClick={toLowerCase} />
+                            <ActionButton icon={<Code size={14} />} label="JSON Pretty" onClick={jsonBeautify} />
+                            <ActionButton icon={<Code size={14} />} label="JSON Minify" onClick={jsonMinify} variant="secondary" />
+                            <ActionButton icon={<Code size={14} />} label="Atbash" onClick={atbashCipher} />
+                            <ActionButton icon={<Code size={14} />} label="Unicode" onClick={unicodeEscape} />
                         </div>
-                    </div>
-                );
+                    </AccordionSection>
 
-            case 'jwt':
-                return (
-                    <div className="space-y-4">
-                        {/* Algorithm Selection */}
-                        <div>
-                            <label className="text-xs text-gray-400 font-bold mb-2 block">JWT ALGORITHM</label>
-                            <div className="grid grid-cols-3 gap-2">
-                                {(['HS256', 'HS384', 'HS512'] as const).map((algo) => (
-                                    <button
-                                        key={algo}
-                                        onClick={() => {
-                                            setJwtAlgorithm(algo);
-                                            if (algo === 'HS256') setJwtKeyLength(256);
-                                            else if (algo === 'HS384') setJwtKeyLength(384);
-                                            else setJwtKeyLength(512);
-                                        }}
-                                        className={`px-4 py-3 rounded font-bold text-sm transition-all ${jwtAlgorithm === algo
-                                                ? 'bg-green-600 text-black border-2 border-green-400'
-                                                : 'bg-gray-900 text-gray-400 border border-gray-700 hover:bg-gray-800 hover:text-green-400'
-                                            }`}
-                                    >
-                                        {algo}
-                                    </button>
-                                ))}
-                            </div>
-                            <div className="mt-2 text-xs text-gray-500">
-                                {jwtAlgorithm === 'HS256' && '• HMAC with SHA-256 - Most commonly used symmetric algorithm'}
-                                {jwtAlgorithm === 'HS384' && '• HMAC with SHA-384 - Stronger hashing for enhanced security'}
-                                {jwtAlgorithm === 'HS512' && '• HMAC with SHA-512 - Maximum security for sensitive applications'}
-                            </div>
-                        </div>
-
-                        {/* Key Length Selection */}
-                        <div>
-                            <label className="text-xs text-gray-400 font-bold mb-2 block">KEY LENGTH (bits)</label>
-                            <div className="grid grid-cols-4 gap-2">
-                                {[32, 64, 128, 256, 384, 512].map((length) => (
-                                    <button
-                                        key={length}
-                                        onClick={() => setJwtKeyLength(length)}
-                                        className={`px-3 py-2 rounded font-mono text-sm transition-all ${jwtKeyLength === length
-                                                ? 'bg-blue-600 text-black border-2 border-blue-400'
-                                                : 'bg-gray-900 text-gray-400 border border-gray-700 hover:bg-gray-800 hover:text-blue-400'
-                                            }`}
-                                    >
-                                        {length}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Key Strength Indicator */}
-                        <div>
-                            <div className="flex justify-between items-center mb-2">
-                                <label className="text-xs text-gray-400 font-bold">KEY STRENGTH</label>
-                                <span className={`text-xs font-bold ${getKeyStrength(jwtKeyLength).color}`}>
-                                    {getKeyStrength(jwtKeyLength).label}
-                                </span>
-                            </div>
-                            <div className="h-2 bg-gray-900 rounded-full overflow-hidden border border-gray-700">
-                                <div
-                                    className="h-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 transition-all duration-300"
-                                    style={{ width: `${getKeyStrength(jwtKeyLength).percentage}%` }}
-                                ></div>
-                            </div>
-                        </div>
-
-                        {/* Generate Button */}
-                        <button
-                            onClick={generateJWTSecret}
-                            className="w-full bg-green-600 hover:bg-green-500 text-black font-bold py-4 rounded transition-all flex items-center justify-center gap-2"
-                        >
-                            <Key size={18} />
-                            Generate {jwtAlgorithm} Secret Key ({jwtKeyLength} bits)
-                        </button>
-
-                        {/* Generated Secret Key Display */}
-                        {jwtSecretKey && (
-                            <div className="space-y-3">
+                    {/* 6. JWT Generator (Custom UI) */}
+                    <AccordionSection
+                        title="JWT Token Generator"
+                        icon={<Shield size={16} />}
+                        isOpen={expandedSection === 'jwt'}
+                        onToggle={() => toggleSection('jwt')}
+                    >
+                        <div className="space-y-4">
+                            {/* Algorithm & Key Length */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <label className="text-xs text-gray-400 font-bold">GENERATED SECRET KEY</label>
-                                        <button
-                                            onClick={copyJWTSecret}
-                                            className="flex items-center gap-1 text-xs text-green-500 hover:text-green-400 transition-colors"
-                                        >
-                                            {jwtCopied ? <Check size={12} /> : <Copy size={12} />}
-                                            {jwtCopied ? 'Copied!' : 'Copy'}
-                                        </button>
-                                    </div>
-                                    <div className="bg-gray-900 border-2 border-green-500 rounded p-4">
-                                        <code className="text-green-400 font-mono text-sm break-all block">
-                                            {jwtSecretKey}
-                                        </code>
+                                    <label className="text-[10px] text-gray-500 font-bold mb-1 block">ALGORITHM</label>
+                                    <div className="flex gap-1">
+                                        {(['HS256', 'HS384', 'HS512'] as const).map((algo) => (
+                                            <button key={algo} onClick={() => { setJwtAlgorithm(algo); setJwtKeyLength(algo === 'HS256' ? 256 : algo === 'HS384' ? 384 : 512); }}
+                                                className={`flex-1 py-1 rounded text-xs border ${jwtAlgorithm === algo ? 'bg-green-600 border-green-500 text-black font-bold' : 'bg-black border-gray-800 text-gray-400'}`}>
+                                                {algo}
+                                            </button>
+                                        ))}
                                     </div>
                                 </div>
-
-                                {/* Key Info */}
-                                <div className="grid grid-cols-3 gap-3">
-                                    <div className="bg-black border border-gray-700 rounded p-3 text-center">
-                                        <div className="text-xs text-gray-500 mb-1">Algorithm</div>
-                                        <div className="text-green-400 font-bold">{jwtAlgorithm}</div>
+                                <div>
+                                    <label className="text-[10px] text-gray-500 font-bold mb-1 block">KEY LENGTH (BITS)</label>
+                                    <div className="flex gap-1 overflow-x-auto">
+                                        {[256, 384, 512].map((length) => (
+                                            <button key={length} onClick={() => setJwtKeyLength(length)}
+                                                className={`flex-1 py-1 px-2 rounded text-xs border ${jwtKeyLength === length ? 'bg-blue-600 border-blue-500 text-black font-bold' : 'bg-black border-gray-800 text-gray-400'}`}>
+                                                {length}
+                                            </button>
+                                        ))}
                                     </div>
-                                    <div className="bg-black border border-gray-700 rounded p-3 text-center">
-                                        <div className="text-xs text-gray-500 mb-1">Length</div>
-                                        <div className="text-green-400 font-bold">{jwtKeyLength} bits</div>
-                                    </div>
-                                    <div className="bg-black border border-gray-700 rounded p-3 text-center">
-                                        <div className="text-xs text-gray-500 mb-1">Hex Length</div>
-                                        <div className="text-green-400 font-bold">{jwtSecretKey.length} chars</div>
-                                    </div>
-                                </div>
-
-                                {/* Usage Example */}
-                                <div className="bg-blue-900/20 border border-blue-500 rounded p-4">
-                                    <div className="text-xs text-blue-400 font-bold mb-2 flex items-center gap-2">
-                                        <AlertCircle size={14} />
-                                        Usage Example (Node.js)
-                                    </div>
-                                    <code className="text-blue-300 font-mono text-xs block">
-                                        const jwt = require('jsonwebtoken');<br />
-                                        const secret = '{jwtSecretKey.substring(0, 32)}...';<br />
-                                        const token = jwt.sign({'{payload}'}, secret, {'{'} algorithm: '{jwtAlgorithm}' {'}'});
-                                    </code>
-                                </div>
-
-                                {/* Security Notice */}
-                                <div className="bg-orange-900/20 border border-orange-500 rounded p-3 text-xs text-orange-400">
-                                    <div className="flex items-center gap-2 mb-1 font-bold">
-                                        <AlertCircle size={14} />
-                                        Security Best Practices
-                                    </div>
-                                    <ul className="text-orange-300 space-y-1 ml-4">
-                                        <li>• Store secret keys in environment variables</li>
-                                        <li>• Never commit secrets to version control</li>
-                                        <li>• Use at least 256 bits for production</li>
-                                        <li>• Rotate keys periodically</li>
-                                    </ul>
                                 </div>
                             </div>
-                        )}
-                    </div>
-                );
-        }
-    };
 
-    return (
-        <div className="flex flex-col h-full bg-black">
-            {/* Header */}
-            <div className="p-4 border-b border-green-900">
-                <div className="flex items-center gap-3 mb-4">
-                    <Key size={24} className="text-green-500" />
-                    <div>
-                        <h2 className="font-orbitron font-bold text-white text-xl">CRYPTOGRAPHY LAB</h2>
-                        <p className="text-xs text-gray-500">40+ Algorithms • Encryption, Encoding, Hashing, JWT Generator</p>
-                    </div>
+                            <button onClick={generateJWTSecret} className="w-full bg-green-900/30 hover:bg-green-500/20 text-green-400 border border-green-500/50 py-2 rounded font-mono text-xs font-bold transition-all">
+                                GENERATE SECRET KEY
+                            </button>
+
+                            {jwtSecretKey && (
+                                <div className="bg-black border border-green-900 rounded p-2 relative group">
+                                    <code className="text-green-500 font-mono text-xs break-all block pr-8">{jwtSecretKey}</code>
+                                    <button onClick={copyJWTSecret} className="absolute top-2 right-2 text-gray-500 hover:text-white">
+                                        {jwtCopied ? <Check size={12} /> : <Copy size={12} />}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </AccordionSection>
+
                 </div>
 
-                {/* Tabs */}
-                <div className="flex gap-2 overflow-x-auto">
-                    <TabButton active={activeTab === 'encrypt'} onClick={() => setActiveTab('encrypt')} label="Encryption" />
-                    <TabButton active={activeTab === 'encode'} onClick={() => setActiveTab('encode')} label="Encoding" />
-                    <TabButton active={activeTab === 'hash'} onClick={() => setActiveTab('hash')} label="Hashing" />
-                    <TabButton active={activeTab === 'modern'} onClick={() => setActiveTab('modern')} label="Modern" />
-                    <TabButton active={activeTab === 'converter'} onClick={() => setActiveTab('converter')} label="Converter" />
-                    <TabButton active={activeTab === 'jwt'} onClick={() => setActiveTab('jwt')} label="JWT Generator" />
-                </div>
-            </div>
-
-            {/* Main Content */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {/* Key Input (for encryption/decryption) */}
-                {(activeTab === 'encrypt' || activeTab === 'modern') && (
-                    <div>
-                        <label className="text-xs text-gray-400 font-bold mb-2 block">SECRET KEY</label>
-                        <input
-                            type="text"
-                            value={key}
-                            onChange={(e) => setKey(e.target.value)}
-                            className="w-full bg-black border border-green-900 rounded px-4 py-2 text-green-400 font-mono text-sm focus:border-green-500 focus:outline-none"
-                            placeholder="Enter encryption key..."
-                        />
-                    </div>
-                )}
-
-                {/* Input */}
-                <div>
-                    <label className="text-xs text-gray-400 font-bold mb-2 block">INPUT</label>
-                    <textarea
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        className="w-full h-32 bg-black border border-green-900 rounded p-4 text-green-400 font-mono text-sm resize-none focus:border-green-500 focus:outline-none"
-                        placeholder="Enter text to process..."
-                    />
-                </div>
-
-                {/* Actions */}
-                {renderTabContent()}
-
-                {/* Error */}
-                {error && (
-                    <div className="bg-red-900/20 border border-red-500 rounded p-3 flex items-center gap-2 text-red-400 text-sm">
-                        <AlertCircle size={16} />
-                        {error}
-                    </div>
-                )}
-
-                {/* Output */}
-                <div>
-                    <div className="flex items-center justify-between mb-2">
-                        <label className="text-xs text-gray-400 font-bold">OUTPUT</label>
+                {/* Output Textarea (Sticky at bottomish) */}
+                <div className="pt-2">
+                    <div className="flex items-center justify-between mb-1">
+                        <label className="text-xs text-green-500/70 font-bold flex items-center gap-2">
+                            <Code size={12} /> OUTPUT RESULT
+                        </label>
                         {output && (
-                            <button
-                                onClick={handleCopy}
-                                className="flex items-center gap-1 text-xs text-green-500 hover:text-green-400 transition-colors"
-                            >
-                                {copied ? <Check size={12} /> : <Copy size={12} />}
-                                {copied ? 'Copied!' : 'Copy'}
+                            <button onClick={handleCopy} className="text-[10px] text-green-500 hover:text-white flex items-center gap-1">
+                                {copied ? <Check size={10} /> : <Copy size={10} />} {copied ? 'COPIED' : 'COPY'}
                             </button>
                         )}
                     </div>
                     <textarea
                         value={output}
                         readOnly
-                        className="w-full h-32 bg-gray-900/50 border border-green-900 rounded p-4 text-green-400 font-mono text-sm resize-none focus:border-green-500 focus:outline-none"
-                        placeholder="Output will appear here..."
+                        className="w-full h-24 bg-black border border-green-900/50 rounded p-3 text-green-400 font-mono text-sm resize-none focus:border-green-500 focus:outline-none placeholder-green-900/50"
+                        placeholder="Result will appear here..."
                     />
                 </div>
             </div>
@@ -705,33 +322,43 @@ const CryptoLab: React.FC = () => {
     );
 };
 
-const TabButton: React.FC<{ active: boolean; onClick: () => void; label: string }> = ({ active, onClick, label }) => (
-    <button
-        onClick={onClick}
-        className={`px-4 py-2 rounded font-bold text-sm transition-all ${active
-            ? 'bg-green-600 text-black'
-            : 'bg-gray-900 text-gray-400 hover:bg-gray-800 hover:text-green-400'
-            }`}
-    >
-        {label}
-    </button>
+// Sub-components
+
+const AccordionSection: React.FC<{ title: string, icon: React.ReactNode, isOpen: boolean, onToggle: () => void, children: React.ReactNode }> = ({
+    title, icon, isOpen, onToggle, children
+}) => (
+    <div className={`border ${isOpen ? 'border-green-500/50 bg-green-900/10' : 'border-green-900/30 bg-black'} rounded transition-all duration-200`}>
+        <button
+            onClick={onToggle}
+            className="w-full flex items-center justify-between p-3 hover:bg-green-900/20 transition-colors text-left"
+        >
+            <div className="flex items-center gap-2 text-green-400 font-bold font-orbitron text-sm">
+                {icon}
+                <span>{title}</span>
+            </div>
+            {isOpen ? <ChevronDown size={16} className="text-green-500" /> : <ChevronRight size={16} className="text-gray-600" />}
+        </button>
+
+        {isOpen && (
+            <div className="p-3 border-t border-green-900/30 animate-in slide-in-from-top-2 duration-200">
+                {children}
+            </div>
+        )}
+    </div>
 );
 
 const ActionButton: React.FC<{ icon: React.ReactNode; label: string; onClick: () => void; variant?: 'primary' | 'secondary' }> = ({
-    icon,
-    label,
-    onClick,
-    variant = 'primary'
+    icon, label, onClick, variant = 'primary'
 }) => (
     <button
         onClick={onClick}
-        className={`flex items-center justify-center gap-2 px-3 py-2 rounded text-xs font-bold transition-all ${variant === 'primary'
-            ? 'bg-green-900/30 text-green-400 border border-green-900 hover:bg-green-900/50 hover:border-green-500'
-            : 'bg-blue-900/30 text-blue-400 border border-blue-900 hover:bg-blue-900/50 hover:border-blue-500'
+        className={`flex flex-col items-center justify-center gap-1 p-2 rounded text-[10px] font-bold transition-all border ${variant === 'primary'
+                ? 'bg-green-950/30 text-green-400 border-green-900 hover:border-green-500 hover:bg-green-900/30'
+                : 'bg-blue-950/30 text-blue-400 border-blue-900 hover:border-blue-500 hover:bg-blue-900/30'
             }`}
     >
         {icon}
-        {label}
+        <span>{label}</span>
     </button>
 );
 

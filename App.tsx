@@ -26,6 +26,9 @@ import LoginScreen from './components/LoginScreen';
 import LoginPage from './components/LoginPage';
 import SecretPage from './components/SecretPage';
 import FunHub from './components/FunHub';
+import Dashboard from './components/Dashboard';
+import ZerosSearch from './components/ZerosSearch';
+import BinaryProfile from './components/BinaryProfile';
 import { TabType, LogEntry, Tool } from './types';
 
 // --- Main App Component ---
@@ -58,7 +61,26 @@ const App: React.FC = () => {
   const [stats, setStats] = useState({
     threats: 0,
     blocked: 0,
-    networkLoad: 0
+    networkLoad: 0,
+    systemIntegrity: 98 // Added system integrity to stats
+  });
+
+  // NEW: State for Web Activity & Security Analytics
+  const [webActivityData, setWebActivityData] = useState<any[]>([]);
+  const [securityAnalytics, setSecurityAnalytics] = useState({
+    attackTypes: [
+      { type: 'SQLi', value: 30 },
+      { type: 'XSS', value: 45 },
+      { type: 'DDoS', value: 60 },
+      { type: 'Brute', value: 20 },
+      { type: 'Malware', value: 10 },
+    ],
+    trafficComposition: [
+      { name: 'HTTP', value: 400 },
+      { name: 'DNS', value: 100 },
+      { name: 'Encrypted', value: 300 },
+      { name: 'P2P', value: 50 },
+    ]
   });
 
   // Save active tab to localStorage whenever it changes
@@ -124,8 +146,33 @@ const App: React.FC = () => {
       setStats(prev => ({
         threats: prev.threats + (Math.random() > 0.8 ? 1 : 0),
         blocked: prev.blocked + (Math.random() > 0.7 ? 1 : 0),
-        networkLoad: Math.floor(Math.random() * 40) + 30
+        networkLoad: Math.floor(Math.random() * 40) + 30,
+        systemIntegrity: Math.max(80, Math.min(100, prev.systemIntegrity + (Math.random() - 0.5) * 2))
       }));
+
+      // NEW: Update Web Activity Data
+      setWebActivityData(prev => {
+        const newData = [...prev, {
+          time: now,
+          requests: Math.floor(Math.random() * 500) + 100,
+          latency: Math.floor(Math.random() * 50) + 10
+        }];
+        return newData.slice(-20);
+      });
+
+      // NEW: Update Security Analytics (Slowly changing)
+      if (Math.random() > 0.8) {
+        setSecurityAnalytics(prev => ({
+          attackTypes: prev.attackTypes.map(item => ({
+            ...item,
+            value: Math.max(0, Math.min(100, item.value + (Math.random() - 0.5) * 20))
+          })),
+          trafficComposition: prev.trafficComposition.map(item => ({
+            ...item,
+            value: Math.max(10, item.value + (Math.random() - 0.5) * 50)
+          }))
+        }));
+      }
 
       // Random Logs
       if (Math.random() > 0.7) {
@@ -169,7 +216,19 @@ const App: React.FC = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <DashboardView stats={stats} networkData={networkData} logs={logs} honeypotData={honeypotData} freqData={freqData} />;
+        return (
+          <Dashboard
+            stats={stats}
+            networkData={networkData}
+            logs={logs}
+            honeypotData={honeypotData}
+            freqData={freqData}
+            webActivityData={webActivityData}
+            securityAnalytics={securityAnalytics}
+          />
+        );
+      case 'zeros':
+        return <ZerosSearch />;
       case 'terminal':
         return <Terminal />;
       case 'attack':
@@ -331,9 +390,10 @@ const SidebarContent: React.FC<{ activeTab: TabType, onTabChange: (t: TabType) =
 
       <div className="text-xs text-gray-500 uppercase tracking-wider mb-2 mt-2 font-bold px-2">Core Modules</div>
       <NavButton active={activeTab === 'dashboard'} onClick={() => onTabChange('dashboard')} icon={<Activity size={18} />} label="Dashboard" />
+      <NavButton active={activeTab === 'zeros'} onClick={() => onTabChange('zeros')} icon={<Globe size={18} />} label="Zeros Search" badge="WEB" />
       <NavButton active={activeTab === 'ai_chat'} onClick={() => onTabChange('ai_chat')} icon={<Bot size={18} />} label="AI Sherly Chat" badge="AI" />
       <NavButton active={activeTab === 'terminal'} onClick={() => onTabChange('terminal')} icon={<TerminalIcon size={18} />} label="Terminal CLI" />
-      <NavButton active={activeTab === 'map'} onClick={() => onTabChange('map')} icon={<MapIcon size={18} />} label="Global Threat Map" badge="LIVE" />
+      <NavButton active={activeTab === 'map'} onClick={() => onTabChange('map')} icon={<MapIcon size={18} />} label="Threat Map" badge="LIVE" />
       <NavButton active={activeTab === 'avatar'} onClick={() => onTabChange('avatar')} icon={<UserCheck size={18} />} label="Digital Soul" />
 
       <div className="text-xs text-gray-500 uppercase tracking-wider mb-2 mt-6 font-bold px-2">Offensive Ops</div>
@@ -342,7 +402,7 @@ const SidebarContent: React.FC<{ activeTab: TabType, onTabChange: (t: TabType) =
       <NavButton active={activeTab === 'code_editor'} onClick={() => onTabChange('code_editor')} icon={<Code size={18} />} label="Code Editor" />
       <NavButton active={activeTab === 'fun'} onClick={() => onTabChange('fun')} icon={<Gamepad2 size={18} />} label="Fun" badge="UBER" />
       <NavButton active={activeTab === 'attack'} onClick={() => onTabChange('attack')} icon={<Zap size={18} />} label="Attack Tools" />
-      <NavButton active={activeTab === 'c2'} onClick={() => onTabChange('c2')} icon={<Laptop size={18} />} label="Command & Control" badge="RAT" />
+      <NavButton active={activeTab === 'c2'} onClick={() => onTabChange('c2')} icon={<Laptop size={18} />} label="RAT" badge="RAT" />
       <NavButton active={activeTab === 'crypto'} onClick={() => onTabChange('crypto')} icon={<Key size={18} />} label="Cryptography" />
       <NavButton active={activeTab === 'database'} onClick={() => onTabChange('database')} icon={<Database size={18} />} label="Data Breach" badge="LEAK" />
 
@@ -391,130 +451,7 @@ const NavButton: React.FC<{ active: boolean, onClick: () => void, icon: React.Re
   </button>
 );
 
-const DashboardView: React.FC<any> = ({ stats, networkData, logs, honeypotData, freqData }) => (
-  <div className="space-y-6 overflow-y-auto h-full pb-20 scrollbar-hide">
-    {/* Top Stats */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <StatCard label="Active Threats" value={stats.threats} icon={<Zap size={20} className="text-red-500" />} color="red" />
-      <StatCard label="Mitigated Attacks" value={stats.blocked} icon={<Shield size={20} className="text-green-500" />} color="green" />
-      <StatCard label="Net Traffic" value={`${stats.networkLoad}%`} icon={<Activity size={20} className="text-blue-500" />} color="blue" />
-      <StatCard label="System Integrity" value="98.2%" icon={<Lock size={20} className="text-green-400" />} color="green" />
-    </div>
-
-    {/* Main Charts Area */}
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-      {/* Network Traffic */}
-      <div className="lg:col-span-2 glass-panel p-4 rounded-lg h-64 md:h-80 relative overflow-hidden border border-green-900 bg-black/40 flex flex-col">
-        <h3 className="text-lg font-orbitron mb-4 flex items-center gap-2 relative z-10">
-          <Activity size={18} className="text-green-500" /> Real-time Traffic Analysis
-        </h3>
-        <div className="flex-1 min-h-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={networkData}>
-              <defs>
-                <linearGradient id="colorIn" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#00ff41" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#00ff41" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="colorOut" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#0096ff" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#0096ff" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
-              <XAxis dataKey="time" stroke="#4b5563" fontSize={10} tick={{ fill: '#6b7280' }} />
-              <YAxis stroke="#4b5563" fontSize={10} tick={{ fill: '#6b7280' }} />
-              <Tooltip
-                contentStyle={{ backgroundColor: 'rgba(0,0,0,0.9)', borderColor: '#00ff41', color: '#00ff41', fontFamily: 'monospace' }}
-                itemStyle={{ color: '#fff' }}
-              />
-              <Area type="monotone" dataKey="inbound" stroke="#00ff41" strokeWidth={2} fillOpacity={1} fill="url(#colorIn)" />
-              <Area type="monotone" dataKey="outbound" stroke="#0096ff" strokeWidth={2} fillOpacity={1} fill="url(#colorOut)" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* Frequency Spectrum Graph */}
-      <div className="glass-panel p-4 rounded-lg border border-green-900 bg-black/40 flex flex-col relative overflow-hidden h-64 md:h-80">
-        <h3 className="text-lg font-orbitron mb-4 flex items-center gap-2 relative z-10">
-          <Radio size={18} className="text-yellow-500 animate-pulse" /> RF Spectrum Analyzer
-        </h3>
-        <div className="flex-1 relative bg-gray-900/20 rounded border border-green-900/30 overflow-hidden">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={freqData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
-              <XAxis dataKey="band" hide />
-              <Tooltip
-                cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                contentStyle={{ backgroundColor: 'rgba(0,0,0,0.9)', borderColor: '#eab308', color: '#eab308', fontFamily: 'monospace' }}
-              />
-              <Bar dataKey="val" fill="#eab308" animationDuration={300}>
-                {
-                  freqData?.map((entry: any, index: number) => (
-                    <Cell key={`cell-${index}`} fillOpacity={0.4 + (entry.val / 200)} fill={entry.val > 80 ? '#ef4444' : '#eab308'} />
-                  ))
-                }
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="mt-2 flex justify-between text-[10px] text-gray-500 font-mono">
-          <span>2.4 GHz</span>
-          <span>BANDWIDTH: 40MHz</span>
-          <span>5.0 GHz</span>
-        </div>
-      </div>
-    </div>
-
-    {/* Bottom Section */}
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Logs */}
-      <div className="lg:col-span-2 glass-panel p-4 rounded-lg border border-green-900 bg-black/40">
-        <h3 className="text-lg font-orbitron mb-3 flex items-center gap-2">
-          <TerminalIcon size={18} /> System Event Logs
-        </h3>
-        <div className="space-y-1 max-h-60 overflow-y-auto pr-2 font-mono text-xs">
-          {logs.map((log: LogEntry) => (
-            <div key={log.id} className="flex gap-3 p-2 bg-black/40 rounded border-l-2 border-green-500/20 hover:bg-green-500/5 hover:border-green-500 transition-all">
-              <span className="text-gray-500 shrink-0">{log.timestamp}</span>
-              <span className={`break-words ${log.type === 'warning' ? 'text-yellow-400' : log.type === 'success' ? 'text-green-400' : 'text-blue-300'}`}>
-                {log.type.toUpperCase()}: {log.message}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Honeypot Stats */}
-      <div className="glass-panel p-4 rounded-lg flex flex-col border border-green-900 bg-black/40">
-        <h3 className="text-lg font-orbitron mb-3 flex items-center gap-2">
-          <Crosshair size={18} className="text-purple-500" /> Honeypot Hits
-        </h3>
-        <div className="flex-1 min-h-[150px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={honeypotData || []}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
-              <XAxis dataKey="protocol" stroke="#6b7280" fontSize={10} />
-              <Tooltip
-                cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                contentStyle={{ backgroundColor: 'rgba(0,0,0,0.9)', borderColor: '#00ff41', color: '#00ff41', fontFamily: 'monospace' }}
-              />
-              <Bar dataKey="attacks" fill="#8884d8" barSize={20}>
-                {
-                  honeypotData?.map((entry: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#a855f7' : '#ec4899'} />
-                  ))
-                }
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+// DashboardView removed (moved to components/Dashboard.tsx)
 
 const ToolsView: React.FC<{ onLaunch: (t: Tool) => void }> = ({ onLaunch }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -677,9 +614,11 @@ const DocsView = () => (
           <p className="text-sm border-l-2 border-green-900 pl-3">
             The central command hub providing real-time situational awareness.
             <br />• <strong>Network Traffic Analysis:</strong> Monitors inbound and outbound packet flow in real-time.
+            <br />• <strong>Web Activity Wave:</strong> Visualizes web request traffic and latency patterns.
+            <br />• <strong>Threat Analysis Radar:</strong> Real-time assessment of active threat vectors (SQLi, XSS, DDoS).
+            <br />• <strong>Packet Composition:</strong> Breakdown of network traffic types (HTTP, DNS, Encrypted).
             <br />• <strong>RF Spectrum Analyzer:</strong> Visualizes radio frequency activity across 2.4GHz and 5.0GHz bands.
             <br />• <strong>System Event Logs:</strong> Stream of latest security events, warnings, and system alerts.
-            <br />• <strong>Honeypot Stats:</strong> Tracks interception rates across SSH, FTP, HTTP, and other protocols.
           </p>
         </div>
 
@@ -704,6 +643,13 @@ const DocsView = () => (
           <h4 className="text-white font-bold mb-1">2.4 Global Threat Map</h4>
           <p className="text-sm border-l-2 border-green-900 pl-3">
             Interactive 3D geospatial visualization of cyber attacks. Tracks origin and destination of threats, displaying attack types (DDoS, Malware, Phishing) and intensity in real-time.
+          </p>
+        </div>
+
+        <div className="mb-4">
+          <h4 className="text-white font-bold mb-1">2.5 Zeros Search</h4>
+          <p className="text-sm border-l-2 border-green-900 pl-3">
+            Secure, encrypted gateway to the surface web. Integrated with Google Custom Search Engine (CSE) but styled for stealth and low-light operations. Allows for rapid OSINT gathering without leaving the secure environment.
           </p>
         </div>
       </section>
@@ -829,33 +775,8 @@ const AboutView = () => {
       {/* Header with Kali Linux Logo */}
       <div className="flex flex-col md:flex-row items-center gap-6 mb-8 border-b border-gray-700 pb-6">
         <div className="relative group">
-          <div className="w-32 h-32 md:w-40 md:h-40 rounded-2xl border-2 border-green-500 flex items-center justify-center group-hover:shadow-[0_0_30px_#00ff41] transition-all bg-black p-3 overflow-hidden relative">
-            {/* Animated Binary Rain */}
-            <div className="absolute inset-0 flex flex-wrap overflow-hidden opacity-60">
-              {binaryText.split('').map((char, i) => (
-                <span
-                  key={i}
-                  className="text-green-500 text-[8px] leading-none animate-pulse"
-                  style={{
-                    animationDelay: `${Math.random() * 2}s`,
-                    opacity: Math.random() * 0.5 + 0.3
-                  }}
-                >
-                  {char}
-                </span>
-              ))}
-            </div>
-            {/* Center KALI text */}
-            <div className="relative z-10 text-center">
-              <div className="text-green-500 font-bold text-2xl tracking-wider animate-pulse">
-                KALI
-              </div>
-              <div className="text-green-500 text-xs mt-1 font-mono">
-                1101 0110
-              </div>
-            </div>
-          </div>
-          <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-2 border-black animate-pulse"></div>
+          {/* Replaced static image with animated BinaryProfile */}
+          <BinaryProfile />
         </div>
         <div className="flex-1 text-center md:text-left">
           <h2 className="text-3xl md:text-4xl font-orbitron text-white font-bold mb-2">AI SHERLY LAB</h2>

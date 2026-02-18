@@ -1,14 +1,46 @@
+import CyberNews from './CyberNews';
+import { Gamepad2, Palette, Tv, ChevronLeft, TrendingUp, Newspaper, BookOpen } from 'lucide-react';
 import React, { useState } from 'react';
-import { Gamepad2, Palette, Tv, ChevronLeft, TrendingUp } from 'lucide-react';
 import MazeGame from './MazeGame';
 import ArtStudio from './ArtStudio/ArtStudio';
 import Anime from './Anime';
 import TradingView from './TradingView';
+import AnimeInfo from './AnimeInfo';
 
-type Mode = 'menu' | 'maze' | 'art' | 'anime' | 'trading';
+type Mode = 'menu' | 'maze' | 'art' | 'anime' | 'trading' | 'news' | 'anime-info';
 
 const FunHub: React.FC = () => {
     const [mode, setMode] = useState<Mode>('menu');
+
+    if (mode === 'anime-info') {
+        return (
+            <div className="h-full flex flex-col">
+                <div className="p-2 border-b border-pink-900 bg-black flex items-center">
+                    <button onClick={() => setMode('menu')} className="text-pink-500 hover:text-pink-400 flex items-center gap-2 text-sm font-bold">
+                        <ChevronLeft size={16} /> Back to Hub
+                    </button>
+                </div>
+                <div className="flex-1 overflow-hidden relative">
+                    <AnimeInfo />
+                </div>
+            </div>
+        );
+    }
+
+    if (mode === 'news') {
+        return (
+            <div className="h-full flex flex-col">
+                <div className="p-2 border-b border-cyan-900 bg-black flex items-center">
+                    <button onClick={() => setMode('menu')} className="text-cyan-500 hover:text-cyan-400 flex items-center gap-2 text-sm font-bold">
+                        <ChevronLeft size={16} /> Back to Hub
+                    </button>
+                </div>
+                <div className="flex-1 overflow-hidden relative">
+                    <CyberNews />
+                </div>
+            </div>
+        );
+    }
 
     if (mode === 'maze') {
         return (
@@ -128,6 +160,52 @@ const FunHub: React.FC = () => {
 
 
 
+
+                {/* Cyber News Card */}
+                <button
+                    onClick={() => setMode('news')}
+                    className="group relative h-64 bg-black border border-cyan-900 rounded-xl overflow-hidden hover:border-cyan-500 transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.2)] text-left md:col-span-2 lg:col-span-1"
+                >
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.1)_0%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-grid-cyan opacity-10" />
+
+                    <div className="p-8 h-full flex flex-col relative z-10">
+                        <div className="mb-4 bg-cyan-900/30 w-16 h-16 rounded-lg flex items-center justify-center border border-cyan-500/30 group-hover:scale-110 transition-transform">
+                            <Newspaper size={32} className="text-cyan-400" />
+                        </div>
+                        <h2 className="text-2xl font-bold text-cyan-400 mb-2 font-orbitron">CYBER NEWS</h2>
+                        <p className="text-gray-400 text-sm">
+                            Real-time intelligence feed. Global cybersecurity updates and tech news.
+                        </p>
+                        <div className="mt-auto flex items-center text-cyan-500 text-sm font-mono opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                            <span>ACCESS_FEED</span>
+                            <span className="ml-2 animate-pulse">_</span>
+                        </div>
+                    </div>
+                </button>
+
+                {/* Anime Database Card (User Request: newsanime) */}
+                <button
+                    onClick={() => setMode('anime-info')}
+                    className="group relative h-64 bg-black border border-purple-900 rounded-xl overflow-hidden hover:border-purple-500 transition-all duration-300 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)] text-left md:col-span-2 lg:col-span-1"
+                >
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.1)_0%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-grid-purple opacity-10" />
+
+                    <div className="p-8 h-full flex flex-col relative z-10">
+                        <div className="mb-4 bg-purple-900/30 w-16 h-16 rounded-lg flex items-center justify-center border border-purple-500/30 group-hover:scale-110 transition-transform">
+                            <BookOpen size={32} className="text-purple-400" />
+                        </div>
+                        <h2 className="text-2xl font-bold text-purple-400 mb-2 font-orbitron">ANIME DB</h2>
+                        <p className="text-gray-400 text-sm">
+                            Access the neural archives. Comprehensive data on anime and manga artifacts.
+                        </p>
+                        <div className="mt-auto flex items-center text-purple-500 text-sm font-mono opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                            <span>QUERY_DB</span>
+                            <span className="ml-2 animate-pulse">_</span>
+                        </div>
+                    </div>
+                </button>
 
                 {/* Anime Card */}
                 <button

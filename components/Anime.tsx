@@ -1,59 +1,100 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Play, ArrowLeft, Tv, AlertCircle, ChevronLeft, ChevronRight, List } from 'lucide-react';
+import { Search, Play, ArrowLeft, Tv, AlertCircle, ChevronLeft, ChevronRight, Star, Calendar, Clock } from 'lucide-react';
 
-interface AnimeItem {
-    title: string;
-    slug: string;
-    poster: string;
-    episode?: string;
-    type?: string;
-    url?: string;
+// Jikan API Types
+interface JikanImage {
+    image_url: string;
+    large_image_url: string;
 }
 
-interface Episode {
-    title: string;
-    slug: string;
+interface JikanImages {
+    jpg: JikanImage;
+    webp: JikanImage;
+}
+
+interface JikanTrailer {
+    youtube_id: string;
     url: string;
+    embed_url: string;
+    images: {
+        image_url: string;
+        small_image_url: string;
+        medium_image_url: string;
+        large_image_url: string;
+        maximum_image_url: string;
+    }
 }
 
-interface AnimeDetail {
+interface JikanAnime {
+    mal_id: number;
+    url: string;
+    images: JikanImages;
+    trailer: JikanTrailer;
     title: string;
-    poster: string;
+    title_english: string;
+    title_japanese: string;
+    type: string;
+    source: string;
+    episodes: number;
+    status: string;
+    airing: boolean;
+    duration: string;
+    rating: string;
+    score: number;
+    scored_by: number;
+    rank: number;
+    popularity: number;
+    members: number;
+    favorites: number;
     synopsis: string;
-    genres: string[];
-    episodes: Episode[];
-}
-
-interface StreamData {
-    title: string;
-    streamUrl: string;
-    servers: { name: string, url: string }[];
-    prevSlug: string | null;
-    nextSlug: string | null;
+    season: string;
+    year: number;
+    studios: { name: string }[];
+    genres: { name: string }[];
 }
 
 const Anime: React.FC = () => {
     const [view, setView] = useState<'list' | 'detail' | 'watch'>('list');
     const [query, setQuery] = useState('');
-    const [animeList, setAnimeList] = useState<AnimeItem[]>([]);
-    const [selectedAnime, setSelectedAnime] = useState<AnimeDetail | null>(null);
-    const [currentStream, setCurrentStream] = useState<StreamData | null>(null);
+    const [animeList, setAnimeList] = useState<JikanAnime[]>([]);
+    const [selectedAnime, setSelectedAnime] = useState<JikanAnime | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [page, setPage] = useState(1);
+    const [hasNextPage, setHasNextPage] = useState(false);
 
-    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+    // Default to Top Anime for "All Anime" view
+    const DEFAULT_API_URL = 'https://api.jikan.moe/v4/top/anime?filter=bypopularity&sfw';
 
-    // Fetch Latest
-    const fetchLatest = async (pageNum = 1) => {
+    // Fetch Anime (Top or Search)
+    const fetchAnime = async (pageNum = 1, searchQuery = '') => {
         setLoading(true);
         setError('');
         try {
-            const res = await fetch(`${backendUrl}/api/anime/latest/${pageNum}`);
-            if (!res.ok) throw new Error('Failed to fetch latest anime');
+            let url = '';
+            if (searchQuery) {
+                // Search API
+                url = `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(searchQuery)}&page=${pageNum}&sfw`;
+            } else {
+                // User requested specific season
+                // Note: Jikan's season endpoint also supports pagination
+                url = `${DEFAULT_API_URL}&page=${pageNum}`;
+            }
+
+            const res = await fetch(url);
+
+            // Jikan Rate Limiting Handling (Simple)
+            if (res.status === 429) {
+                throw new Error('Rate limit exceeded. Please wait a moment.');
+            }
+
+            if (!res.ok) throw new Error(`Failed to fetch anime: ${res.status}`);
+
             const data = await res.json();
             setAnimeList(data.data);
-            setPage(pageNum);
+            setPage(data.pagination.current_page);
+            setHasNextPage(data.pagination.has_next_page);
+
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -61,70 +102,28 @@ const Anime: React.FC = () => {
         }
     };
 
-    // Search
-    const handleSearch = async (e?: React.FormEvent) => {
-        if (e) e.preventDefault();
-        if (!query.trim()) return;
-        setLoading(true);
-        setError('');
-        try {
-            const res = await fetch(`${backendUrl}/api/anime/search?q=${encodeURIComponent(query)}`);
-            if (!res.ok) throw new Error('Search failed');
-            const data = await res.json();
-            setAnimeList(data.data);
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Get Detail
-    const handleSelectAnime = async (slug: string) => {
-        setLoading(true);
-        setError('');
-        try {
-            const res = await fetch(`${backendUrl}/api/anime/detail/${slug}`);
-            if (!res.ok) throw new Error('Failed to fetch details');
-            const data = await res.json();
-            setSelectedAnime(data);
-            setView('detail');
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Watch Episode
-    const handleWatch = async (slug: string, directUrl?: string) => {
-        // If episode has a direct streaming URL (from AniList), open it
-        if (directUrl) {
-            window.open(directUrl, '_blank', 'noopener,noreferrer');
-            return;
-        }
-
-        setLoading(true);
-        setError('');
-        try {
-            const res = await fetch(`${backendUrl}/api/anime/watch/${slug}`);
-            if (!res.ok) throw new Error('Failed to fetch stream');
-            const data = await res.json();
-
-            if (!data.streamUrl) throw new Error('No stream found');
-
-            setCurrentStream(data);
-            setView('watch');
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
+    // Initial Load
     useEffect(() => {
-        fetchLatest();
+        fetchAnime();
     }, []);
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        fetchAnime(1, query);
+    };
+
+    const handleSelectAnime = (anime: JikanAnime) => {
+        setSelectedAnime(anime);
+        setView('detail');
+    };
+
+    const handleWatch = () => {
+        if (selectedAnime?.trailer?.embed_url) {
+            setView('watch');
+        } else {
+            setError('No trailer available for simulated streaming.');
+        }
+    };
 
     return (
         <div className="h-full bg-gray-900 text-white flex flex-col font-sans">
@@ -141,8 +140,8 @@ const Anime: React.FC = () => {
                             type="text"
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
-                            placeholder="Search anime..."
-                            className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-1 text-sm focus:outline-none focus:border-pink-500 transition-colors"
+                            placeholder="Data search..."
+                            className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-1 text-sm focus:outline-none focus:border-pink-500 transition-colors font-mono"
                         />
                         <button type="submit" className="bg-pink-600 hover:bg-pink-500 px-4 py-1 rounded text-sm font-bold transition-colors">
                             <Search size={16} />
@@ -154,7 +153,10 @@ const Anime: React.FC = () => {
                     <button
                         onClick={() => {
                             if (view === 'watch') setView('detail');
-                            else setView('list');
+                            else {
+                                setView('list');
+                                setSelectedAnime(null);
+                            }
                         }}
                         className="text-gray-400 hover:text-white flex items-center gap-2 text-sm"
                     >
@@ -164,94 +166,173 @@ const Anime: React.FC = () => {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
                 {error && (
                     <div className="bg-red-900/30 text-red-400 p-4 rounded border border-red-800 mb-6 flex items-center gap-2">
                         <AlertCircle size={18} />
                         {error}
+                        <button onClick={() => setError('')} className="ml-auto hover:text-white"><ArrowLeft size={14} className="rotate-45" /></button>
                     </div>
                 )}
 
                 {loading ? (
                     <div className="flex justify-center items-center h-64">
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
+                        <div className="flex flex-col items-center gap-4">
+                            <div className="w-16 h-16 border-4 border-pink-500/30 border-t-pink-500 rounded-full animate-spin"></div>
+                            <p className="text-pink-500 font-mono animate-pulse">CONNECTING TO JIKAN GRID...</p>
+                        </div>
                     </div>
                 ) : (
                     <>
                         {/* LIST VIEW */}
                         {view === 'list' && (
                             <div className="space-y-6">
-                                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 animate-fadeIn">
-                                    {animeList.map((anime, idx) => (
+                                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 animate-fadeIn">
+                                    {animeList.map((anime) => (
                                         <button
-                                            key={idx}
-                                            onClick={() => handleSelectAnime(anime.slug)}
+                                            key={anime.mal_id}
+                                            onClick={() => handleSelectAnime(anime)}
                                             className="group relative aspect-[2/3] bg-gray-800 rounded-lg overflow-hidden border border-gray-800 hover:border-pink-500 transition-all duration-300 hover:shadow-[0_0_20px_rgba(236,72,153,0.2)] text-left"
                                         >
-                                            <img src={anime.poster} alt={anime.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-80 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                                            <img
+                                                src={anime.images.webp.large_image_url || anime.images.jpg.large_image_url}
+                                                alt={anime.title}
+                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
                                                 <h3 className="text-sm font-bold text-white group-hover:text-pink-400 transition-colors line-clamp-2">{anime.title}</h3>
-                                                {anime.episode && <span className="text-[10px] bg-pink-600/80 text-white px-1.5 py-0.5 rounded font-bold w-fit mt-1">{anime.episode}</span>}
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    <span className="text-[10px] bg-pink-600/80 text-white px-1.5 py-0.5 rounded font-bold">{anime.type}</span>
+                                                    {anime.score && (
+                                                        <span className="text-[10px] flex items-center gap-0.5 text-yellow-400">
+                                                            <Star size={8} fill="currentColor" /> {anime.score}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
                                         </button>
                                     ))}
                                 </div>
 
-                                {!query && (
-                                    <div className="flex justify-center gap-4 mt-8">
-                                        <button
-                                            onClick={() => fetchLatest(page - 1)}
-                                            disabled={page <= 1}
-                                            className="px-4 py-2 bg-gray-800 rounded hover:bg-gray-700 disabled:opacity-50 flex items-center gap-2"
-                                        >
-                                            <ChevronLeft size={16} /> Prev
-                                        </button>
-                                        <span className="px-4 py-2 bg-black rounded border border-gray-800">Page {page}</span>
-                                        <button
-                                            onClick={() => fetchLatest(page + 1)}
-                                            className="px-4 py-2 bg-gray-800 rounded hover:bg-gray-700 flex items-center gap-2"
-                                        >
-                                            Next <ChevronRight size={16} />
-                                        </button>
-                                    </div>
-                                )}
+                                {/* Pagination */}
+                                <div className="flex justify-center gap-4 mt-8 pb-8">
+                                    <button
+                                        onClick={() => fetchAnime(page - 1, query)}
+                                        disabled={page <= 1}
+                                        className="px-4 py-2 bg-gray-800 rounded hover:bg-gray-700 disabled:opacity-50 flex items-center gap-2 disabled:cursor-not-allowed"
+                                    >
+                                        <ChevronLeft size={16} /> Prev
+                                    </button>
+                                    <span className="px-4 py-2 bg-black rounded border border-gray-800 font-mono text-pink-500">PAGE {page}</span>
+                                    <button
+                                        onClick={() => fetchAnime(page + 1, query)}
+                                        disabled={!hasNextPage}
+                                        className="px-4 py-2 bg-gray-800 rounded hover:bg-gray-700 disabled:opacity-50 flex items-center gap-2 disabled:cursor-not-allowed"
+                                    >
+                                        Next <ChevronRight size={16} />
+                                    </button>
+                                </div>
                             </div>
                         )}
 
                         {/* DETAIL VIEW */}
                         {view === 'detail' && selectedAnime && (
-                            <div className="max-w-5xl mx-auto animate-fadeIn">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                    <div className="md:col-span-1">
-                                        <div className="aspect-[2/3] rounded-xl overflow-hidden shadow-2xl border border-gray-800">
-                                            <img src={selectedAnime.poster} alt={selectedAnime.title} className="w-full h-full object-cover" />
-                                        </div>
-                                    </div>
-                                    <div className="md:col-span-2 space-y-6">
-                                        <div>
-                                            <h2 className="text-3xl font-bold text-pink-500 mb-2 font-orbitron">{selectedAnime.title}</h2>
-                                            <div className="flex flex-wrap gap-2 mb-4">
-                                                {selectedAnime.genres.map((g, i) => (
-                                                    <span key={i} className="text-xs bg-gray-800 text-gray-300 px-2 py-1 rounded border border-gray-700">{g}</span>
-                                                ))}
+                            <div className="max-w-6xl mx-auto animate-fadeIn">
+                                <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                                    {/* Cover Image & Actions */}
+                                    <div className="md:col-span-4 lg:col-span-3 space-y-4">
+                                        <div className="aspect-[2/3] rounded-xl overflow-hidden shadow-2xl border border-gray-800 relative group">
+                                            <img
+                                                src={selectedAnime.images.webp.large_image_url}
+                                                alt={selectedAnime.title}
+                                                className="w-full h-full object-cover"
+                                            />
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                {selectedAnime.trailer.embed_url ? (
+                                                    <Play className="w-16 h-16 text-white opacity-80" />
+                                                ) : (
+                                                    <span className="text-white font-mono text-xs">NO SIGNAL</span>
+                                                )}
                                             </div>
-                                            <p className="text-gray-300 leading-relaxed text-sm">{selectedAnime.synopsis}</p>
                                         </div>
 
-                                        <div className="bg-gray-800/30 rounded-xl p-4 border border-gray-700">
-                                            <h3 className="text-sm font-bold text-gray-400 mb-4 flex items-center gap-2">
-                                                <List size={16} /> EPISODE LIST
-                                            </h3>
-                                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-96 overflow-y-auto custom-scrollbar">
-                                                {selectedAnime.episodes.map((ep, i) => (
-                                                    <button
-                                                        key={i}
-                                                        onClick={() => handleWatch(ep.slug, ep.url || undefined)}
-                                                        className="px-3 py-2 bg-gray-800 hover:bg-pink-600/20 hover:text-pink-400 border border-gray-700 hover:border-pink-600/50 rounded text-xs transition-colors truncate text-left"
-                                                    >
-                                                        {ep.title}
-                                                    </button>
+                                        <button
+                                            onClick={handleWatch}
+                                            disabled={!selectedAnime.trailer.embed_url}
+                                            className="w-full py-3 bg-pink-600 hover:bg-pink-500 disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white rounded-lg font-bold font-orbitron tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-pink-500/25"
+                                        >
+                                            {selectedAnime.trailer.embed_url ? (
+                                                <><Play size={18} fill="currentColor" /> WATCH TRAILER</>
+                                            ) : (
+                                                <><AlertCircle size={18} /> STREAM OFFLINE</>
+                                            )}
+                                        </button>
+
+                                        <div className="bg-gray-800/50 p-4 rounded-lg border border-gray-700 space-y-3 font-mono text-xs">
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-400">Format:</span>
+                                                <span className="text-white">{selectedAnime.type}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-400">Episodes:</span>
+                                                <span className="text-white">{selectedAnime.episodes || '?'}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-400">Status:</span>
+                                                <span className={`text-${selectedAnime.airing ? 'green' : 'gray'}-400`}>{selectedAnime.status}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-400">Season:</span>
+                                                <span className="text-white capitalize">{selectedAnime.season} {selectedAnime.year}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-400">Studio:</span>
+                                                <span className="text-white text-right">{selectedAnime.studios.map(s => s.name).join(', ') || 'Unknown'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Info & Synopsis */}
+                                    <div className="md:col-span-8 lg:col-span-9 space-y-6">
+                                        <div>
+                                            <h2 className="text-3xl md:text-4xl font-bold text-white mb-2 font-orbitron">{selectedAnime.title}</h2>
+                                            {selectedAnime.title_english && (
+                                                <h3 className="text-xl text-gray-400 mb-4">{selectedAnime.title_english}</h3>
+                                            )}
+
+                                            <div className="flex flex-wrap gap-2 mb-6">
+                                                {selectedAnime.genres.map((g, i) => (
+                                                    <span key={i} className="text-xs bg-pink-900/30 text-pink-300 px-3 py-1 rounded-full border border-pink-500/30">
+                                                        {g.name}
+                                                    </span>
                                                 ))}
+                                            </div>
+
+                                            <div className="flex items-center gap-6 mb-6 p-4 bg-gray-800/30 rounded-lg border border-gray-700/50">
+                                                <div className="flex items-center gap-2">
+                                                    <Star className="text-yellow-400" size={24} fill="currentColor" />
+                                                    <div>
+                                                        <div className="text-2xl font-bold text-white">{selectedAnime.score || 'N/A'}</div>
+                                                        <div className="text-[10px] text-gray-500 font-mono">{selectedAnime.scored_by?.toLocaleString()} VOTES</div>
+                                                    </div>
+                                                </div>
+                                                <div className="w-px h-8 bg-gray-700"></div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="text-2xl font-bold text-white">#{selectedAnime.rank}</div>
+                                                    <div className="text-[10px] text-gray-500 font-mono">RANKED</div>
+                                                </div>
+                                                <div className="w-px h-8 bg-gray-700"></div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="text-2xl font-bold text-white">#{selectedAnime.popularity}</div>
+                                                    <div className="text-[10px] text-gray-500 font-mono">POPULARITY</div>
+                                                </div>
+                                            </div>
+
+                                            <div className="prose prose-invert max-w-none">
+                                                <h3 className="text-lg font-bold text-pink-400 mb-2 border-b border-gray-700 pb-2">Transmission Data (Synopsis)</h3>
+                                                <p className="text-gray-300 leading-relaxed whitespace-pre-line text-sm md:text-base">
+                                                    {selectedAnime.synopsis || "No synopsis available."}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -259,56 +340,44 @@ const Anime: React.FC = () => {
                             </div>
                         )}
 
-                        {/* WATCH VIEW */}
-                        {view === 'watch' && currentStream && (
-                            <div className="max-w-6xl mx-auto animate-fadeIn space-y-4">
+                        {/* WATCH VIEW (Trailer Only) */}
+                        {view === 'watch' && selectedAnime && (
+                            <div className="max-w-5xl mx-auto animate-fadeIn flex flex-col h-full">
                                 <div className="aspect-video bg-black rounded-xl overflow-hidden border border-pink-900 shadow-[0_0_50px_rgba(236,72,153,0.1)] relative">
                                     <iframe
-                                        src={currentStream.streamUrl}
+                                        src={selectedAnime.trailer.embed_url?.replace('autoplay=0', 'autoplay=1')}
                                         className="w-full h-full border-0"
                                         allowFullScreen
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        title={`${selectedAnime.title} Trailer`}
                                     />
                                 </div>
-                                <div className="flex justify-between items-center bg-gray-800/50 p-4 rounded-xl border border-gray-700">
-                                    <h2 className="text-lg font-bold text-pink-400">{currentStream.title}</h2>
-                                    <div className="flex gap-2">
-                                        {currentStream.prevSlug && (
-                                            <button
-                                                onClick={() => handleWatch(currentStream.prevSlug!)}
-                                                className="px-4 py-1.5 bg-gray-800 hover:bg-gray-700 rounded text-sm flex items-center gap-2 transition-colors"
-                                            >
-                                                <ChevronLeft size={16} /> Prev
-                                            </button>
-                                        )}
-                                        {currentStream.nextSlug && (
-                                            <button
-                                                onClick={() => handleWatch(currentStream.nextSlug!)}
-                                                className="px-4 py-1.5 bg-gray-800 hover:bg-gray-700 rounded text-sm flex items-center gap-2 transition-colors"
-                                            >
-                                                Next <ChevronRight size={16} />
-                                            </button>
-                                        )}
-                                    </div>
+                                <div className="mt-4 flex justify-between items-center">
+                                    <h2 className="text-xl font-bold text-pink-400">{selectedAnime.title} - Official Trailer</h2>
+                                    <span className="text-xs font-mono text-gray-500">STREAMING FROM: YOUTUBE NEURAL LINK</span>
                                 </div>
-                                {currentStream.servers.length > 1 && (
-                                    <div className="flex gap-2 overflow-x-auto pb-2">
-                                        {currentStream.servers.map((s, i) => (
-                                            <button
-                                                key={i}
-                                                onClick={() => setCurrentStream({ ...currentStream, streamUrl: s.url })}
-                                                className={`px-3 py-1 rounded text-xs border whitespace-nowrap ${currentStream.streamUrl === s.url ? 'bg-pink-600 border-pink-500 text-white' : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700'}`}
-                                            >
-                                                {s.name}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
+                                <div className="mt-2 text-sm text-gray-400 bg-gray-800/50 p-4 rounded border border-gray-700 flex items-start gap-2">
+                                    <AlertCircle className="shrink-0 text-pink-500" size={18} />
+                                    <p>
+                                        Notice: Full episode streaming is currently encrypted/restricted in this sector.
+                                        Only the promotional data packet (Trailer) is available for decryption.
+                                    </p>
+                                </div>
                             </div>
                         )}
                     </>
                 )}
             </div>
+
+            <style>{`
+                .scrollbar-hide::-webkit-scrollbar {
+                    display: none;
+                }
+                .scrollbar-hide {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+            `}</style>
         </div>
     );
 };

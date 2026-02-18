@@ -25,7 +25,7 @@ const Terminal: React.FC = () => {
         background: '#000000',
         foreground: '#00ff41',
         cursor: '#00ff41',
-        selection: 'rgba(0, 255, 65, 0.3)',
+        selectionBackground: 'rgba(0, 255, 65, 0.3)',
         black: '#000000',
         red: '#ff0000',
         green: '#00ff41',
