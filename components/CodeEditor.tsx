@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Editor from '@monaco-editor/react';
-import { Play, Save, FolderPlus, FilePlus, Trash2, Edit2, Code2, Terminal as TerminalIcon, FileCode, ChevronRight, ChevronDown, X, GripVertical, FolderOpen } from 'lucide-react';
+import { Play, Save, FolderPlus, FilePlus, Trash2, Edit2, Code2, Terminal as TerminalIcon, FileCode, ChevronRight, ChevronDown, X, GripVertical, FolderOpen, Globe } from 'lucide-react';
 
 interface Script {
   name: string;
@@ -22,6 +22,7 @@ const CodeEditor: React.FC = () => {
   ]);
   const [activeFile, setActiveFile] = useState(0);
   const [output, setOutput] = useState('');
+  const [isHtmlPreview, setIsHtmlPreview] = useState(false);
   const [isExecuting, setIsExecuting] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['/']));
@@ -142,6 +143,15 @@ const CodeEditor: React.FC = () => {
     if (openFiles.length === 0) return;
     const currentFile = openFiles[activeFile];
 
+    // HTML Live Preview
+    if (currentFile.language === 'html' || currentFile.name.endsWith('.html')) {
+      setIsHtmlPreview(true);
+      setOutput(currentFile.content);
+      setTerminalOutput(prev => `${prev}$ Starting Live Preview for ${currentFile.name}...\n`);
+      return;
+    }
+
+    setIsHtmlPreview(false);
     setIsExecuting(true);
     setOutput('⚡ Executing code...\n');
     setTerminalOutput(prev => `${prev}$ Executing ${currentFile.name}...\n`);
@@ -578,9 +588,13 @@ const CodeEditor: React.FC = () => {
               <button
                 onClick={handleExecute}
                 disabled={isExecuting || openFiles.length === 0}
-                className="flex items-center gap-2 px-4 py-1.5 rounded bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:text-gray-500 text-black text-xs font-bold transition-colors"
+                className={`flex items-center gap-2 px-4 py-1.5 rounded transition-colors text-xs font-bold ${openFiles[activeFile]?.language === 'html'
+                  ? 'bg-purple-600 hover:bg-purple-500 text-white'
+                  : 'bg-green-600 hover:bg-green-500 text-black'
+                  } disabled:bg-gray-700 disabled:text-gray-500`}
               >
-                <Play size={14} /> {isExecuting ? 'Menjalankan...' : 'Eksekusi'}
+                {openFiles[activeFile]?.language === 'html' ? <Globe size={14} /> : <Play size={14} />}
+                {isExecuting ? 'Menjalankan...' : (openFiles[activeFile]?.language === 'html' ? 'Live Preview' : 'Eksekusi')}
               </button>
             </div>
           </div>
@@ -603,8 +617,19 @@ const CodeEditor: React.FC = () => {
                   <X size={14} />
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto p-3 font-mono text-xs">
-                <pre className="text-green-400 whitespace-pre-wrap">{output}</pre>
+              <div className="flex-1 overflow-y-auto font-mono text-xs relative">
+                {isHtmlPreview ? (
+                  <iframe
+                    srcDoc={output}
+                    className="w-full h-full bg-white border-0"
+                    title="Live Preview"
+                    sandbox="allow-scripts"
+                  />
+                ) : (
+                  <div className="p-3">
+                    <pre className="text-green-400 whitespace-pre-wrap">{output}</pre>
+                  </div>
+                )}
               </div>
             </div>
           )}

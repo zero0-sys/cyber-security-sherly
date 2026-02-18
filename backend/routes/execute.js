@@ -36,7 +36,8 @@ router.post('/code', async (req, res) => {
                 ext = 'py';
                 tempFile = path.join(TEMP_DIR, filename || `script_${Date.now()}.py`);
                 await fs.writeFile(tempFile, code);
-                command = `python3 "${tempFile}"`;
+                // Try python3 first, then python
+                command = `(python3 "${tempFile}" || python "${tempFile}")`;
                 break;
 
             case 'javascript':
