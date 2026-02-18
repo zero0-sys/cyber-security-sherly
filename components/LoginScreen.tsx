@@ -11,8 +11,8 @@ const VALID_PASSWORD = "183923";
 const MAX_ATTEMPTS = 3;
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
-  // Morse code stage
-  const [loginStage, setLoginStage] = useState<'morse' | 'credentials'>('credentials');
+  // Morse code stage — always start from morse when LoginScreen is shown
+  const [loginStage, setLoginStage] = useState<'morse' | 'credentials'>('morse');
   const [morseInput, setMorseInput] = useState<string[]>([]);
   const [morseError, setMorseError] = useState('');
   const CORRECT_MORSE = ['--', '----', '--', '---'];
@@ -24,23 +24,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   const [isLocked, setIsLocked] = useState(false);
   const [error, setError] = useState('');
 
-  // Check for existing session and lockout status on mount
+  // Check for lockout status on mount
   useEffect(() => {
-    const session = localStorage.getItem('sherlySession');
     const lockedStatus = localStorage.getItem('sherlyLocked');
-    const morseUnlocked = sessionStorage.getItem('morseUnlocked');
-
     if (lockedStatus === 'true') {
       setIsLocked(true);
-    } else if (session) {
-      // Auto-login if session exists
-      const sessionData = JSON.parse(session);
-      onLogin(sessionData.username);
-    } else if (morseUnlocked === 'true') {
-      // Skip morse if already unlocked in this session
-      setLoginStage('credentials');
     }
-  }, [onLogin]);
+  }, []);
 
   const addMorseSymbol = (symbol: '-' | '.') => {
     const newInput = [...morseInput];

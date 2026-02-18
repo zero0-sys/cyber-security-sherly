@@ -30,13 +30,21 @@ import { TabType, LogEntry, Tool } from './types';
 
 // --- Main App Component ---
 const App: React.FC = () => {
-  // Morse Code Gate State
-  const [morseUnlocked, setMorseUnlocked] = useState(false);
+  // Check existing session FIRST — restore all gate states from localStorage
+  const existingSession = (() => {
+    try {
+      const raw = localStorage.getItem('sherlySession');
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  })();
+
+  // Morse Code Gate State — skip if session exists
+  const [morseUnlocked, setMorseUnlocked] = useState(() => !!existingSession);
   const [showSecretPage, setShowSecretPage] = useState(false);
 
-  // Login State
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState('');
+  // Login State — restore from session
+  const [isAuthenticated, setIsAuthenticated] = useState(() => !!existingSession);
+  const [username, setUsername] = useState(() => existingSession?.username || '');
 
   // Restore navigation state from localStorage
   const [activeTab, setActiveTab] = useState<TabType>(() => {
@@ -67,6 +75,7 @@ const App: React.FC = () => {
     localStorage.removeItem('sherlySession');
     localStorage.removeItem('sherlyActiveTab');
     setIsAuthenticated(false);
+    setMorseUnlocked(false);
     setUsername('');
     setActiveTab('dashboard');
   };
