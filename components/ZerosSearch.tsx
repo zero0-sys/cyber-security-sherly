@@ -201,6 +201,52 @@ const ZerosSearch: React.FC = () => {
                 td.gsc-input { padding: 0 !important; }
                 table.gsc-search-box { margin: 0 !important; }
                 .gsc-modal-background-image { background: rgba(0,0,0,0.8) !important; }
+                
+                /* Force dark background on results overlay */
+                .gsc-results-wrapper-overlay,
+                .gsc-results-wrapper-visible,
+                .gsc-wrapper,
+                .gsc-webResult.gsc-result,
+                .gsc-result-info-container,
+                .gsc-results {
+                    background-color: #000 !important;
+                    background: #000 !important;
+                }
+                
+                /* Ensure text is visible on dark background */
+                .gs-promo {
+                    color: #4ade80 !important;
+                    background-color: #111 !important;
+                }
+                
+                /* Remove white borders/backgrounds from promotion blocks if any */
+                .gs-promotion-text-cell .gs-visibleUrl,
+                .gs-promotion-text-cell .gs-snippet {
+                    color: #4ade80 !important;
+                }
+
+                /* Mobile/Overlay specific fixes */
+                .gsc-results-wrapper-overlay {
+                    border: 1px solid rgba(0, 255, 65, 0.2) !important;
+                    box-shadow: 0 0 20px rgba(0, 255, 65, 0.1) !important;
+                }
+                
+                /* Close button fix */
+                .gsc-results-close-btn {
+                    background: transparent !important;
+                    color: #4ade80 !important;
+                    border: 1px solid rgba(0, 255, 65, 0.3) !important;
+                    opacity: 1 !important;
+                }
+                .gsc-results-close-btn:hover {
+                    background: rgba(0, 255, 65, 0.1) !important;
+                }
+                
+                /* Selected result hover */
+                .gsc-webResult.gsc-result:hover,
+                .gsc-imageResult:hover {
+                    background-color: #0a0a0a !important;
+                }
             `}</style>
         </div>
     );
