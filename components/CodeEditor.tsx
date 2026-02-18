@@ -160,7 +160,14 @@ const CodeEditor: React.FC = () => {
       });
 
       if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        let errorMessage = `HTTP ${res.status}: ${res.statusText}`;
+        try {
+          const errorData = await res.json();
+          errorMessage = errorData.error || errorData.errorOutput || errorMessage;
+        } catch (e) {
+          // ignore json parse error
+        }
+        throw new Error(errorMessage);
       }
 
       const contentType = res.headers.get('content-type');

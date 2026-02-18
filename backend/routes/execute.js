@@ -151,10 +151,21 @@ router.post('/code', async (req, res) => {
         });
 
     } catch (error) {
+        // If it's an execution error (non-zero exit code), return 200 with success: false
+        // This allows the frontend to display the compiler/runtime error
+        if (error.stderr || error.stdout) {
+            return res.json({
+                success: false,
+                error: error.message,
+                errorOutput: error.stderr || error.stdout,
+                executedAt: new Date().toISOString()
+            });
+        }
+
+        // Actual system error
         res.status(500).json({
             success: false,
-            error: error.message,
-            errorOutput: error.stderr || error.stdout
+            error: error.message
         });
     }
 });
