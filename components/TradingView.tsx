@@ -23,11 +23,11 @@ const TradingView: React.FC<TradingViewProps> = ({ onBack }) => {
             </div>
 
             {/* Chart Container */}
-            <div className="flex-1 w-full h-full">
+            <div className="flex-1 w-full h-full relative overflow-hidden">
                 <AdvancedRealTimeChart
                     theme="dark"
                     autosize
-                    symbol="BINANCE:BTCUSDT"
+                    symbol="BITSTAMP:BTCUSD"
                     timezone="Etc/UTC"
                     style="1"
                     locale="en"
@@ -38,6 +38,8 @@ const TradingView: React.FC<TradingViewProps> = ({ onBack }) => {
                     save_image={false}
                     container_id="tradingview_chart"
                     allow_symbol_change={true}
+                    width="100%"
+                    height="100%"
                 />
             </div>
         </div>
