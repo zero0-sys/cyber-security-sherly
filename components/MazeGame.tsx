@@ -324,42 +324,155 @@ const MazeGame: React.FC = () => {
                 );
                 await userFunction(moveUp, moveDown, moveLeft, moveRight, getPosition, isWall, isEnd);
             } else {
-                // Python to JS - remove comments first!
-                const withoutComments = code.replace(/#.*/g, '');
+                // Python to JS - indentation-aware transpiler
+                const lines = code.split('\n');
+                const jsLines: string[] = [];
+                const indentStack: number[] = [0]; // Track indentation levels for closing braces
 
-                // Enhanced transpiler for the demo
-                const pythonToJs = withoutComments
-                    .replace(/def /g, 'async function ')
-                    .replace(/move_up\(\)/g, 'await moveUp()')
-                    .replace(/move_down\(\)/g, 'await moveDown()')
-                    .replace(/move_left\(\)/g, 'await moveLeft()')
-                    .replace(/move_right\(\)/g, 'await moveRight()')
-                    .replace(/get_position\(\)/g, 'getPosition()')
-                    .replace(/is_wall/g, 'isWall')
-                    .replace(/is_end/g, 'isEnd')
-                    // Handle while loops: while condition: -> while (condition) {
-                    .replace(/while\s+(.+):/g, 'while ($1) {')
-                    // Handle if statements: if condition: -> if (condition) {
-                    .replace(/if\s+(.+):/g, 'if ($1) {')
-                    // Handle elif statements
-                    .replace(/elif\s+(.+):/g, 'else if ($1) {')
-                    // Handle else
-                    .replace(/else:/g, 'else {')
-                    // Python specific replacements
-                    .replace(/\blen\(/g, '(')
-                    .replace(/\.append\(/g, '.push(')
-                    .replace(/\.insert\(0,/g, '.unshift(')
-                    .replace(/\.pop\(0\)/g, '.shift()')
+                for (let i = 0; i < lines.length; i++) {
+                    let line = lines[i];
+
+                    // Skip empty lines and comments
+                    if (line.trim() === '' || line.trim().startsWith('#')) {
+                        jsLines.push('');
+                        continue;
+                    }
+
+                    // Calculate indentation
+                    const indent = line.length - line.trimStart().length;
+                    const trimmed = line.trimStart();
+
+                    // Close blocks when indentation decreases
+                    while (indentStack.length > 1 && indent < indentStack[indentStack.length - 1]) {
+                        indentStack.pop();
+                        const closingIndent = ' '.repeat(indentStack[indentStack.length - 1]);
+                        jsLines.push(closingIndent + '}');
+                    }
+
+                    const currentIndent = ' '.repeat(indent);
+                    let jsLine = trimmed;
+
+                    // --- Transform Python constructs ---
+
+                    // Function def
+                    if (/^def\s+/.test(jsLine)) {
+                        jsLine = jsLine.replace(/^def\s+(\w+)\s*\(([^)]*)\)\s*:/, 'async function $1($2) {');
+                        indentStack.push(indent + 4);
+                        jsLines.push(currentIndent + jsLine);
+                        continue;
+                    }
+
+                    // For loop: for x in y:
+                    if (/^for\s+/.test(jsLine)) {
+                        jsLine = jsLine.replace(/^for\s+(\w+)\s+in\s+(.+):$/, 'for (const $1 of $2) {');
+                        indentStack.push(indent + 4);
+                        jsLines.push(currentIndent + jsLine);
+                        continue;
+                    }
+
+                    // While loop
+                    if (/^while\s+/.test(jsLine)) {
+                        jsLine = jsLine.replace(/^while\s+(.+):$/, 'while ($1) {');
+                        indentStack.push(indent + 4);
+                        jsLines.push(currentIndent + jsLine);
+                        continue;
+                    }
+
+                    // elif
+                    if (/^elif\s+/.test(jsLine)) {
+                        jsLine = jsLine.replace(/^elif\s+(.+):$/, '} else if ($1) {');
+                        // Pop and re-push (same block level)
+                        if (indentStack.length > 1 && indentStack[indentStack.length - 1] === indent + 4) {
+                            // already at correct level
+                        } else {
+                            indentStack.push(indent + 4);
+                        }
+                        jsLines.push(currentIndent + jsLine);
+                        continue;
+                    }
+
+                    // if statement (must be after elif check)
+                    if (/^if\s+/.test(jsLine)) {
+                        jsLine = jsLine.replace(/^if\s+(.+):$/, 'if ($1) {');
+                        indentStack.push(indent + 4);
+                        jsLines.push(currentIndent + jsLine);
+                        continue;
+                    }
+
+                    // else:
+                    if (/^else\s*:/.test(jsLine)) {
+                        jsLine = '} else {';
+                        jsLines.push(currentIndent + jsLine);
+                        continue;
+                    }
+
+                    // return statement
+                    if (/^return\s/.test(jsLine)) {
+                        // just keep as-is, transform contents below
+                    }
+
+                    // Now do inline replacements on the line
+                    // Python API to JS API
+                    jsLine = jsLine.replace(/move_up\(\)/g, 'await moveUp()');
+                    jsLine = jsLine.replace(/move_down\(\)/g, 'await moveDown()');
+                    jsLine = jsLine.replace(/move_left\(\)/g, 'await moveLeft()');
+                    jsLine = jsLine.replace(/move_right\(\)/g, 'await moveRight()');
+                    jsLine = jsLine.replace(/get_position\(\)/g, 'getPosition()');
+                    jsLine = jsLine.replace(/is_wall\b/g, 'isWall');
+                    jsLine = jsLine.replace(/is_end\b/g, 'isEnd');
+
+                    // str(x) -> String(x)
+                    jsLine = jsLine.replace(/\bstr\(/g, 'String(');
+
+                    // len(x) -> x.length  (simple case)
+                    jsLine = jsLine.replace(/\blen\(([^)]+)\)/g, '$1.length');
+
+                    // Python set literal {val} -> new Set([val])
+                    // visited = {start_key} -> visited = new Set([start_key])
+                    jsLine = jsLine.replace(/^(\w+)\s*=\s*\{(\w+)\}\s*$/, '$1 = new Set([$2])');
+
+                    // Python dict literal {} (empty) -> new Map() or just {}
+                    // parent = {} -> parent = {}  (this is fine for JS too)
+
+                    // .add( -> .add(  (Set.add is same in JS)
+                    // .append( -> .push(
+                    jsLine = jsLine.replace(/\.append\(/g, '.push(');
+                    // .insert(0, x) -> .unshift(x)
+                    jsLine = jsLine.replace(/\.insert\(0,\s*/g, '.unshift(');
+                    // .pop(0) -> .shift()
+                    jsLine = jsLine.replace(/\.pop\(0\)/g, '.shift()');
+
+                    // "x not in y" -> !y.has(x) for Sets
+                    jsLine = jsLine.replace(/(\w+)\s+not\s+in\s+(\w+)/g, '!$2.has($1)');
+                    // Plain "x in y" is left as-is — JS `in` operator works on Objects
+
+                    // Boolean/None
+                    jsLine = jsLine.replace(/\bTrue\b/g, 'true');
+                    jsLine = jsLine.replace(/\bFalse\b/g, 'false');
+                    jsLine = jsLine.replace(/\bNone\b/g, 'null');
+
                     // Logic operators
-                    .replace(/\bnot\s+/g, '!')
-                    .replace(/\band\b/g, '&&')
-                    .replace(/\bor\b/g, '||')
-                    // Python constants
-                    .replace(/\bTrue\b/g, 'true')
-                    .replace(/\bFalse\b/g, 'false')
-                    .replace(/\bNone\b/g, 'null')
-                    // Fix indentation
-                    .replace(/    /g, '  ');
+                    jsLine = jsLine.replace(/\bnot\s+/g, '!');
+                    jsLine = jsLine.replace(/\band\b/g, '&&');
+                    jsLine = jsLine.replace(/\bor\b/g, '||');
+
+                    // Variable declarations: simple assignments without let/const
+                    // Add let for first assignment (approximate, works for template)
+                    if (/^\w+\s*=\s/.test(jsLine) && !/^(let|const|var|return)\s/.test(jsLine)) {
+                        jsLine = 'let ' + jsLine;
+                    }
+
+                    jsLines.push(currentIndent + jsLine);
+                }
+
+                // Close any remaining open blocks
+                while (indentStack.length > 1) {
+                    indentStack.pop();
+                    const closingIndent = ' '.repeat(indentStack[indentStack.length - 1]);
+                    jsLines.push(closingIndent + '}');
+                }
+
+                const pythonToJs = jsLines.join('\n');
 
                 const userFunction = new AsyncFunction(
                     'moveUp', 'moveDown', 'moveLeft', 'moveRight',

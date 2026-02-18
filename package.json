@@ -12,6 +12,8 @@
   "dependencies": {
     "@faker-js/faker": "^9.5.0",
     "@google/genai": "*",
+    "@types/d3": "^7.4.3",
+    "d3": "^7.9.0",
     "d3-geo": "^3.1.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.378.0",

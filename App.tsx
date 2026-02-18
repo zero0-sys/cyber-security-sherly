@@ -220,7 +220,6 @@ const App: React.FC = () => {
   if (!isAuthenticated) {
     return <LoginScreen onLogin={handleLogin} />;
   }
-
   // Use h-[100dvh] for better mobile support (addresses the "can't move" issue on mobile browsers)
   return (
     <div className="flex h-[100dvh] bg-black text-green-400 overflow-hidden relative font-mono selection:bg-green-500 selection:text-black">

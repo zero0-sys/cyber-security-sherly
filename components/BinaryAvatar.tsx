@@ -40,7 +40,7 @@ const BinaryAvatar: React.FC<BinaryAvatarProps> = ({ isSpeaking, gesture }) => {
     }, [gesture]);
 
     // Physics constants - Reduced slightly for a lighter, "thinner" feel
-    const PARTICLES_COUNT = 4500;
+    const PARTICLES_COUNT = 4000;
 
     useEffect(() => {
         const canvas = canvasRef.current;

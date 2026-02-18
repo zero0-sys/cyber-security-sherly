@@ -12,7 +12,7 @@ const MAX_ATTEMPTS = 3;
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   // Morse code stage
-  const [loginStage, setLoginStage] = useState<'morse' | 'credentials'>('morse');
+  const [loginStage, setLoginStage] = useState<'morse' | 'credentials'>('credentials');
   const [morseInput, setMorseInput] = useState<string[]>([]);
   const [morseError, setMorseError] = useState('');
   const CORRECT_MORSE = ['--', '----', '--', '---'];
