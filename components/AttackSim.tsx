@@ -5,12 +5,19 @@ import {
     Server, Shield, Wifi, Search, Eye, DollarSign, Download, Cpu,
     Camera, Trash2, Smartphone, Upload, Play, AlertTriangle, Send,
     RefreshCw, Target, Globe, Code, CheckCircle, FileText, GitCompare,
-    BarChart3, Binary, Shuffle, Crosshair, Loader2, Clock
+    BarChart3, Binary, Shuffle, Crosshair, Loader2, Clock, MapPin, Radio
 } from 'lucide-react';
 import { AttackStats } from '../types';
 
 const AttackSim: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<'network' | 'malware' | 'web' | 'burp'>('network');
+    const [activeTab, setActiveTab] = useState<'network' | 'malware' | 'web' | 'burp' | 'ipintel'>('network');
+
+    // IP Intelligence
+    const [ipQuery, setIpQuery] = useState('');
+    const [ipResult, setIpResult] = useState<any>(null);
+    const [ipLoading, setIpLoading] = useState(false);
+    const [ipError, setIpError] = useState<string | null>(null);
+    const [ipHistory, setIpHistory] = useState<{ ip: string; country: string; risk: number }[]>([]);
 
     // Network Stats
     const [ddosActive, setDdosActive] = useState(false);
@@ -236,11 +243,12 @@ const AttackSim: React.FC = () => {
     return (
         <div className="h-full flex flex-col gap-4">
             {/* Sub Nav */}
-            <div className="flex gap-2 border-b border-green-900 pb-2">
-                <button onClick={() => setActiveTab('network')} className={`px-4 py-2 text-sm font-bold rounded ${activeTab === 'network' ? 'bg-red-900/30 text-red-400 border border-red-500' : 'text-gray-500 hover:text-gray-300'}`}>Network Attacks</button>
-                <button onClick={() => setActiveTab('malware')} className={`px-4 py-2 text-sm font-bold rounded ${activeTab === 'malware' ? 'bg-yellow-900/30 text-yellow-400 border border-yellow-500' : 'text-gray-500 hover:text-gray-300'}`}>Malware</button>
-                <button onClick={() => setActiveTab('web')} className={`px-4 py-2 text-sm font-bold rounded ${activeTab === 'web' ? 'bg-blue-900/30 text-blue-400 border border-blue-500' : 'text-gray-500 hover:text-gray-300'}`}>Web Exploits</button>
-                <button onClick={() => setActiveTab('burp')} className={`px-4 py-2 text-sm font-bold rounded ${activeTab === 'burp' ? 'bg-orange-900/30 text-orange-400 border border-orange-500' : 'text-gray-500 hover:text-gray-300'}`}>Burp Suite</button>
+            <div className="flex gap-2 border-b border-green-900 pb-2 overflow-x-auto">
+                <button onClick={() => setActiveTab('network')} className={`px-4 py-2 text-sm font-bold rounded whitespace-nowrap ${activeTab === 'network' ? 'bg-red-900/30 text-red-400 border border-red-500' : 'text-gray-500 hover:text-gray-300'}`}>Network Attacks</button>
+                <button onClick={() => setActiveTab('malware')} className={`px-4 py-2 text-sm font-bold rounded whitespace-nowrap ${activeTab === 'malware' ? 'bg-yellow-900/30 text-yellow-400 border border-yellow-500' : 'text-gray-500 hover:text-gray-300'}`}>Malware</button>
+                <button onClick={() => setActiveTab('web')} className={`px-4 py-2 text-sm font-bold rounded whitespace-nowrap ${activeTab === 'web' ? 'bg-blue-900/30 text-blue-400 border border-blue-500' : 'text-gray-500 hover:text-gray-300'}`}>Web Exploits</button>
+                <button onClick={() => setActiveTab('burp')} className={`px-4 py-2 text-sm font-bold rounded whitespace-nowrap ${activeTab === 'burp' ? 'bg-orange-900/30 text-orange-400 border border-orange-500' : 'text-gray-500 hover:text-gray-300'}`}>Burp Suite</button>
+                <button onClick={() => setActiveTab('ipintel')} className={`px-4 py-2 text-sm font-bold rounded whitespace-nowrap ${activeTab === 'ipintel' ? 'bg-emerald-900/30 text-emerald-400 border border-emerald-500' : 'text-gray-500 hover:text-gray-300'}`}>IP Intelligence</button>
             </div>
 
             <div className="flex-1 overflow-y-auto pb-20 scrollbar-hide">
@@ -1117,10 +1125,10 @@ const AttackSim: React.FC = () => {
                                             }, 1000 / (bruteForceSpeed / 10)); // Adjust speed
                                         }}
                                         className={`px-4 py-2 rounded font-bold transition-all ${bruteForceRunning
-                                                ? 'bg-red-500 text-black animate-pulse'
-                                                : bruteForceSuccess
-                                                    ? 'bg-green-500 text-black'
-                                                    : 'bg-transparent border border-red-500 text-red-400 hover:bg-red-900/30'
+                                            ? 'bg-red-500 text-black animate-pulse'
+                                            : bruteForceSuccess
+                                                ? 'bg-green-500 text-black'
+                                                : 'bg-transparent border border-red-500 text-red-400 hover:bg-red-900/30'
                                             }`}
                                     >
                                         {bruteForceRunning ? 'STOP ATTACK' : bruteForceSuccess ? 'CRACKED!' : 'START ATTACK'}
@@ -1237,9 +1245,9 @@ const AttackSim: React.FC = () => {
                                                         </div>
                                                         <div className="flex items-center gap-2">
                                                             <span className={`font-bold ${log.status === 200 ? 'text-green-500' :
-                                                                    log.status === 401 ? 'text-red-500' :
-                                                                        log.status === 403 ? 'text-orange-500' :
-                                                                            'text-gray-500'
+                                                                log.status === 401 ? 'text-red-500' :
+                                                                    log.status === 403 ? 'text-orange-500' :
+                                                                        'text-gray-500'
                                                                 }`}>
                                                                 {log.status}
                                                             </span>
@@ -1284,6 +1292,277 @@ const AttackSim: React.FC = () => {
                                         This tool is for authorized penetration testing only. Unauthorized access to computer systems is illegal.
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* IP INTELLIGENCE TAB */}
+                {activeTab === 'ipintel' && (
+                    <div className="space-y-4">
+                        {/* Search Panel */}
+                        <div className="glass-panel p-6 rounded-lg border border-emerald-900 bg-black/40">
+                            <div className="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 className="text-xl font-orbitron text-emerald-400 flex items-center gap-2">
+                                        <Globe size={20} /> IP Intelligence
+                                    </h3>
+                                    <p className="text-sm text-gray-400 mt-1">Powered by ipquery.io API</p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-2 mb-4">
+                                <input
+                                    type="text"
+                                    value={ipQuery}
+                                    onChange={(e) => setIpQuery(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            const ip = ipQuery.trim() || '';
+                                            setIpLoading(true);
+                                            setIpError(null);
+                                            setIpResult(null);
+                                            fetch(`https://api.ipquery.io/${ip}`)
+                                                .then(r => r.json())
+                                                .then(data => {
+                                                    setIpResult(data);
+                                                    setIpHistory(prev => [
+                                                        { ip: data.ip, country: data.location?.country || 'Unknown', risk: data.risk?.risk_score || 0 },
+                                                        ...prev
+                                                    ].slice(0, 10));
+                                                })
+                                                .catch(err => setIpError(err.message))
+                                                .finally(() => setIpLoading(false));
+                                        }
+                                    }}
+                                    className="flex-1 bg-black border border-emerald-900 rounded px-3 py-2 text-sm text-gray-300 font-mono"
+                                    placeholder="Enter IP address (leave empty for your own IP)"
+                                />
+                                <button
+                                    onClick={() => {
+                                        const ip = ipQuery.trim() || '';
+                                        setIpLoading(true);
+                                        setIpError(null);
+                                        setIpResult(null);
+                                        fetch(`https://api.ipquery.io/${ip}`)
+                                            .then(r => r.json())
+                                            .then(data => {
+                                                setIpResult(data);
+                                                setIpHistory(prev => [
+                                                    { ip: data.ip, country: data.location?.country || 'Unknown', risk: data.risk?.risk_score || 0 },
+                                                    ...prev
+                                                ].slice(0, 10));
+                                            })
+                                            .catch(err => setIpError(err.message))
+                                            .finally(() => setIpLoading(false));
+                                    }}
+                                    disabled={ipLoading}
+                                    className="px-4 py-2 bg-emerald-900/30 border border-emerald-500 text-emerald-400 rounded font-bold hover:bg-emerald-900/50 disabled:opacity-50"
+                                >
+                                    {ipLoading ? 'SCANNING...' : 'LOOKUP'}
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setIpQuery('');
+                                        setIpLoading(true);
+                                        setIpError(null);
+                                        setIpResult(null);
+                                        fetch('https://api.ipquery.io/')
+                                            .then(r => r.text())
+                                            .then(myIp => {
+                                                setIpQuery(myIp.trim());
+                                                return fetch(`https://api.ipquery.io/${myIp.trim()}`);
+                                            })
+                                            .then(r => r.json())
+                                            .then(data => {
+                                                setIpResult(data);
+                                                setIpHistory(prev => [
+                                                    { ip: data.ip, country: data.location?.country || 'Unknown', risk: data.risk?.risk_score || 0 },
+                                                    ...prev
+                                                ].slice(0, 10));
+                                            })
+                                            .catch(err => setIpError(err.message))
+                                            .finally(() => setIpLoading(false));
+                                    }}
+                                    disabled={ipLoading}
+                                    className="px-4 py-2 bg-cyan-900/30 border border-cyan-500 text-cyan-400 rounded font-bold hover:bg-cyan-900/50 disabled:opacity-50"
+                                >
+                                    MY IP
+                                </button>
+                            </div>
+
+                            {ipLoading && (
+                                <div className="flex items-center justify-center gap-3 py-8">
+                                    <Loader2 size={24} className="text-emerald-500 animate-spin" />
+                                    <span className="text-emerald-400 text-sm font-mono animate-pulse">QUERYING TARGET...</span>
+                                </div>
+                            )}
+
+                            {ipError && (
+                                <div className="bg-red-900/20 border border-red-500 rounded p-3 text-red-400 text-sm">
+                                    <AlertTriangle size={14} className="inline mr-2" />
+                                    Error: {ipError}
+                                </div>
+                            )}
+
+                            {ipResult && !ipLoading && (
+                                <div className="space-y-4">
+                                    {/* IP Header */}
+                                    <div className="bg-emerald-900/10 border border-emerald-500/30 rounded-lg p-4 flex items-center justify-between">
+                                        <div>
+                                            <div className="text-2xl font-mono font-bold text-emerald-400">{ipResult.ip}</div>
+                                            <div className="text-xs text-gray-500 mt-1">
+                                                {ipResult.isp?.isp || 'Unknown ISP'} • {ipResult.isp?.org || ''}
+                                            </div>
+                                        </div>
+                                        <div className={`text-center px-4 py-2 rounded-lg border ${ipResult.risk?.risk_score > 50
+                                            ? 'bg-red-900/30 border-red-500 text-red-400'
+                                            : ipResult.risk?.risk_score > 20
+                                                ? 'bg-yellow-900/30 border-yellow-500 text-yellow-400'
+                                                : 'bg-green-900/30 border-green-500 text-green-400'
+                                            }`}>
+                                            <div className="text-xs font-mono mb-1">RISK SCORE</div>
+                                            <div className="text-2xl font-bold">{ipResult.risk?.risk_score ?? 'N/A'}</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        {/* ISP Info */}
+                                        <div className="bg-black/40 border border-gray-800 rounded-lg p-4">
+                                            <h4 className="text-sm font-orbitron text-cyan-400 flex items-center gap-2 mb-3">
+                                                <Server size={16} /> ISP / Network
+                                            </h4>
+                                            <div className="space-y-2 font-mono text-xs">
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-500">ASN:</span>
+                                                    <span className="text-white">{ipResult.isp?.asn || 'N/A'}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-500">ISP:</span>
+                                                    <span className="text-white text-right max-w-[60%] truncate">{ipResult.isp?.isp || 'N/A'}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-500">Org:</span>
+                                                    <span className="text-white text-right max-w-[60%] truncate">{ipResult.isp?.org || 'N/A'}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Location */}
+                                        <div className="bg-black/40 border border-gray-800 rounded-lg p-4">
+                                            <h4 className="text-sm font-orbitron text-orange-400 flex items-center gap-2 mb-3">
+                                                <MapPin size={16} /> Location
+                                            </h4>
+                                            <div className="space-y-2 font-mono text-xs">
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-500">Country:</span>
+                                                    <span className="text-white">{ipResult.location?.country || 'N/A'} ({ipResult.location?.country_code || ''})</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-500">City:</span>
+                                                    <span className="text-white">{ipResult.location?.city || 'N/A'}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-500">State:</span>
+                                                    <span className="text-white">{ipResult.location?.state || 'N/A'}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-500">Timezone:</span>
+                                                    <span className="text-white">{ipResult.location?.timezone || 'N/A'}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-500">Coords:</span>
+                                                    <span className="text-white">
+                                                        {ipResult.location?.latitude?.toFixed(4) || 'N/A'}, {ipResult.location?.longitude?.toFixed(4) || 'N/A'}
+                                                    </span>
+                                                </div>
+                                                {ipResult.location?.zipcode && (
+                                                    <div className="flex justify-between">
+                                                        <span className="text-gray-500">Zip:</span>
+                                                        <span className="text-white">{ipResult.location.zipcode}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Risk Assessment */}
+                                        <div className="bg-black/40 border border-gray-800 rounded-lg p-4">
+                                            <h4 className="text-sm font-orbitron text-red-400 flex items-center gap-2 mb-3">
+                                                <ShieldAlert size={16} /> Risk Assessment
+                                            </h4>
+                                            <div className="space-y-2 text-xs">
+                                                {[
+                                                    { label: 'VPN', value: ipResult.risk?.is_vpn, icon: <Shield size={14} /> },
+                                                    { label: 'TOR', value: ipResult.risk?.is_tor, icon: <Eye size={14} /> },
+                                                    { label: 'Proxy', value: ipResult.risk?.is_proxy, icon: <Radio size={14} /> },
+                                                    { label: 'Datacenter', value: ipResult.risk?.is_datacenter, icon: <Server size={14} /> },
+                                                    { label: 'Mobile', value: ipResult.risk?.is_mobile, icon: <Smartphone size={14} /> },
+                                                ].map((item, idx) => (
+                                                    <div key={idx} className="flex justify-between items-center">
+                                                        <span className="text-gray-400 flex items-center gap-2">{item.icon} {item.label}</span>
+                                                        <span className={`font-bold font-mono ${item.value ? 'text-red-500' : 'text-green-500'}`}>
+                                                            {item.value ? 'YES' : 'NO'}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Local Time */}
+                                    {ipResult.location?.localtime && (
+                                        <div className="bg-gray-900/30 border border-gray-700 rounded p-3 flex items-center justify-between font-mono text-xs">
+                                            <span className="text-gray-500 flex items-center gap-2"><Clock size={14} /> Local Time:</span>
+                                            <span className="text-white">{ipResult.location.localtime}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Lookup History */}
+                        {ipHistory.length > 0 && (
+                            <div className="glass-panel p-4 rounded-lg border border-gray-800 bg-black/40">
+                                <h4 className="text-sm font-orbitron text-gray-400 mb-3 flex items-center gap-2">
+                                    <Clock size={16} /> Recent Lookups
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2">
+                                    {ipHistory.map((item, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => {
+                                                setIpQuery(item.ip);
+                                                setIpLoading(true);
+                                                setIpError(null);
+                                                fetch(`https://api.ipquery.io/${item.ip}`)
+                                                    .then(r => r.json())
+                                                    .then(data => setIpResult(data))
+                                                    .catch(err => setIpError(err.message))
+                                                    .finally(() => setIpLoading(false));
+                                            }}
+                                            className="bg-gray-900/50 border border-gray-700 rounded p-2 text-left hover:border-emerald-500/50 transition-colors"
+                                        >
+                                            <div className="text-xs font-mono text-emerald-400 truncate">{item.ip}</div>
+                                            <div className="flex justify-between mt-1">
+                                                <span className="text-[10px] text-gray-500">{item.country}</span>
+                                                <span className={`text-[10px] font-bold ${item.risk > 50 ? 'text-red-500' : item.risk > 20 ? 'text-yellow-500' : 'text-green-500'}`}>
+                                                    Risk: {item.risk}
+                                                </span>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Educational Notice */}
+                        <div className="bg-emerald-900/20 border border-emerald-500 rounded p-3 text-xs text-emerald-400">
+                            <div className="flex items-center gap-2 mb-1">
+                                <AlertTriangle size={14} />
+                                <span className="font-bold">OSINT TOOL - EDUCATIONAL PURPOSE</span>
+                            </div>
+                            <div className="text-emerald-300">
+                                IP Intelligence data is sourced from ipquery.io. This tool is for authorized reconnaissance and security research only.
                             </div>
                         </div>
                     </div>
