@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { Gamepad2, Palette, ChevronLeft, Film, TrendingUp } from 'lucide-react';
+import { Gamepad2, Palette, Film, Activity, Tv, ArrowLeft, X, ChevronLeft, TrendingUp } from 'lucide-react';
 import MazeGame from './MazeGame';
 import ArtStudio from './ArtStudio/ArtStudio';
 import Cinema from './Cinema';
+import Anime from './Anime';
 import TradingView from './TradingView';
 
+type Mode = 'menu' | 'maze' | 'art' | 'cinema' | 'anime' | 'trading';
+
 const FunHub: React.FC = () => {
-    const [mode, setMode] = useState<'menu' | 'maze' | 'art' | 'cinema' | 'trading'>('menu');
+    const [mode, setMode] = useState<Mode>('menu');
 
     if (mode === 'maze') {
         return (
@@ -48,6 +51,21 @@ const FunHub: React.FC = () => {
                 </div>
                 <div className="flex-1 overflow-hidden relative">
                     <Cinema />
+                </div>
+            </div>
+        );
+    }
+
+    if (mode === 'anime') {
+        return (
+            <div className="h-full flex flex-col">
+                <div className="p-2 border-b border-pink-900 bg-black flex items-center">
+                    <button onClick={() => setMode('menu')} className="text-pink-500 hover:text-pink-400 flex items-center gap-2 text-sm font-bold">
+                        <ChevronLeft size={16} /> Back to Hub
+                    </button>
+                </div>
+                <div className="flex-1 overflow-hidden relative">
+                    <Anime />
                 </div>
             </div>
         );
@@ -141,6 +159,29 @@ const FunHub: React.FC = () => {
                         </p>
                         <div className="mt-auto flex items-center text-yellow-500 text-sm font-mono opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
                             <span>ACCESS_ARCHIVE</span>
+                            <span className="ml-2 animate-pulse">_</span>
+                        </div>
+                    </div>
+                </button>
+
+                {/* Anime Card */}
+                <button
+                    onClick={() => setMode('anime')}
+                    className="group relative h-64 bg-black border border-pink-900 rounded-xl overflow-hidden hover:border-pink-500 transition-all duration-300 hover:shadow-[0_0_30px_rgba(236,72,153,0.2)] text-left md:col-span-2 lg:col-span-1"
+                >
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(236,72,153,0.1)_0%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-grid-pink opacity-10" />
+
+                    <div className="p-8 h-full flex flex-col relative z-10">
+                        <div className="mb-4 bg-pink-900/30 w-16 h-16 rounded-lg flex items-center justify-center border border-pink-500/30 group-hover:scale-110 transition-transform">
+                            <Tv size={32} className="text-pink-400" />
+                        </div>
+                        <h2 className="text-2xl font-bold text-pink-400 mb-2 font-orbitron">ANIME STATION</h2>
+                        <p className="text-gray-400 text-sm">
+                            Watch latest anime releases. Daily updates and streaming.
+                        </p>
+                        <div className="mt-auto flex items-center text-pink-500 text-sm font-mono opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                            <span>START_STREAM</span>
                             <span className="ml-2 animate-pulse">_</span>
                         </div>
                     </div>

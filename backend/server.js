@@ -17,6 +17,7 @@ import geoipRoutes from './routes/geoip.js';
 import executeRoutes from './routes/execute.js';
 import ragRoutes from './routes/rag.js';
 import movieRoutes from './routes/movies.js';
+import animeRoutes from './routes/anime.js';
 
 const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
