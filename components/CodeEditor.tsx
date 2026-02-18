@@ -139,6 +139,28 @@ const CodeEditor: React.FC = () => {
     }
   };
 
+  // Wandbox compiler mapping
+  const wandboxCompilerMap: Record<string, string> = {
+    python: 'cpython-3.12.7',
+    javascript: 'nodejs-20.17.0',
+    typescript: 'typescript-5.6.3',
+    c: 'gcc-14.2.0-c',
+    cpp: 'gcc-14.2.0',
+    java: 'openjdk-jdk-22+36',
+    go: 'go-1.23.2',
+    rust: 'rust-1.82.0',
+    ruby: 'ruby-3.4.1',
+    php: 'php-8.3.12',
+    bash: 'bash',
+    csharp: 'mono-6.12.0.199',
+    perl: 'perl-5.42.0',
+    lua: 'lua-5.4.7',
+    swift: 'swift-6.0.1',
+    haskell: 'ghc-9.10.1',
+    scala: 'scala-3.5.1',
+    pascal: 'fpc-3.2.2',
+  };
+
   const handleExecute = async () => {
     if (openFiles.length === 0) return;
     const currentFile = openFiles[activeFile];
@@ -178,52 +200,83 @@ const CodeEditor: React.FC = () => {
       return;
     }
 
+    // JSON Preview
+    if (currentFile.language === 'json') {
+      setIsHtmlPreview(false);
+      try {
+        const parsed = JSON.parse(currentFile.content);
+        setOutput(`✅ Valid JSON\n\n${JSON.stringify(parsed, null, 2)}`);
+      } catch (e: any) {
+        setOutput(`❌ Invalid JSON: ${e.message}`);
+      }
+      return;
+    }
+
+    // Markdown Preview
+    if (currentFile.language === 'markdown') {
+      setIsHtmlPreview(true);
+      setOutput(`<!DOCTYPE html><html><head><style>body{font-family:sans-serif;padding:20px;color:#eee;background:#111}pre{background:#222;padding:10px;border-radius:4px}code{background:#222;padding:2px 4px;border-radius:3px}</style></head><body><pre>${currentFile.content}</pre></body></html>`);
+      return;
+    }
+
     setIsHtmlPreview(false);
     setIsExecuting(true);
-    setOutput('⚡ Executing code...\n');
+
+    // Check if language is supported by Wandbox
+    const compiler = wandboxCompilerMap[currentFile.language];
+
+    if (!compiler) {
+      setOutput(`❌ Language "${currentFile.language}" is not supported for execution.\n\nSupported languages: ${Object.keys(wandboxCompilerMap).join(', ')}\n\nFor HTML/CSS: use Live Preview.`);
+      setIsExecuting(false);
+      return;
+    }
+
+    setOutput(`⚡ Executing ${currentFile.name} via Wandbox...\n📡 Compiler: ${compiler}\n`);
+    setTerminalOutput(prev => `${prev}$ wandbox compile --lang=${currentFile.language} --compiler=${compiler} ${currentFile.name}\n`);
 
     try {
-      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
-
-      const res = await fetch(`${backendUrl}/api/execute/code`, {
+      const res = await fetch('https://wandbox.org/api/compile.json', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           code: currentFile.content,
-          language: currentFile.language,
-          filename: currentFile.name
+          compiler: compiler,
+          options: '',
+          stdin: '',
         })
       });
 
       if (!res.ok) {
-        let errorMessage = `HTTP ${res.status}: ${res.statusText}`;
-        try {
-          const errorData = await res.json();
-          errorMessage = errorData.error || errorData.errorOutput || errorMessage;
-        } catch (e) {
-          // ignore json parse error
-        }
-        throw new Error(errorMessage);
-      }
-
-      const contentType = res.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        const text = await res.text();
-        throw new Error(`Server returned non-JSON: ${text.substring(0, 100)}`);
+        throw new Error(`Wandbox API Error: ${res.status} ${res.statusText}`);
       }
 
       const data = await res.json();
 
-      if (data.success) {
-        const result = `✅ Execution completed\n\n${data.output || '(no output)'}${data.error ? `\n⚠️ Warnings:\n${data.error}` : ''}`;
-        setOutput(result);
-        setTerminalOutput(prev => `${prev}${data.output || '(no output)'}\n\n`);
-      } else {
-        throw new Error(data.errorOutput || data.error || 'Execution failed');
+      let result = '';
+
+      if (data.compiler_error) {
+        result += `⚠️ Compiler Warnings/Errors:\n${data.compiler_error}\n\n`;
       }
+
+      if (data.program_output) {
+        result += `${data.program_output}`;
+      }
+
+      if (data.program_error) {
+        result += `\n⚠️ Runtime Error:\n${data.program_error}`;
+      }
+
+      if (data.status === '0') {
+        setOutput(`✅ Execution completed (exit code: 0)\n\n${result || '(no output)'}`);
+      } else {
+        setOutput(`❌ Execution finished (exit code: ${data.status})\n\n${result || '(no output)'}`);
+      }
+
+      setTerminalOutput(prev => `${prev}${data.program_output || data.compiler_error || '(no output)'}\n\n`);
+
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-      setOutput(`❌ Execution error: ${errorMsg}\n\nCheck:\n1. VITE_API_URL set in Netlify\n2. Backend running on Railway\n3. ENV_SETUP.md for details`);
+      setOutput(`❌ Execution error: ${errorMsg}\n\nWandbox API might be temporarily unavailable.\nTry again in a moment.`);
       setTerminalOutput(prev => `${prev}❌ ERROR: ${errorMsg}\n\n`);
     } finally {
       setIsExecuting(false);
@@ -615,8 +668,8 @@ const CodeEditor: React.FC = () => {
                 onClick={handleExecute}
                 disabled={isExecuting || openFiles.length === 0}
                 className={`flex items-center gap-2 px-4 py-1.5 rounded transition-colors text-xs font-bold ${['html', 'css'].includes(openFiles[activeFile]?.language)
-                    ? 'bg-purple-600 hover:bg-purple-500 text-white'
-                    : 'bg-green-600 hover:bg-green-500 text-black'
+                  ? 'bg-purple-600 hover:bg-purple-500 text-white'
+                  : 'bg-green-600 hover:bg-green-500 text-black'
                   } disabled:bg-gray-700 disabled:text-gray-500`}
               >
                 {['html', 'css'].includes(openFiles[activeFile]?.language) ? <Globe size={14} /> : <Play size={14} />}
