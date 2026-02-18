@@ -92,6 +92,7 @@ const Anime: React.FC = () => {
     const [epsLoading, setEpsLoading] = useState(false);
     const [activeTab, setActiveTab] = useState<'info' | 'episodes' | 'videos'>('info');
     const [playingVideo, setPlayingVideo] = useState<string | null>(null);
+    const [playingTitle, setPlayingTitle] = useState<string>('');
 
     const DEFAULT_API_URL = 'https://api.jikan.moe/v4/top/anime?filter=bypopularity&sfw';
 
@@ -179,12 +180,29 @@ const Anime: React.FC = () => {
     const handlePlayTrailer = () => {
         if (selectedAnime?.trailer?.embed_url) {
             setPlayingVideo(selectedAnime.trailer.embed_url);
+            setPlayingTitle(`${selectedAnime.title} — Trailer`);
             setView('watch');
         }
     };
 
-    const handlePlayPromo = (embedUrl: string) => {
+    const handlePlayPromo = (embedUrl: string, title: string) => {
         setPlayingVideo(embedUrl);
+        setPlayingTitle(title);
+        setView('watch');
+    };
+
+    const handlePlayEpisode = (epNumber: number, epTitle: string) => {
+        if (!selectedAnime) return;
+        // Build gogoanime-style slug from anime title
+        const titleSlug = (selectedAnime.title_english || selectedAnime.title)
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '');
+        const slug = `${titleSlug}-episode-${epNumber}`;
+        // Use embtaku.pro embed (HTTPS, works with gogoanime slugs)
+        const embedUrl = `https://embtaku.pro/videos/${slug}`;
+        setPlayingVideo(embedUrl);
+        setPlayingTitle(epTitle || `Episode ${epNumber}`);
         setView('watch');
     };
 
@@ -427,22 +445,25 @@ const Anime: React.FC = () => {
                                                         <>
                                                             <div className="space-y-1">
                                                                 {episodes.map((ep) => (
-                                                                    <div
+                                                                    <button
                                                                         key={ep.mal_id}
-                                                                        className="flex items-center gap-3 p-3 bg-gray-800/40 rounded-lg border border-gray-700/50 hover:border-pink-500/30 transition-all group"
+                                                                        onClick={() => handlePlayEpisode(ep.mal_id, ep.title || `Episode ${ep.mal_id}`)}
+                                                                        className="w-full flex items-center gap-3 p-3 bg-gray-800/40 rounded-lg border border-gray-700/50 hover:border-pink-500/50 hover:bg-pink-900/10 transition-all group text-left"
                                                                     >
-                                                                        <div className="w-10 h-10 bg-pink-900/30 rounded-lg flex items-center justify-center shrink-0 border border-pink-500/20">
-                                                                            <span className="text-xs font-mono font-bold text-pink-400">{ep.mal_id}</span>
+                                                                        <div className="w-10 h-10 bg-pink-900/30 rounded-lg flex items-center justify-center shrink-0 border border-pink-500/20 group-hover:bg-pink-600/30 transition-colors">
+                                                                            <Play size={14} className="text-pink-400 ml-0.5 opacity-0 group-hover:opacity-100 transition-opacity absolute" fill="currentColor" />
+                                                                            <span className="text-xs font-mono font-bold text-pink-400 group-hover:opacity-0 transition-opacity">{ep.mal_id}</span>
                                                                         </div>
                                                                         <div className="flex-1 min-w-0">
-                                                                            <h4 className="text-sm font-bold text-white truncate">{ep.title || `Episode ${ep.mal_id}`}</h4>
+                                                                            <h4 className="text-sm font-bold text-white truncate group-hover:text-pink-300 transition-colors">{ep.title || `Episode ${ep.mal_id}`}</h4>
                                                                             <div className="flex items-center gap-3 text-[10px] text-gray-500 font-mono mt-0.5">
                                                                                 {ep.aired && <span><Calendar size={10} className="inline mr-1" />{new Date(ep.aired).toLocaleDateString()}</span>}
                                                                                 {ep.filler && <span className="text-yellow-500 bg-yellow-900/30 px-1.5 py-0.5 rounded">FILLER</span>}
                                                                                 {ep.recap && <span className="text-blue-500 bg-blue-900/30 px-1.5 py-0.5 rounded">RECAP</span>}
+                                                                                <span className="ml-auto text-pink-500/50 group-hover:text-pink-400 transition-colors text-[9px] font-bold">▶ WATCH</span>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
+                                                                    </button>
                                                                 ))}
                                                             </div>
 
@@ -481,7 +502,7 @@ const Anime: React.FC = () => {
                                                             {promos.map((promo, idx) => (
                                                                 <button
                                                                     key={idx}
-                                                                    onClick={() => handlePlayPromo(promo.trailer.embed_url)}
+                                                                    onClick={() => handlePlayPromo(promo.trailer.embed_url, promo.title)}
                                                                     className="group relative aspect-video bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-pink-500 transition-all text-left"
                                                                 >
                                                                     <img
@@ -518,12 +539,13 @@ const Anime: React.FC = () => {
                                         className="w-full h-full border-0"
                                         allowFullScreen
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        title={`${selectedAnime.title}`}
+                                        title={playingTitle || selectedAnime.title}
                                     />
                                 </div>
-                                <div className="mt-4 flex justify-between items-center">
+                                <div className="mt-4 space-y-1">
                                     <h2 className="text-lg font-bold text-pink-400">{selectedAnime.title}</h2>
-                                    <span className="text-[10px] font-mono text-gray-500">SOURCE: YOUTUBE</span>
+                                    <p className="text-sm text-gray-400">{playingTitle}</p>
+                                    <p className="text-[10px] font-mono text-gray-600">SOURCE: EMBTAKU / YOUTUBE — If video doesn't load, try a different server or check your connection.</p>
                                 </div>
                             </div>
                         )}
