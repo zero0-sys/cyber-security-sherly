@@ -11,10 +11,13 @@ const queryAniList = async (query, variables = {}) => {
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         timeout: 10000
     });
+    if (response.data.errors) {
+        throw new Error(response.data.errors[0].message);
+    }
     return response.data.data;
 };
 
-// GET Latest / Airing Anime
+// GET Latest / Airing Anime (SFW only)
 router.get('/latest/:page?', async (req, res) => {
     try {
         const page = parseInt(req.params.page) || 1;
@@ -22,9 +25,9 @@ router.get('/latest/:page?', async (req, res) => {
         const query = `
         query ($page: Int) {
             Page(page: $page, perPage: 20) {
-                media(type: ANIME, status: RELEASING, sort: UPDATED_AT_DESC) {
+                media(type: ANIME, status: RELEASING, sort: UPDATED_AT_DESC, isAdult: false) {
                     id
-                    title { romaji english native }
+                    title { romaji english }
                     coverImage { large medium }
                     episodes
                     status
@@ -53,7 +56,7 @@ router.get('/latest/:page?', async (req, res) => {
     }
 });
 
-// GET Search Anime
+// GET Search Anime (SFW only)
 router.get('/search', async (req, res) => {
     try {
         const { q } = req.query;
@@ -62,9 +65,9 @@ router.get('/search', async (req, res) => {
         const query = `
         query ($search: String) {
             Page(page: 1, perPage: 20) {
-                media(type: ANIME, search: $search, sort: SEARCH_MATCH) {
+                media(type: ANIME, search: $search, sort: SEARCH_MATCH, isAdult: false) {
                     id
-                    title { romaji english native }
+                    title { romaji english }
                     coverImage { large medium }
                     episodes
                     status
@@ -83,7 +86,7 @@ router.get('/search', async (req, res) => {
             poster: m.coverImage.large || m.coverImage.medium,
             genres: m.genres,
             score: m.averageScore,
-            synopsis: m.description?.replace(/<[^>]*>/g, '').slice(0, 200) + '...' || ''
+            synopsis: m.description ? m.description.replace(/<[^>]*>/g, '').slice(0, 200) + '...' : ''
         }));
 
         res.json({ query: q, data: items });
@@ -97,6 +100,9 @@ router.get('/search', async (req, res) => {
 router.get('/detail/:id', async (req, res) => {
     try {
         const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({ error: 'Invalid anime ID' });
+        }
 
         const query = `
         query ($id: Int) {
@@ -110,27 +116,35 @@ router.get('/detail/:id', async (req, res) => {
                 status
                 genres
                 averageScore
+                isAdult
                 studios { nodes { name } }
                 streamingEpisodes { title thumbnail url site }
-                externalLinks { url site }
+                externalLinks { url site type }
             }
         }`;
 
         const data = await queryAniList(query, { id });
         const m = data.Media;
 
-        // Build episode list from streamingEpisodes or generate numbered list
+        // Block adult content
+        if (m.isAdult) {
+            return res.status(403).json({ error: 'Content not available' });
+        }
+
+        // Build episode list
         let episodes = [];
+
+        // Prefer streaming episodes from AniList (Crunchyroll, Funimation, etc.)
         if (m.streamingEpisodes && m.streamingEpisodes.length > 0) {
             episodes = m.streamingEpisodes.map((ep, i) => ({
                 title: ep.title || `Episode ${i + 1}`,
-                slug: String(id) + '-ep-' + (i + 1),
-                url: ep.url,
+                slug: `${id}-ep-${i + 1}`,
+                url: ep.url || null,
                 thumbnail: ep.thumbnail,
                 site: ep.site
             }));
         } else if (m.episodes) {
-            // Generate episode slugs for gogoanime embed
+            // Generate gogoanime embed slugs
             const titleSlug = (m.title.romaji || m.title.english || '')
                 .toLowerCase()
                 .replace(/[^a-z0-9]+/g, '-')
@@ -150,7 +164,7 @@ router.get('/detail/:id', async (req, res) => {
             titleNative: m.title.native,
             poster: m.coverImage.extraLarge || m.coverImage.large,
             banner: m.bannerImage,
-            synopsis: m.description?.replace(/<[^>]*>/g, '') || '',
+            synopsis: m.description ? m.description.replace(/<[^>]*>/g, '') : '',
             genres: m.genres,
             episodes,
             totalEpisodes: m.episodes,
@@ -161,17 +175,18 @@ router.get('/detail/:id', async (req, res) => {
         });
     } catch (err) {
         console.error('Anime API Error [detail]:', err.message);
-        res.status(500).json({ error: 'Failed to fetch data', details: err.message });
+        const status = err.message?.includes('Not Found') ? 404 : 500;
+        res.status(status).json({ error: 'Failed to fetch data', details: err.message });
     }
 });
 
-// GET Watch - returns embed URL for gogoanime player
+// GET Watch - returns HTTPS embed URL for gogoanime player
 router.get('/watch/:slug', async (req, res) => {
     try {
         const { slug } = req.params;
-        // slug format: "gogoanime-episode-slug" e.g. "one-piece-episode-1100"
-        // We embed via gogoanime embed player
-        const embedUrl = `https://gogoanime3.co/videos/${slug}`;
+
+        // Always use HTTPS to avoid mixed content errors
+        const embedUrl = `https://www1.gogoanime3.co/videos/${slug}`;
         const altEmbedUrl = `https://embtaku.pro/videos/${slug}`;
 
         res.json({
