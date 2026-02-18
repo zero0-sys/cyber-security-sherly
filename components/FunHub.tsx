@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Gamepad2, Palette, ChevronLeft, Film } from 'lucide-react';
+import { Gamepad2, Palette, ChevronLeft, Film, TrendingUp } from 'lucide-react';
 import MazeGame from './MazeGame';
 import ArtStudio from './ArtStudio/ArtStudio';
 import Cinema from './Cinema';
+import TradingView from './TradingView';
 
 const FunHub: React.FC = () => {
-    const [mode, setMode] = useState<'menu' | 'maze' | 'art' | 'cinema'>('menu');
+    const [mode, setMode] = useState<'menu' | 'maze' | 'art' | 'cinema' | 'trading'>('menu');
 
     if (mode === 'maze') {
         return (
@@ -47,6 +48,22 @@ const FunHub: React.FC = () => {
                 </div>
                 <div className="flex-1 overflow-hidden relative">
                     <Cinema />
+                </div>
+            </div>
+        );
+    }
+
+    if (mode === 'trading') {
+        return (
+            <div className="h-full flex flex-col">
+                {/* Header is handled inside TradingView component or we can wrap it here. 
+                    TradingView component I wrote handles its own header.
+                    Let's check TradingView.tsx content I wrote: 
+                    It has a header with onBack.
+                    So I should pass onBack.
+                */}
+                <div className="flex-1 overflow-hidden relative h-full">
+                    <TradingView onBack={() => setMode('menu')} />
                 </div>
             </div>
         );
@@ -124,6 +141,29 @@ const FunHub: React.FC = () => {
                         </p>
                         <div className="mt-auto flex items-center text-yellow-500 text-sm font-mono opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
                             <span>ACCESS_ARCHIVE</span>
+                            <span className="ml-2 animate-pulse">_</span>
+                        </div>
+                    </div>
+                </button>
+
+                {/* Trading View Card */}
+                <button
+                    onClick={() => setMode('trading')}
+                    className="group relative h-64 bg-black border border-cyan-900 rounded-xl overflow-hidden hover:border-cyan-500 transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.2)] text-left md:col-span-2 lg:col-span-1"
+                >
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.1)_0%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-grid-cyan opacity-10" />
+
+                    <div className="p-8 h-full flex flex-col relative z-10">
+                        <div className="mb-4 bg-cyan-900/30 w-16 h-16 rounded-lg flex items-center justify-center border border-cyan-500/30 group-hover:scale-110 transition-transform">
+                            <TrendingUp size={32} className="text-cyan-400" />
+                        </div>
+                        <h2 className="text-2xl font-bold text-cyan-400 mb-2 font-orbitron">TRADING ZONE</h2>
+                        <p className="text-gray-400 text-sm">
+                            Real-time market data stream. Monitor crypto and forex markets securely.
+                        </p>
+                        <div className="mt-auto flex items-center text-cyan-500 text-sm font-mono opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                            <span>INIT_STREAM</span>
                             <span className="ml-2 animate-pulse">_</span>
                         </div>
                     </div>
