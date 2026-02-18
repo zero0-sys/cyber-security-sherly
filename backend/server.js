@@ -16,6 +16,7 @@ import cryptoRoutes from './routes/crypto.js';
 import geoipRoutes from './routes/geoip.js';
 import executeRoutes from './routes/execute.js';
 import ragRoutes from './routes/rag.js';
+import movieRoutes from './routes/movies.js';
 
 const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
@@ -84,6 +85,9 @@ app.use('/api/geoip', geoipRoutes);
 
 // ==================== LlamaIndex RAG AI ====================
 app.use('/api/rag', ragRoutes);
+
+// ==================== Movie Streaming (LK21) ====================
+app.use('/api/movies', movieRoutes);
 
 // Storage paths
 const DATA_BREACH_DIR = path.join(__dirname, '../data-breach');

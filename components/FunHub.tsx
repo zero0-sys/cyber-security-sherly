@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Gamepad2, Palette, ChevronLeft } from 'lucide-react';
+import { Gamepad2, Palette, ChevronLeft, Film } from 'lucide-react';
 import MazeGame from './MazeGame';
 import ArtStudio from './ArtStudio/ArtStudio';
+import Cinema from './Cinema';
 
 const FunHub: React.FC = () => {
-    const [mode, setMode] = useState<'menu' | 'maze' | 'art'>('menu');
+    const [mode, setMode] = useState<'menu' | 'maze' | 'art' | 'cinema'>('menu');
 
     if (mode === 'maze') {
         return (
@@ -31,6 +32,21 @@ const FunHub: React.FC = () => {
                 </div>
                 <div className="flex-1 overflow-hidden relative">
                     <ArtStudio />
+                </div>
+            </div>
+        );
+    }
+
+    if (mode === 'cinema') {
+        return (
+            <div className="h-full flex flex-col">
+                <div className="p-2 border-b border-yellow-900 bg-black flex items-center">
+                    <button onClick={() => setMode('menu')} className="text-yellow-500 hover:text-yellow-400 flex items-center gap-2 text-sm font-bold">
+                        <ChevronLeft size={16} /> Back to Hub
+                    </button>
+                </div>
+                <div className="flex-1 overflow-hidden relative">
+                    <Cinema />
                 </div>
             </div>
         );
@@ -88,8 +104,32 @@ const FunHub: React.FC = () => {
                         </div>
                     </div>
                 </button>
+
+
+                {/* Cinema Card */}
+                <button
+                    onClick={() => setMode('cinema')}
+                    className="group relative h-64 bg-black border border-yellow-900 rounded-xl overflow-hidden hover:border-yellow-500 transition-all duration-300 hover:shadow-[0_0_30px_rgba(234,179,8,0.2)] text-left md:col-span-2 lg:col-span-1"
+                >
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(234,179,8,0.1)_0%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-grid-yellow opacity-10" />
+
+                    <div className="p-8 h-full flex flex-col relative z-10">
+                        <div className="mb-4 bg-yellow-900/30 w-16 h-16 rounded-lg flex items-center justify-center border border-yellow-500/30 group-hover:scale-110 transition-transform">
+                            <Film size={32} className="text-yellow-400" />
+                        </div>
+                        <h2 className="text-2xl font-bold text-yellow-400 mb-2 font-orbitron">LK21 CINEMA</h2>
+                        <p className="text-gray-400 text-sm">
+                            Access the global entertainment archives. Stream movies and visual logs.
+                        </p>
+                        <div className="mt-auto flex items-center text-yellow-500 text-sm font-mono opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                            <span>ACCESS_ARCHIVE</span>
+                            <span className="ml-2 animate-pulse">_</span>
+                        </div>
+                    </div>
+                </button>
             </div>
-        </div>
+        </div >
     );
 };
 
