@@ -53,8 +53,8 @@ const ZerosSearch: React.FC = () => {
             </div>
 
             {/* Google CSE Container */}
-            <div className="flex-1 overflow-y-auto p-4 relative z-10 custom-scrollbar-green">
-                <div className="max-w-4xl mx-auto">
+            <div className="flex-1 overflow-auto p-4 relative z-10 custom-scrollbar-green" style={{ overflowX: 'hidden' }}>
+                <div className="w-full max-w-4xl mx-auto" id="zeros-search-wrapper">
                     <div className="gcse-search" ref={searchContainerRef}></div>
                 </div>
             </div>
@@ -65,11 +65,62 @@ const ZerosSearch: React.FC = () => {
                 .custom-scrollbar-green::-webkit-scrollbar-thumb { background: rgba(0, 255, 65, 0.2); border-radius: 3px; }
                 .custom-scrollbar-green::-webkit-scrollbar-thumb:hover { background: rgba(0, 255, 65, 0.4); }
 
+                /* ===== RESPONSIVE FIX: Force CSE to fit within container ===== */
+                #zeros-search-wrapper,
+                #zeros-search-wrapper * {
+                    box-sizing: border-box !important;
+                    max-width: 100% !important;
+                }
+                /* Fix table-based layout overflow */
+                #zeros-search-wrapper table,
+                #zeros-search-wrapper .gsc-search-box,
+                #zeros-search-wrapper .gsc-search-box-tools {
+                    width: 100% !important;
+                    table-layout: fixed !important;
+                }
+                /* Results wrapper - prevent fixed positioning overflow */
+                .gsc-results-wrapper-nooverlay,
+                .gsc-results-wrapper-overlay {
+                    width: 100% !important;
+                    left: 0 !important;
+                    right: 0 !important;
+                    position: relative !important;
+                    overflow: hidden !important;
+                }
+                /* Prevent result thumbnails from pushing layout */
+                .gsc-table-result {
+                    display: block !important;
+                    width: 100% !important;
+                }
+                .gsc-table-result tbody,
+                .gsc-table-result tr {
+                    display: flex !important;
+                    flex-wrap: wrap !important;
+                    width: 100% !important;
+                }
+                .gsc-table-result td {
+                    display: block !important;
+                    min-width: 0 !important;
+                }
+                .gsc-thumbnail-inside {
+                    width: auto !important;
+                    flex-shrink: 0 !important;
+                }
+                /* Prevent long URLs from overflowing */
+                .gs-visibleUrl, .gs-visibleUrl-short, .gs-visibleUrl-long,
+                .gs-title, .gs-snippet {
+                    word-break: break-word !important;
+                    overflow-wrap: break-word !important;
+                    white-space: normal !important;
+                }
+                /* ===== END RESPONSIVE FIX ===== */
+
                 /* Override Google CSE styles to match dark theme */
                 .gsc-control-cse {
                     background-color: transparent !important;
                     border: none !important;
                     font-family: inherit !important;
+                    padding: 0 !important;
                 }
                 .gsc-input-box {
                     background: #000 !important;
@@ -88,9 +139,7 @@ const ZerosSearch: React.FC = () => {
                     padding: 8px 16px !important;
                     cursor: pointer !important;
                 }
-                .gsc-search-button-v2 svg {
-                    fill: #4ade80 !important;
-                }
+                .gsc-search-button-v2 svg { fill: #4ade80 !important; }
                 .gsc-results .gsc-result {
                     background: rgba(0,0,0,0.4) !important;
                     border: 1px solid rgba(0, 255, 65, 0.1) !important;
@@ -98,33 +147,21 @@ const ZerosSearch: React.FC = () => {
                     padding: 12px !important;
                     margin-bottom: 8px !important;
                 }
-                .gsc-results .gsc-result:hover {
-                    border-color: rgba(0, 255, 65, 0.3) !important;
-                }
+                .gsc-results .gsc-result:hover { border-color: rgba(0, 255, 65, 0.3) !important; }
                 .gs-title, .gs-title a, .gs-title a b {
                     color: #4ade80 !important;
                     text-decoration: none !important;
                 }
-                .gs-snippet {
-                    color: #9ca3af !important;
-                }
-                .gs-visibleUrl, .gs-visibleUrl-short, .gs-visibleUrl-long {
-                    color: #166534 !important;
-                }
-                .gsc-above-wrapper-area {
-                    border: none !important;
-                }
+                .gs-snippet { color: #9ca3af !important; }
+                .gs-visibleUrl, .gs-visibleUrl-short, .gs-visibleUrl-long { color: #166534 !important; }
+                .gsc-above-wrapper-area { border: none !important; }
                 .gsc-result-info {
                     color: #166534 !important;
                     font-family: monospace !important;
                     font-size: 11px !important;
                 }
-                .gsc-orderby-container {
-                    color: #4ade80 !important;
-                }
-                .gsc-cursor-box {
-                    text-align: center !important;
-                }
+                .gsc-orderby-container { color: #4ade80 !important; }
+                .gsc-cursor-box { text-align: center !important; }
                 .gsc-cursor-page {
                     color: #4ade80 !important;
                     background: rgba(0, 128, 0, 0.1) !important;
@@ -139,15 +176,8 @@ const ZerosSearch: React.FC = () => {
                     color: #fff !important;
                     font-weight: bold !important;
                 }
-                .gsc-table-result, .gsc-thumbnail-inside, .gsc-url-top {
-                    padding: 0 !important;
-                }
-                .gsc-webResult .gsc-result {
-                    padding: 10px !important;
-                }
-                .gsc-expansionArea {
-                    margin: 0 !important;
-                }
+                .gsc-webResult .gsc-result { padding: 10px !important; }
+                .gsc-expansionArea { margin: 0 !important; }
                 .gs-image-box, .gs-image {
                     border: 1px solid rgba(0, 255, 65, 0.2) !important;
                     border-radius: 4px !important;
@@ -160,28 +190,17 @@ const ZerosSearch: React.FC = () => {
                     border-bottom-color: #4ade80 !important;
                     color: #fff !important;
                 }
-                .gsc-refinementsArea {
-                    background: transparent !important;
-                }
+                .gsc-refinementsArea { background: transparent !important; }
                 .gsc-option-menu-container {
                     background: #111 !important;
                     border-color: rgba(0, 255, 65, 0.2) !important;
                 }
-                .gsc-option-menu-item {
-                    color: #4ade80 !important;
-                }
-                .gsc-option-menu-item-highlighted {
-                    background: rgba(0, 255, 65, 0.1) !important;
-                }
+                .gsc-option-menu-item { color: #4ade80 !important; }
+                .gsc-option-menu-item-highlighted { background: rgba(0, 255, 65, 0.1) !important; }
                 .gsc-adBlock { display: none !important; }
                 td.gsc-input { padding: 0 !important; }
                 table.gsc-search-box { margin: 0 !important; }
                 .gsc-modal-background-image { background: rgba(0,0,0,0.8) !important; }
-                .gsc-results-wrapper-overlay {
-                    background: #111 !important;
-                    border: 1px solid rgba(0,255,65,0.2) !important;
-                    border-radius: 12px !important;
-                }
             `}</style>
         </div>
     );

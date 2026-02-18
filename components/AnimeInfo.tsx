@@ -167,9 +167,14 @@ function parseDetailResult(xmlDoc: Document): AnimeDetails | null {
     };
 }
 
+// Curated popular ANN anime IDs (Attack on Titan, One Piece, Naruto, FMA Brotherhood, Demon Slayer, etc.)
+const FEATURED_IDS = [6592, 11672, 344, 6, 1558, 21936, 15119, 17498, 8165, 13055, 25777, 18689];
+
 const AnimeInfo: React.FC = () => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<AnimeDetails[]>([]);
+    const [featured, setFeatured] = useState<AnimeDetails[]>([]);
+    const [featuredLoading, setFeaturedLoading] = useState(true);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [selected, setSelected] = useState<AnimeDetails | null>(null);
@@ -212,6 +217,31 @@ const AnimeInfo: React.FC = () => {
             setLoading(false);
         }
     };
+
+    // Load featured popular anime on mount
+    const fetchFeatured = async () => {
+        setFeaturedLoading(true);
+        const fetched: AnimeDetails[] = [];
+        // Fetch first 6 in parallel batches
+        const ids = FEATURED_IDS.slice(0, 8);
+        const results = await Promise.allSettled(
+            ids.map(id =>
+                fetch(`https://cdn.animenewsnetwork.com/encyclopedia/api.xml?anime=${id}`)
+                    .then(r => r.text())
+                    .then(text => {
+                        const doc = new DOMParser().parseFromString(text, 'text/xml');
+                        return parseDetailResult(doc);
+                    })
+                    .catch(() => null)
+            )
+        );
+        results.forEach(r => { if (r.status === 'fulfilled' && r.value) fetched.push(r.value); });
+        setFeatured(fetched);
+        setFeaturedLoading(false);
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    React.useEffect(() => { fetchFeatured(); }, []);
 
     // Fetch full detail using api.xml?anime={id} or api.xml?manga={id}
     const fetchDetail = async (item: AnimeDetails) => {
@@ -302,9 +332,51 @@ const AnimeInfo: React.FC = () => {
                     )}
 
                     {!loading && !error && results.length === 0 && (
-                        <div className="h-full flex flex-col items-center justify-center text-gray-600 gap-4 opacity-50">
-                            <BookOpen className="w-16 h-16 stroke-1" />
-                            <p className="font-mono text-xs tracking-widest">SEARCH ANIME NEWS NETWORK</p>
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse"></span>
+                                <p className="font-mono text-[10px] text-pink-500 tracking-widest">FEATURED // POPULAR TITLES</p>
+                            </div>
+                            {featuredLoading ? (
+                                <div className="flex flex-col items-center justify-center gap-3 py-16">
+                                    <div className="w-10 h-10 border-2 border-pink-500/30 border-t-pink-500 rounded-full animate-spin"></div>
+                                    <p className="text-pink-500 font-mono text-xs animate-pulse">LOADING NEURAL ARCHIVES...</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                                    {featured.map(item => (
+                                        <button
+                                            key={item.id}
+                                            onClick={() => fetchDetail(item)}
+                                            className="group relative rounded-xl overflow-hidden border border-gray-800 hover:border-pink-500/60 transition-all duration-300 hover:shadow-[0_0_20px_rgba(236,72,153,0.2)] text-left aspect-[2/3] bg-gray-900"
+                                        >
+                                            {item.image ? (
+                                                <img
+                                                    src={item.image}
+                                                    alt={item.name}
+                                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                                    referrerPolicy="no-referrer"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-gray-800">
+                                                    <Tv className="w-8 h-8 text-gray-600" />
+                                                </div>
+                                            )}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent opacity-80 group-hover:opacity-100 transition-opacity">
+                                                <div className="absolute bottom-0 p-2.5 w-full">
+                                                    <p className="text-xs font-bold text-white truncate leading-tight group-hover:text-pink-300 transition-colors">{item.name}</p>
+                                                    {item.vintage && <p className="text-[9px] text-pink-400/70 font-mono mt-0.5">{item.vintage}</p>}
+                                                    <div className="flex flex-wrap gap-1 mt-1">
+                                                        {item.genres?.slice(0, 2).map((g, i) => (
+                                                            <span key={i} className="text-[8px] bg-pink-900/50 text-pink-300 px-1.5 py-0.5 rounded-full">{g}</span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     )}
 
