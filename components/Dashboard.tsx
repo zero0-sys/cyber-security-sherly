@@ -43,7 +43,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 <StatCard label="Active Threats" value={stats.threats} icon={<Zap size={20} className="text-red-500" />} color="red" />
                 <StatCard label="Mitigated Attacks" value={stats.blocked} icon={<Shield size={20} className="text-green-500" />} color="green" />
                 <StatCard label="Net Traffic" value={`${stats.networkLoad}%`} icon={<Activity size={20} className="text-blue-500" />} color="blue" />
-                <StatCard label="System Integrity" value={`${stats.systemIntegrity}%`} icon={<Lock size={20} className="text-green-400" />} color="green" />
+                <StatCard label="System Integrity" value={`${Number(stats.systemIntegrity).toFixed(2)}%`} icon={<Lock size={20} className="text-green-400" />} color="green" />
             </div>
 
             {/* Main Charts Area */}

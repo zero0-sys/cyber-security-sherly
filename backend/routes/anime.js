@@ -1,206 +1,201 @@
 import express from 'express';
 import axios from 'axios';
+import * as cheerio from 'cheerio';
+import https from 'https';
 
 const router = express.Router();
+const BASE_URL = 'https://otakudesu.best';
 
-const ANILIST_API = 'https://graphql.anilist.co';
+// Shared Axios instance with SSL bypass
+const agent = new https.Agent({ rejectUnauthorized: false });
+const client = axios.create({
+    headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    },
+    httpsAgent: agent
+});
 
-// Helper to query AniList GraphQL
-const queryAniList = async (query, variables = {}) => {
-    const response = await axios.post(ANILIST_API, { query, variables }, {
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        timeout: 10000
-    });
-    if (response.data.errors) {
-        throw new Error(response.data.errors[0].message);
-    }
-    return response.data.data;
+// Helper to extract slug from URL
+const getSlug = (url) => {
+    if (!url) return null;
+    const parts = url.split('/').filter(p => p.length > 0);
+    return parts[parts.length - 1];
 };
 
-// GET Latest / Airing Anime (SFW only)
+// GET Latest / Ongoing Anime
 router.get('/latest/:page?', async (req, res) => {
     try {
-        const page = parseInt(req.params.page) || 1;
+        const page = req.params.page || 1;
+        const url = `${BASE_URL}/ongoing-anime/page/${page}/`;
+        const { data } = await client.get(url);
+        const $ = cheerio.load(data);
 
-        const query = `
-        query ($page: Int) {
-            Page(page: $page, perPage: 20) {
-                media(type: ANIME, status: RELEASING, sort: UPDATED_AT_DESC, isAdult: false) {
-                    id
-                    title { romaji english }
-                    coverImage { large medium }
-                    episodes
-                    status
-                    genres
-                    averageScore
-                    nextAiringEpisode { episode }
-                }
+        const items = [];
+        $('.venz ul li').each((i, el) => {
+            const title = $(el).find('.jdlfl a').text();
+            const link = $(el).find('.jdlfl a').attr('href');
+            const thumb = $(el).find('.thumbz img').attr('src');
+            const episode = $(el).find('.epz').text().trim();
+            const day = $(el).find('.epztipe').text().trim();
+            const date = $(el).find('.newnime').text().trim();
+
+            if (link) {
+                items.push({
+                    title,
+                    slug: getSlug(link),
+                    poster: thumb,
+                    episode,
+                    day,
+                    date,
+                    url: link
+                });
             }
-        }`;
-
-        const data = await queryAniList(query, { page });
-        const items = data.Page.media.map(m => ({
-            id: m.id,
-            slug: String(m.id),
-            title: m.title.english || m.title.romaji,
-            poster: m.coverImage.large || m.coverImage.medium,
-            episode: m.nextAiringEpisode ? `EP ${m.nextAiringEpisode.episode}` : (m.episodes ? `${m.episodes} eps` : ''),
-            genres: m.genres,
-            score: m.averageScore
-        }));
+        });
 
         res.json({ page, data: items });
     } catch (err) {
-        console.error('Anime API Error [latest]:', err.message);
-        res.status(500).json({ error: 'Failed to fetch data', details: err.message });
+        console.error('Scraper Error [latest]:', err.message);
+        res.status(500).json({ error: 'Failed to fetch ongoing anime', details: err.message });
     }
 });
 
-// GET Search Anime (SFW only)
+// GET Search Anime
 router.get('/search', async (req, res) => {
     try {
         const { q } = req.query;
         if (!q) return res.status(400).json({ error: 'Query "q" required' });
 
-        const query = `
-        query ($search: String) {
-            Page(page: 1, perPage: 20) {
-                media(type: ANIME, search: $search, sort: SEARCH_MATCH, isAdult: false) {
-                    id
-                    title { romaji english }
-                    coverImage { large medium }
-                    episodes
-                    status
-                    genres
-                    averageScore
-                    description(asHtml: false)
-                }
-            }
-        }`;
+        const url = `${BASE_URL}/?s=${encodeURIComponent(q)}&post_type=anime`;
+        const { data } = await client.get(url);
+        const $ = cheerio.load(data);
 
-        const data = await queryAniList(query, { search: q });
-        const items = data.Page.media.map(m => ({
-            id: m.id,
-            slug: String(m.id),
-            title: m.title.english || m.title.romaji,
-            poster: m.coverImage.large || m.coverImage.medium,
-            genres: m.genres,
-            score: m.averageScore,
-            synopsis: m.description ? m.description.replace(/<[^>]*>/g, '').slice(0, 200) + '...' : ''
-        }));
+        const items = [];
+        $('.chivsrc li').each((i, el) => {
+            const title = $(el).find('h2 a').text();
+            const link = $(el).find('h2 a').attr('href');
+            const poster = $(el).find('img').attr('src');
+
+            const genres = [];
+            $(el).find('.set a').each((j, g) => genres.push($(g).text()));
+
+            let status = '';
+            let rating = '';
+            $(el).find('.set').each((j, s) => {
+                const text = $(s).text();
+                if (text.includes('Status')) status = text.replace('Status : ', '').trim();
+                if (text.includes('Rating')) rating = text.replace('Rating : ', '').trim();
+            });
+
+            if (link) {
+                items.push({
+                    title,
+                    slug: getSlug(link),
+                    poster,
+                    genres,
+                    status,
+                    rating,
+                    url: link
+                });
+            }
+        });
 
         res.json({ query: q, data: items });
     } catch (err) {
-        console.error('Anime API Error [search]:', err.message);
-        res.status(500).json({ error: 'Failed to fetch data', details: err.message });
+        console.error('Scraper Error [search]:', err.message);
+        res.status(500).json({ error: 'Failed to search anime', details: err.message });
     }
 });
 
-// GET Anime Details by AniList ID
-router.get('/detail/:id', async (req, res) => {
+// GET Anime Details
+router.get('/detail/:slug', async (req, res) => {
     try {
-        const id = parseInt(req.params.id);
-        if (isNaN(id)) {
-            return res.status(400).json({ error: 'Invalid anime ID' });
-        }
+        const { slug } = req.params;
+        const url = `${BASE_URL}/anime/${slug}/`;
+        const { data } = await client.get(url);
+        const $ = cheerio.load(data);
 
-        const query = `
-        query ($id: Int) {
-            Media(id: $id, type: ANIME) {
-                id
-                title { romaji english native }
-                coverImage { extraLarge large }
-                bannerImage
-                description(asHtml: false)
-                episodes
-                status
-                genres
-                averageScore
-                isAdult
-                studios { nodes { name } }
-                streamingEpisodes { title thumbnail url site }
-                externalLinks { url site type }
+        // Basic Info
+        const title = $('.jdlrx h1').text().trim() || $('.fotoanime .infozin .jdlz').text(); // Fallback selector
+        const poster = $('.fotoanime img').attr('src');
+        const synopsis = $('.sinopc').text().trim();
+
+        const info = {};
+        $('.infozingle p').each((i, el) => {
+            const text = $(el).text();
+            const parts = text.split(':');
+            if (parts.length >= 2) {
+                const key = parts[0].trim().toLowerCase().replace(/\s+/g, '_');
+                const value = parts.slice(1).join(':').trim();
+                info[key] = value;
             }
-        }`;
+        });
 
-        const data = await queryAniList(query, { id });
-        const m = data.Media;
+        // Episodes
+        const episodes = [];
+        $('.episodelist ul li').each((i, el) => {
+            const epTitle = $(el).find('a').text();
+            const link = $(el).find('a').attr('href');
+            const date = $(el).find('.zeebr').text();
 
-        // Block adult content
-        if (m.isAdult) {
-            return res.status(403).json({ error: 'Content not available' });
-        }
-
-        // Build episode list
-        let episodes = [];
-
-        // Prefer streaming episodes from AniList (Crunchyroll, Funimation, etc.)
-        if (m.streamingEpisodes && m.streamingEpisodes.length > 0) {
-            episodes = m.streamingEpisodes.map((ep, i) => ({
-                title: ep.title || `Episode ${i + 1}`,
-                slug: `${id}-ep-${i + 1}`,
-                url: ep.url || null,
-                thumbnail: ep.thumbnail,
-                site: ep.site
-            }));
-        } else if (m.episodes) {
-            // Generate gogoanime embed slugs
-            const titleSlug = (m.title.romaji || m.title.english || '')
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/^-|-$/g, '');
-            for (let i = 1; i <= m.episodes; i++) {
+            if (link && link.includes('/episode/')) {
                 episodes.push({
-                    title: `Episode ${i}`,
-                    slug: `${titleSlug}-episode-${i}`,
-                    url: null
+                    title: epTitle,
+                    slug: getSlug(link),
+                    date,
+                    url: link
                 });
             }
-        }
+        });
+
+        // Reverse to have Episode 1 first (optional, but UI might prefer it sorted)
+        // Otakudesu usually lists newest first.
 
         res.json({
-            id: m.id,
-            title: m.title.english || m.title.romaji,
-            titleNative: m.title.native,
-            poster: m.coverImage.extraLarge || m.coverImage.large,
-            banner: m.bannerImage,
-            synopsis: m.description ? m.description.replace(/<[^>]*>/g, '') : '',
-            genres: m.genres,
-            episodes,
-            totalEpisodes: m.episodes,
-            status: m.status,
-            score: m.averageScore,
-            studios: m.studios.nodes.map(s => s.name),
-            externalLinks: m.externalLinks
+            slug,
+            title,
+            poster,
+            synopsis,
+            info,
+            episodes
         });
     } catch (err) {
-        console.error('Anime API Error [detail]:', err.message);
-        const status = err.message?.includes('Not Found') ? 404 : 500;
-        res.status(status).json({ error: 'Failed to fetch data', details: err.message });
+        console.error('Scraper Error [detail]:', err.message);
+        res.status(500).json({ error: 'Failed to fetch anime details', details: err.message });
     }
 });
 
-// GET Watch - returns HTTPS embed URL
+// GET Watch/Stream
 router.get('/watch/:slug', async (req, res) => {
     try {
         const { slug } = req.params;
+        const url = `${BASE_URL}/episode/${slug}/`;
+        const { data } = await client.get(url);
+        const $ = cheerio.load(data);
 
-        // embtaku.pro is HTTPS-only and works with gogoanime slugs
-        const embedUrl = `https://embtaku.pro/videos/${slug}`;
-        const altEmbedUrl = `https://gogoanime.bid/videos/${slug}`;
+        const title = $('.venutama h1').text().trim();
+        const streamUrl = $('.responsive-embed-stream iframe').attr('src');
+
+        const mirrors = [];
+        $('.mirrorstream ul li').each((i, el) => {
+            const name = $(el).find('a').text().trim();
+            const content = $(el).find('a').data('content'); // might need decoding if base64
+            // Otakudesu often uses data-content for mirrors. 
+            // For now, we will just return the default streamUrl as primary.
+            // If needed, we can expand this.
+        });
+
+        const prevSlug = getSlug($('.flir a[title="Episode Sebelumnya"]').attr('href'));
+        const nextSlug = getSlug($('.flir a[title="Episode Selanjutnya"]').attr('href'));
 
         res.json({
-            title: slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-            streamUrl: embedUrl,
-            servers: [
-                { name: 'Server 1', url: embedUrl },
-                { name: 'Server 2', url: altEmbedUrl }
-            ],
-            prevSlug: null,
-            nextSlug: null
+            title,
+            streamUrl,
+            slug,
+            prevSlug,
+            nextSlug
         });
     } catch (err) {
-        console.error('Anime API Error [watch]:', err.message);
+        console.error('Scraper Error [watch]:', err.message);
         res.status(500).json({ error: 'Failed to fetch stream', details: err.message });
     }
 });
