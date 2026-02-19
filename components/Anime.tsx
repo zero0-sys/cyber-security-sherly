@@ -48,7 +48,8 @@ const Anime: React.FC = () => {
     const [streamLoading, setStreamLoading] = useState(false);
 
     // API Base URL (Backend)
-    const API_BASE = 'http://localhost:5001/api/anime';
+    // API Base URL (Backend)
+    const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:5001') + '/api/anime';
 
     // Fetch Latest / Ongoing
     const fetchLatest = async (pageNum = 1) => {
