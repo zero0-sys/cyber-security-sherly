@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Play, ArrowLeft, Tv, AlertCircle, ChevronLeft, ChevronRight, Star, Calendar, Clock, List, Film, X, Info } from 'lucide-react';
+import { Search, Play, ArrowLeft, Tv, AlertCircle, ChevronLeft, ChevronRight, Star, Calendar, Clock, List, Film, X, Info, ExternalLink } from 'lucide-react';
 
 // Platform API Types
 interface AnimeItem {
@@ -11,6 +11,7 @@ interface AnimeItem {
     episode?: string;
     genres?: string[];
     url?: string;
+    date?: string;
 }
 
 interface EpisodeItem {
@@ -99,7 +100,41 @@ const Anime: React.FC = () => {
         }
     };
 
-    // ... (fetchDetail, fetchStream remain same)
+    // Fetch Detail
+    const fetchDetail = async (slug: string) => {
+        setLoading(true);
+        setError('');
+        try {
+            const res = await fetch(`${API_BASE}/detail/${slug}`);
+            if (!res.ok) throw new Error(`API Error: ${res.status}`);
+            const data = await res.json();
+            setSelectedAnime(data);
+            setView('detail');
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Fetch Stream
+    const fetchStream = async (slug: string) => {
+        setStreamLoading(true);
+        // Don't clear playingEpisode immediately to avoid flash, or maybe do?
+        setError('');
+        try {
+            const res = await fetch(`${API_BASE}/watch/${slug}`);
+            if (!res.ok) throw new Error(`API Error: ${res.status}`);
+            const data = await res.json();
+            setPlayingEpisode(data);
+            setView('watch');
+        } catch (err: any) {
+            setError(err.message);
+            setPlayingEpisode(null); // Clear on error
+        } finally {
+            setStreamLoading(false);
+        }
+    };
 
     // Initial load
     useEffect(() => {
@@ -126,7 +161,13 @@ const Anime: React.FC = () => {
         }
     };
 
-    // ... (handleSelectAnime, handlePlayEpisode remain same)
+    const handleSelectAnime = (anime: AnimeItem) => {
+        fetchDetail(anime.slug);
+    };
+
+    const handlePlayEpisode = (slug: string) => {
+        fetchStream(slug);
+    };
 
     return (
         <div className="h-full bg-gray-900 text-white flex flex-col font-sans">
@@ -354,15 +395,29 @@ const Anime: React.FC = () => {
                                     </div>
                                 ) : playingEpisode ? (
                                     <>
-                                        <div className="aspect-video bg-black rounded-xl overflow-hidden border border-pink-900 shadow-[0_0_50px_rgba(236,72,153,0.1)] relative">
+                                        <div className="aspect-video bg-black rounded-xl overflow-hidden border border-pink-900 shadow-[0_0_50px_rgba(236,72,153,0.1)] relative group">
                                             {playingEpisode.streamUrl ? (
-                                                <iframe
-                                                    src={playingEpisode.streamUrl}
-                                                    className="w-full h-full border-0"
-                                                    allowFullScreen
-                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                    title={playingEpisode.title}
-                                                />
+                                                <>
+                                                    <iframe
+                                                        src={playingEpisode.streamUrl}
+                                                        className="w-full h-full border-0"
+                                                        allowFullScreen
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                        title={playingEpisode.title}
+                                                        sandbox="allow-forms allow-scripts allow-same-origin allow-popups allow-presentation"
+                                                    />
+                                                    {/* Hover Overlay for External Link */}
+                                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <a
+                                                            href={playingEpisode.streamUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="bg-black/80 hover:bg-pink-600 text-white text-xs px-3 py-1.5 rounded flex items-center gap-2 border border-pink-500/30 backdrop-blur-sm transition-colors"
+                                                        >
+                                                            <ExternalLink size={12} /> Open in New Tab
+                                                        </a>
+                                                    </div>
+                                                </>
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-red-400 flex-col gap-2">
                                                     <AlertCircle size={32} />
