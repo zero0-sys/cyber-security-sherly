@@ -26,7 +26,11 @@ const getSlug = (url) => {
 router.get('/latest/:page?', async (req, res) => {
     try {
         const page = req.params.page || 1;
-        const url = `${BASE_URL}/ongoing-anime/page/${page}/`;
+        // Page 1 is usually the root ongoing page, other pages are /page/N/
+        const url = page == 1
+            ? `${BASE_URL}/ongoing-anime/`
+            : `${BASE_URL}/ongoing-anime/page/${page}/`;
+
         const { data } = await client.get(url);
         const $ = cheerio.load(data);
 
@@ -56,6 +60,46 @@ router.get('/latest/:page?', async (req, res) => {
     } catch (err) {
         console.error('Scraper Error [latest]:', err.message);
         res.status(500).json({ error: 'Failed to fetch ongoing anime', details: err.message });
+    }
+});
+
+// GET Completed Anime
+router.get('/completed/:page?', async (req, res) => {
+    try {
+        const page = req.params.page || 1;
+        const url = page == 1
+            ? `${BASE_URL}/complete-anime/`
+            : `${BASE_URL}/complete-anime/page/${page}/`;
+
+        const { data } = await client.get(url);
+        const $ = cheerio.load(data);
+
+        const items = [];
+        $('.venz ul li').each((i, el) => {
+            const title = $(el).find('.jdlfl a').text();
+            const link = $(el).find('.jdlfl a').attr('href');
+            const thumb = $(el).find('.thumbz img').attr('src');
+            const episode = $(el).find('.epz').text().trim();
+            const rating = $(el).find('.epztipe').text().trim(); // Usually rating in completed list
+            const date = $(el).find('.newnime').text().trim();
+
+            if (link) {
+                items.push({
+                    title,
+                    slug: getSlug(link),
+                    poster: thumb,
+                    episode,
+                    rating,
+                    date,
+                    url: link
+                });
+            }
+        });
+
+        res.json({ page, data: items });
+    } catch (err) {
+        console.error('Scraper Error [completed]:', err.message);
+        res.status(500).json({ error: 'Failed to fetch completed anime', details: err.message });
     }
 });
 
