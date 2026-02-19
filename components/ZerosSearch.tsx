@@ -206,6 +206,81 @@ const ZerosSearch: React.FC = () => {
                 .gsc-webResult.gsc-result:focus {
                     background-color: #111 !important;
                 }
+
+                /* =========================================
+                   EXPANSION MODE / IMAGE PREVIEW FIXES
+                   ========================================= */
+                
+                /* Main Image Preview Overlay */
+                .gsc-expansion-mode-overlay,
+                .gsc-lightbox-main,
+                .gs-imagePreviewArea, 
+                .gsc-imageResult {
+                    background: rgba(10, 10, 10, 0.98) !important;
+                    border: 1px solid rgba(0, 255, 65, 0.2) !important;
+                }
+
+                /* Preview Box Content */
+                .gs-image-preview-box, 
+                .gs-image-box {
+                    background: transparent !important;
+                    color: #fff !important;
+                    border: none !important;
+                }
+
+                /* Text constraints in preview */
+                .gs-image-preview-box .gs-title,
+                .gs-image-preview-box .gs-snippet,
+                .gs-image-preview-box .gs-visibleUrl {
+                    color: #4ade80 !important;
+                    text-shadow: none !important;
+                }
+
+                /* Close Button */
+                .gsc-results-close-btn {
+                    background: transparent !important;
+                    color: #ff4444 !important;
+                    font-size: 24px !important;
+                    opacity: 1 !important;
+                }
+                .gsc-results-close-btn:hover {
+                    color: #ff0000 !important;
+                    transform: scale(1.1);
+                }
+
+                /* Option Menu (if any) */
+                .gsc-option-menu {
+                    background: #0a0a0a !important;
+                    border: 1px solid rgba(0, 255, 65, 0.3) !important;
+                    color: #fff !important;
+                }
+                .gsc-option-menu-item {
+                    color: #4ade80 !important;
+                }
+                .gsc-option-menu-item:hover {
+                    background: rgba(0, 255, 65, 0.1) !important;
+                }
+
+                /* Tabs area in expansion mode */
+                .gsc-tabsArea {
+                    border-bottom: 1px solid rgba(0, 255, 65, 0.2) !important;
+                }
+                .gsc-tabHeader {
+                    background: transparent !important;
+                    color: #9ca3af !important;
+                }
+                .gsc-tabHeader.gsc-tabhActive {
+                    background: rgba(0, 255, 65, 0.1) !important;
+                    border-bottom: 2px solid #00ff41 !important;
+                    color: #fff !important;
+                }
+
+                /* Remove Google Branding Backgrounds */
+                .gsc-branding, 
+                .gsc-branding-text, 
+                .gsc-branding-img {
+                    display: none !important;
+                }
             `}</style>
         </div>
     );
