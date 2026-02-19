@@ -16,22 +16,29 @@ const CyberNews: React.FC = () => {
     const [articles, setArticles] = useState<NewsArticle[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [nextPage, setNextPage] = useState<string | null>(null);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
 
     const API_KEY = 'pub_2e90a14d214d4bf0b624a92ed25985f0'; // User provided API Key
 
-    const fetchNews = async () => {
-        setLoading(true);
+    const fetchNews = async (isLoadMore = false) => {
+        if (isLoadMore) {
+            setIsLoadingMore(true);
+        } else {
+            setLoading(true);
+        }
         setError(null);
+
         try {
             // "Show All" / Broad fetch strategy
-            // Using 'technology' and 'science' categories to keep it relevant to "Cyber Security Sherly" context
-            // while obeying "tampilkan semua" (show all/latest).
-            // Removed 'q' parameter to fix 422 error and avoid search mode.
-            const url = `https://newsdata.io/api/1/news?apikey=${API_KEY}&category=technology,science&language=en,id`;
+            let url = `https://newsdata.io/api/1/news?apikey=${API_KEY}&category=technology,science&language=en,id`;
+
+            if (isLoadMore && nextPage) {
+                url += `&page=${nextPage}`;
+            }
 
             const response = await fetch(url);
             if (!response.ok) {
-                // If 422 persists, try an even simpler call
                 if (response.status === 422) {
                     throw new Error('API Configuration Error (422). Retrying with simpler request...');
                 }
@@ -39,20 +46,29 @@ const CyberNews: React.FC = () => {
             }
             const data = await response.json();
             if (data.status === 'success') {
-                // Sort by pubDate descending (Newest first) just in case
-                const sorted = (data.results || []).sort((a: NewsArticle, b: NewsArticle) => {
-                    return new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime();
-                });
-                setArticles(sorted);
+                // Filter out duplicates based on article_id
+                const newArticles = data.results || [];
+
+                if (isLoadMore) {
+                    setArticles(prev => {
+                        const existingIds = new Set(prev.map(a => a.article_id));
+                        const uniqueNew = newArticles.filter((a: NewsArticle) => !existingIds.has(a.article_id));
+                        return [...prev, ...uniqueNew];
+                    });
+                } else {
+                    setArticles(newArticles);
+                }
+
+                setNextPage(data.nextPage || null);
             } else {
                 throw new Error(data.message || 'Failed to fetch news');
             }
         } catch (err: any) {
             console.error(err);
-            // Fallback to purely English if mixed fails, or just generic error
             setError(err.message || 'An unexpected error occurred');
         } finally {
             setLoading(false);
+            setIsLoadingMore(false);
         }
     };
 
@@ -84,7 +100,7 @@ const CyberNews: React.FC = () => {
                 </div>
 
                 <button
-                    onClick={fetchNews}
+                    onClick={() => fetchNews(false)}
                     className="p-2 bg-gray-900 rounded-lg border border-gray-800 hover:border-cyan-500/50 hover:bg-cyan-900/20 text-gray-400 hover:text-cyan-400 transition-all"
                     title="Refresh Feed"
                 >
@@ -113,14 +129,14 @@ const CyberNews: React.FC = () => {
                             <p className="font-mono text-sm opacity-60 max-w-md mx-auto">{error}</p>
                         </div>
                         <button
-                            onClick={fetchNews}
+                            onClick={() => fetchNews(false)}
                             className="mt-4 px-6 py-2 bg-red-900/30 border border-red-500/50 rounded hover:bg-red-500/20 text-red-200 transition-colors font-mono text-sm"
                         >
                             RECONNECT
                         </button>
                     </div>
                 ) : (
-                    <div className="flex flex-col gap-4 max-w-5xl mx-auto">
+                    <div className="flex flex-col gap-4 max-w-5xl mx-auto pb-8">
                         {articles.map((article, idx) => (
                             <div
                                 key={`${article.article_id}-${idx}`}
@@ -186,6 +202,24 @@ const CyberNews: React.FC = () => {
                                 </div>
                             </div>
                         ))}
+
+                        {/* Load More Button */}
+                        {nextPage && (
+                            <button
+                                onClick={() => fetchNews(true)}
+                                disabled={isLoadingMore}
+                                className="w-full py-4 bg-gray-900/50 border border-gray-800 rounded-xl text-cyan-500 font-bold font-mono hover:bg-cyan-900/20 hover:border-cyan-500/50 transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isLoadingMore ? (
+                                    <>
+                                        <div className="w-4 h-4 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
+                                        LOADING NEXT BATCH...
+                                    </>
+                                ) : (
+                                    'LOAD MORE INTEL'
+                                )}
+                            </button>
+                        )}
                     </div>
                 )}
             </div>
