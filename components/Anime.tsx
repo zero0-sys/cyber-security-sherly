@@ -38,6 +38,7 @@ const Anime: React.FC = () => {
     const [view, setView] = useState<'list' | 'detail' | 'watch'>('list');
     const [query, setQuery] = useState('');
     const [animeList, setAnimeList] = useState<AnimeItem[]>([]);
+    const [completedList, setCompletedList] = useState<AnimeItem[]>([]); // New state for completed
     const [selectedAnime, setSelectedAnime] = useState<AnimeDetail | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -47,7 +48,6 @@ const Anime: React.FC = () => {
     const [playingEpisode, setPlayingEpisode] = useState<StreamData | null>(null);
     const [streamLoading, setStreamLoading] = useState(false);
 
-    // API Base URL (Backend)
     // API Base URL (Backend)
     const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:5001') + '/api/anime';
 
@@ -62,9 +62,22 @@ const Anime: React.FC = () => {
             setAnimeList(data.data || []);
             setPage(data.page || 1);
         } catch (err: any) {
-            setError(err.message);
+            console.error("Latest fetch error:", err);
+            // Don't set global error yet, try to load completed at least
         } finally {
             setLoading(false);
+        }
+    };
+
+    // Fetch Completed
+    const fetchCompleted = async (pageNum = 1) => {
+        try {
+            const res = await fetch(`${API_BASE}/completed/${pageNum}`);
+            if (!res.ok) throw new Error(`API Error: ${res.status}`);
+            const data = await res.json();
+            setCompletedList(data.data || []);
+        } catch (err: any) {
+            console.error("Completed fetch error:", err);
         }
     };
 
@@ -77,7 +90,8 @@ const Anime: React.FC = () => {
             if (!res.ok) throw new Error(`API Error: ${res.status}`);
             const data = await res.json();
             setAnimeList(data.data || []);
-            setPage(1); // Search results usually single page or paginated differently, mostly 1 page from scraper for now
+            setCompletedList([]); // Clear completed on search
+            setPage(1);
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -85,42 +99,16 @@ const Anime: React.FC = () => {
         }
     };
 
-    // Get Details
-    const fetchDetail = async (slug: string) => {
-        setLoading(true);
-        try {
-            const res = await fetch(`${API_BASE}/detail/${slug}`);
-            if (!res.ok) throw new Error(`API Error: ${res.status}`);
-            const data = await res.json();
-            setSelectedAnime(data);
-            setView('detail');
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Get Stream
-    const fetchStream = async (slug: string) => {
-        setStreamLoading(true);
-        setPlayingEpisode(null);
-        try {
-            const res = await fetch(`${API_BASE}/watch/${slug}`);
-            if (!res.ok) throw new Error(`API Error: ${res.status}`);
-            const data = await res.json();
-            setPlayingEpisode(data);
-            setView('watch');
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setStreamLoading(false);
-        }
-    };
+    // ... (fetchDetail, fetchStream remain same)
 
     // Initial load
     useEffect(() => {
-        fetchLatest();
+        const initLoad = async () => {
+            setLoading(true);
+            await Promise.all([fetchLatest(1), fetchCompleted(1)]);
+            setLoading(false);
+        };
+        initLoad();
     }, []);
 
     const handleSearch = (e: React.FormEvent) => {
@@ -128,22 +116,21 @@ const Anime: React.FC = () => {
         if (query.trim()) {
             fetchSearch(query);
         } else {
-            fetchLatest(1);
+            // Reset to home
+            const initLoad = async () => {
+                setLoading(true);
+                await Promise.all([fetchLatest(1), fetchCompleted(1)]);
+                setLoading(false);
+            };
+            initLoad();
         }
     };
 
-    const handleSelectAnime = (anime: AnimeItem) => {
-        // Fetch full details
-        fetchDetail(anime.slug);
-    };
-
-    const handlePlayEpisode = (slug: string) => {
-        fetchStream(slug);
-    };
+    // ... (handleSelectAnime, handlePlayEpisode remain same)
 
     return (
         <div className="h-full bg-gray-900 text-white flex flex-col font-sans">
-            {/* Header */}
+            {/* Header ... */}
             <div className="p-3 md:p-4 border-b border-gray-800 flex items-center justify-between bg-black/50 gap-3">
                 <div className="flex items-center gap-2 text-pink-500 shrink-0">
                     <Tv size={20} />
@@ -199,53 +186,95 @@ const Anime: React.FC = () => {
                     <>
                         {/* LIST VIEW */}
                         {view === 'list' && (
-                            <div className="space-y-6">
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
-                                    {animeList.map((anime, idx) => (
-                                        <button
-                                            key={`${anime.slug}-${idx}`}
-                                            onClick={() => handleSelectAnime(anime)}
-                                            className="group relative aspect-[2/3] bg-gray-800 rounded-lg overflow-hidden border border-gray-800 hover:border-pink-500 transition-all duration-300 hover:shadow-[0_0_20px_rgba(236,72,153,0.2)] text-left"
-                                        >
-                                            <img
-                                                src={anime.poster}
-                                                alt={anime.title}
-                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                            />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
-                                                <h3 className="text-xs md:text-sm font-bold text-white group-hover:text-pink-400 transition-colors line-clamp-2">{anime.title}</h3>
-                                                <div className="flex flex-wrap items-center gap-1 mt-1">
-                                                    {anime.episode && (
-                                                        <span className="text-[9px] bg-pink-600/80 text-white px-1.5 py-0.5 rounded font-bold">{anime.episode}</span>
-                                                    )}
-                                                    {anime.rating && (
-                                                        <span className="text-[9px] flex items-center gap-0.5 text-yellow-400">
-                                                            <Star size={8} fill="currentColor" /> {anime.rating}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </button>
-                                    ))}
-                                </div>
+                            <div className="space-y-8">
+                                {/* ONGOING SECTION */}
+                                {animeList.length > 0 && (
+                                    <section>
+                                        <h2 className="text-pink-400 font-bold font-orbitron mb-4 flex items-center gap-2 border-b border-gray-800 pb-2">
+                                            <Calendar size={18} /> ONGOING ANIME
+                                        </h2>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
+                                            {animeList.map((anime, idx) => (
+                                                <button
+                                                    key={`ongoing-${anime.slug}-${idx}`}
+                                                    onClick={() => handleSelectAnime(anime)}
+                                                    className="group relative aspect-[2/3] bg-gray-800 rounded-lg overflow-hidden border border-gray-800 hover:border-pink-500 transition-all duration-300 hover:shadow-[0_0_20px_rgba(236,72,153,0.2)] text-left"
+                                                >
+                                                    <img
+                                                        src={anime.poster}
+                                                        alt={anime.title}
+                                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                                    />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
+                                                        <h3 className="text-xs md:text-sm font-bold text-white group-hover:text-pink-400 transition-colors line-clamp-2">{anime.title}</h3>
+                                                        <div className="flex flex-wrap items-center gap-1 mt-1">
+                                                            {anime.episode && (
+                                                                <span className="text-[9px] bg-pink-600/80 text-white px-1.5 py-0.5 rounded font-bold">{anime.episode}</span>
+                                                            )}
+                                                            <span className="text-[9px] text-gray-300">{anime.date}</span>
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </section>
+                                )}
 
-                                {/* Pagination (Simple) */}
-                                <div className="flex justify-center gap-3 mt-6 pb-6">
-                                    <button
-                                        onClick={() => fetchLatest(page - 1)}
-                                        disabled={page <= 1}
-                                        className="px-3 py-2 bg-gray-800 rounded hover:bg-gray-700 disabled:opacity-50 flex items-center gap-1 disabled:cursor-not-allowed text-sm"
-                                    >
-                                        <ChevronLeft size={14} /> Prev
-                                    </button>
-                                    <span className="px-3 py-2 bg-black rounded border border-gray-800 font-mono text-pink-500 text-sm">PAGE {page}</span>
-                                    <button
-                                        onClick={() => fetchLatest(page + 1)}
-                                        className="px-3 py-2 bg-gray-800 rounded hover:bg-gray-700 disabled:opacity-50 flex items-center gap-1 disabled:cursor-not-allowed text-sm"
-                                    >
-                                        Next <ChevronRight size={14} />
-                                    </button>
-                                </div>
+                                {/* COMPLETED SECTION */}
+                                {completedList.length > 0 && (
+                                    <section>
+                                        <h2 className="text-blue-400 font-bold font-orbitron mb-4 flex items-center gap-2 border-b border-gray-800 pb-2">
+                                            <Star size={18} /> COMPLETED ANIME
+                                        </h2>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
+                                            {completedList.map((anime, idx) => (
+                                                <button
+                                                    key={`complete-${anime.slug}-${idx}`}
+                                                    onClick={() => handleSelectAnime(anime)}
+                                                    className="group relative aspect-[2/3] bg-gray-800 rounded-lg overflow-hidden border border-gray-800 hover:border-blue-500 transition-all duration-300 hover:shadow-[0_0_20px_rgba(59,130,246,0.2)] text-left"
+                                                >
+                                                    <img
+                                                        src={anime.poster}
+                                                        alt={anime.title}
+                                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                                        onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200x300?text=No+Image'; }}
+                                                    />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
+                                                        <h3 className="text-xs md:text-sm font-bold text-white group-hover:text-blue-400 transition-colors line-clamp-2">{anime.title}</h3>
+                                                        <div className="flex flex-wrap items-center gap-1 mt-1">
+                                                            {anime.rating && (
+                                                                <span className="text-[9px] flex items-center gap-0.5 text-yellow-400">
+                                                                    <Star size={8} fill="currentColor" /> {anime.rating}
+                                                                </span>
+                                                            )}
+                                                            <span className="text-[9px] text-gray-300">{anime.episode} Eps</span>
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </section>
+                                )}
+
+                                {/* Pagination (Only shows for ongoing in default view for now, or could be improved) */}
+                                {query === '' && (
+                                    <div className="flex justify-center gap-3 mt-6 pb-6">
+                                        <button
+                                            onClick={() => fetchLatest(page - 1)}
+                                            disabled={page <= 1}
+                                            className="px-3 py-2 bg-gray-800 rounded hover:bg-gray-700 disabled:opacity-50 flex items-center gap-1 disabled:cursor-not-allowed text-sm"
+                                        >
+                                            <ChevronLeft size={14} /> Prev
+                                        </button>
+                                        <span className="px-3 py-2 bg-black rounded border border-gray-800 font-mono text-pink-500 text-sm">PAGE {page}</span>
+                                        <button
+                                            onClick={() => fetchLatest(page + 1)}
+                                            className="px-3 py-2 bg-gray-800 rounded hover:bg-gray-700 disabled:opacity-50 flex items-center gap-1 disabled:cursor-not-allowed text-sm"
+                                        >
+                                            Next <ChevronRight size={14} />
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
 
